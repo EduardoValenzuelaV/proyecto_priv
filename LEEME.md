@@ -1,19 +1,22 @@
-# Regalo para Dallana
+# Un rincón para Dallana
 
-## Backend en Render
+## Publicar la página
 
-1. Sube `Dallana_main.py` y `requirements.txt` al servicio.
-2. Usa `pip install -r requirements.txt` para instalar y `uvicorn Dallana_main:app --host 0.0.0.0 --port $PORT` para iniciar.
-3. Configura `DALLANA_ADMIN_TOKEN` con una clave larga y privada.
-4. Configura `DALLANA_ALLOWED_ORIGINS` con el origen exacto de la página publicada, por ejemplo `https://tupagina.netlify.app`. Para varios orígenes, sepáralos por coma. En desarrollo, el valor predeterminado permite `http://localhost:5500` y `http://127.0.0.1:5500`.
-5. Conecta un disco persistente. Define `DALLANA_DATA_FILE=/var/data/cumplidos.json` y `DALLANA_MEDIA_DIR=/var/data/fotos` para conservar tanto mensajes como fotos entre despliegues.
+`Dallana.html` se puede publicar directamente en GitHub Pages. La URL pública del proyecto es:
 
-## Página
+`https://eduardovalenzuelav.github.io/proyecto_priv/Dallana.html`
 
-1. En `Dallana.html`, cambia `URL_BACKEND` por la URL de Render y revisa `FECHA_INICIO` y `MENSAJES_PARA_CARTA`.
-2. Publica `Dallana.html` en Netlify o GitHub Pages. Puedes agregar `musica.mp3` a la misma carpeta.
-3. Entra al panel con la pequeña estrella de la esquina. La clave es la variable `DALLANA_ADMIN_TOKEN`.
-4. Desde el panel puedes añadir, editar y borrar recuerdos, subir imágenes PNG/JPG/WebP/GIF, cambiar la carta y editar los saludos de mañana y noche.
-5. Para el paseo de Paicaví, selecciona el recuerdo en el panel, sube una foto real y guarda los cambios.
+La página muestra recuerdos de respaldo y una carta sin necesitar el backend. El contador considera el 17 de octubre de 2026 como el primer día. Los descubrimientos y favoritos se guardan en el navegador de cada visitante. La música ambiental se genera en el navegador al tocar el sobre o el botón de música; no hace falta un archivo MP3.
 
-El mensaje del día y los saludos se calculan según la hora de `America/Santiago`. El progreso y favoritos se guardan en el navegador de Dallana. Al descubrir 10 mensajes distintos se abre la carta una vez; después queda disponible el botón «Leer mi carta».
+## Activar el panel privado y sincronizar cambios
+
+Para editar recuerdos, fotos, carta y saludos desde el panel secreto, despliega `Dallana_main.py` como Web Service en Render conectado a este repositorio:
+
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `uvicorn Dallana_main:app --host 0.0.0.0 --port $PORT`
+- Variable `DALLANA_ADMIN_TOKEN`: define una clave larga y privada.
+- Variable `DALLANA_ALLOWED_ORIGINS`: `https://eduardovalenzuelav.github.io`
+
+Luego reemplaza en `Dallana.html` la constante `URL_BACKEND` por la URL real de tu servicio Render y sube el cambio a `main`. Para conservar los recuerdos y fotos que se administren, conecta un disco persistente y define `DALLANA_DATA_FILE=/var/data/cumplidos.json` y `DALLANA_MEDIA_DIR=/var/data/fotos`.
+
+El panel de administración necesita que la API esté disponible. Las fotos se aceptan en PNG, JPG, WebP y GIF, hasta 8 MB. La página guarda el progreso de descubrimientos y los favoritos localmente en el navegador.
