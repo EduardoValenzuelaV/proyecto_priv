@@ -20,3 +20,8 @@ Para editar recuerdos, fotos, carta y saludos desde el panel secreto, despliega 
 Luego reemplaza en `Dallana.html` la constante `URL_BACKEND` por la URL real de tu servicio Render y sube el cambio a `main`. Para conservar los recuerdos y fotos que se administren, conecta un disco persistente y define `DALLANA_DATA_FILE=/var/data/cumplidos.json` y `DALLANA_MEDIA_DIR=/var/data/fotos`.
 
 El panel de administración necesita que la API esté disponible. Las fotos se aceptan en PNG, JPG, WebP y GIF, hasta 8 MB. La página guarda el progreso de descubrimientos y los favoritos localmente en el navegador.
+## Fotos y stickers
+
+- Agrega fotografías en `assets/fotos/` (JPG, PNG o WebP). La carpeta incluye instrucciones para insertarlas en la página.
+- Agrega stickers SVG o PNG transparentes en `assets/stickers/`. La página ya usa `flor-rosa.svg` como adorno.
+- Las rutas se escriben desde el HTML, por ejemplo `assets/fotos/paseo-paicavi.jpg`. Todo lo que subas a este repositorio público será visible en Internet.
