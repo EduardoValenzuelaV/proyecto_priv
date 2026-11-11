@@ -1,0 +1,227 @@
+import json
+import os
+import random
+import secrets
+import uuid
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+from zoneinfo import ZoneInfo
+
+from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+
+app = FastAPI(title="La API del amor 💌")
+origins = [item.strip() for item in os.getenv("DALLANA_ALLOWED_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",") if item.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "X-Admin-Token"])
+
+DATOS = Path(os.getenv("DALLANA_DATA_FILE", "cumplidos.json"))
+FOTOS = Path(os.getenv("DALLANA_MEDIA_DIR", str(DATOS.parent / "fotos")))
+FOTOS.mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=FOTOS), name="media")
+
+INICIALES = [
+    {"mensaje": "Me encanta tu sonrisa, ilumina cualquier día.", "foto": ""},
+    {"mensaje": "Conocerte en ese curso de la universidad ha sido mi parte favorita del semestre.", "foto": ""},
+    {"mensaje": "Caminar contigo por Paicaví siempre es un buen plan si voy de tu mano.", "foto": ""},
+    {"mensaje": "Eres increíblemente inteligente y admiro tu dedicación en tu carrera.", "foto": ""},
+    {"mensaje": "No puedo esperar para celebrar este 17 de noviembre contigo, Dallana.", "foto": ""},
+    {"mensaje": "Haces que hasta un día pesado valga totalmente la pena.", "foto": ""},
+    {"mensaje": "Vale por una invitación a comer tu sushi favorito. 🍣", "foto": ""},
+    {"mensaje": "Vale por un helado en Sweet Cream, yo invito. 🍦", "foto": ""},
+    {"mensaje": "Me encanta cómo empezamos a hablar, es mi recuerdo favorito.", "foto": ""},
+    {"mensaje": "Tu risa es mi sonido favorito en el mundo.", "foto": ""},
+    {"mensaje": "Contigo hasta esperar la micro se siente como una aventura.", "foto": ""},
+    {"mensaje": "Eres la razón por la que reviso mi celular con una sonrisa.", "foto": ""},
+    {"mensaje": "Me gusta lo tranquilo que se siente todo cuando estoy contigo.", "foto": ""},
+    {"mensaje": "Gracias por ser tú, tal cual eres. Eso es lo que más me gusta.", "foto": ""},
+    {"mensaje": "Vale por un abrazo largo, de esos que arreglan el día. 🤗", "foto": ""},
+    {"mensaje": "Admiro lo fuerte y valiente que eres, aunque a veces no lo notes.", "foto": ""},
+    {"mensaje": "Me encanta cómo te brillan los ojos cuando hablas de lo que te apasiona.", "foto": ""},
+    {"mensaje": "Vale por una tarde de película y manta, tú eliges la película. 🎬", "foto": ""},
+    {"mensaje": "En este primer mes aprendí que mi lugar favorito es a tu lado.", "foto": ""},
+    {"mensaje": "Si pudiera repetir un día, elegiría cualquiera de los que pasé contigo.", "foto": ""},
+    {"mensaje": "Eres mi persona favorita para contarle todo.", "foto": ""},
+    {"mensaje": "Me haces querer ser una mejor versión de mí.", "foto": ""},
+    {"mensaje": "Vale por un paseo sin apuro y sin destino. 🌅", "foto": ""},
+    {"mensaje": "Tus mensajes son la mejor parte de mis días.", "foto": ""},
+    {"mensaje": "Me encanta que contigo hasta el silencio sea cómodo.", "foto": ""},
+    {"mensaje": "Gracias por hacerme tan feliz en tan poco tiempo.", "foto": ""},
+    {"mensaje": "Vale por un 'te quiero' extra hoy, y mañana otro. 💕", "foto": ""},
+    {"mensaje": "Eres de esas casualidades bonitas que uno agradece toda la vida.", "foto": ""},
+    {"mensaje": "Un mes juntos y ya no me imagino los días sin ti.", "foto": ""},
+    {"mensaje": "Te elegiría otra vez, y otra vez, y otra vez. ❤️", "foto": ""},
+]
+CARTA_INICIAL = "Dallana, gracias por cada paseo, cada conversación y cada risa. Me haces muy feliz. Te elegiría una y mil veces. Con todo mi cariño, siempre."
+SALUDOS_INICIALES = {"manana": "Buenos días, amor. Ojalá hoy encuentres un motivo nuevo para sonreír. Yo ya tengo el mío: tú. ☀️", "noche": "Buenas noches, mi vida. Que descanses bonito y sueñes con todo lo que todavía nos queda por vivir. 🌙"}
+
+
+def leer_datos():
+    try:
+        datos = json.loads(DATOS.read_text(encoding="utf-8")) if DATOS.exists() else {}
+    except (OSError, json.JSONDecodeError):
+        datos = {}
+    cumplidos = datos.get("cumplidos") or [dict(item, id=str(i)) for i, item in enumerate(INICIALES)]
+    for i, item in enumerate(cumplidos):
+        item.setdefault("id", str(i))
+        item.setdefault("foto", "")
+    datos["cumplidos"] = cumplidos
+    datos.setdefault("carta", CARTA_INICIAL)
+    datos.setdefault("saludos", dict(SALUDOS_INICIALES))
+    for clave, valor in SALUDOS_INICIALES.items():
+        datos["saludos"].setdefault(clave, valor)
+    return datos
+
+
+def guardar_datos(datos):
+    DATOS.parent.mkdir(parents=True, exist_ok=True)
+    temporal = DATOS.with_suffix(DATOS.suffix + ".tmp")
+    temporal.write_text(json.dumps(datos, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporal.replace(DATOS)
+
+
+def exigir_admin(token: Optional[str]):
+    esperado = os.getenv("DALLANA_ADMIN_TOKEN", "")
+    if not esperado:
+        raise HTTPException(503, "Configura DALLANA_ADMIN_TOKEN en el servidor.")
+    if not token or not secrets.compare_digest(token, esperado):
+        raise HTTPException(401, "Clave incorrecta.")
+
+
+def encontrar(datos, mensaje_id):
+    item = next((item for item in datos["cumplidos"] if str(item["id"]) == mensaje_id), None)
+    if item is None:
+        raise HTTPException(404, "No encontré ese recuerdo.")
+    return item
+
+
+class Cumplido(BaseModel):
+    mensaje: str = Field(min_length=1, max_length=500)
+    foto: str = Field(default="", max_length=2000)
+
+
+class Carta(BaseModel):
+    carta: str = Field(min_length=1, max_length=10000)
+
+
+class Saludos(BaseModel):
+    manana: str = Field(min_length=1, max_length=500)
+    noche: str = Field(min_length=1, max_length=500)
+
+
+@app.get("/")
+def raiz():
+    return {"estado": "La API del amor está funcionando 💌", "cumplidos": len(leer_datos()["cumplidos"])}
+
+
+@app.get("/api/cumplido")
+def obtener_cumplido(ultimo: Optional[str] = None):
+    cumplidos = leer_datos()["cumplidos"]
+    opciones = [item for item in cumplidos if str(item["id"]) != str(ultimo)] or cumplidos
+    if not opciones:
+        raise HTTPException(503, "Todavía no hay recuerdos guardados.")
+    item = random.choice(opciones)
+    return {**item, "total": len(cumplidos)}
+
+
+@app.get("/api/del-dia")
+def mensaje_del_dia():
+    datos = leer_datos()
+    cumplidos = datos["cumplidos"]
+    if not cumplidos:
+        raise HTTPException(503, "Todavía no hay recuerdos guardados.")
+    hoy = datetime.now(ZoneInfo("America/Santiago")).date()
+    item = cumplidos[hoy.toordinal() % len(cumplidos)]
+    return {**item, "fecha": hoy.isoformat()}
+
+
+@app.get("/api/momento")
+def mensaje_del_momento():
+    datos = leer_datos()
+    ahora = datetime.now(ZoneInfo("America/Santiago"))
+    if ahora.hour < 12:
+        return {"id": "saludo-manana", "mensaje": datos["saludos"]["manana"], "foto": "", "tipo": "Buenos días"}
+    if ahora.hour >= 21:
+        return {"id": "saludo-noche", "mensaje": datos["saludos"]["noche"], "foto": "", "tipo": "Buenas noches"}
+    cumplidos = datos["cumplidos"]
+    if not cumplidos:
+        raise HTTPException(503, "Todavía no hay recuerdos guardados.")
+    item = random.choice(cumplidos)
+    return {**item, "tipo": "Un mensaje para ti"}
+
+
+@app.get("/api/carta")
+def obtener_carta():
+    return {"carta": leer_datos()["carta"]}
+
+
+@app.get("/api/administracion")
+def listar_admin(x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    return leer_datos()
+
+
+@app.post("/api/administracion/cumplidos")
+def agregar_cumplido(nuevo: Cumplido, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    datos = leer_datos()
+    datos["cumplidos"].append({"id": uuid.uuid4().hex, **nuevo.dict()})
+    guardar_datos(datos)
+    return {"total": len(datos["cumplidos"])}
+
+
+@app.put("/api/administracion/cumplidos/{mensaje_id}")
+def editar_cumplido(mensaje_id: str, cambio: Cumplido, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    datos = leer_datos()
+    item = encontrar(datos, mensaje_id)
+    item.update(cambio.dict())
+    guardar_datos(datos)
+    return item
+
+
+@app.delete("/api/administracion/cumplidos/{mensaje_id}")
+def eliminar_cumplido(mensaje_id: str, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    datos = leer_datos()
+    encontrar(datos, mensaje_id)
+    if len(datos["cumplidos"]) <= 1:
+        raise HTTPException(409, "Debes conservar al menos un recuerdo.")
+    datos["cumplidos"] = [item for item in datos["cumplidos"] if str(item["id"]) != mensaje_id]
+    guardar_datos(datos)
+    return {"total": len(datos["cumplidos"])}
+
+
+@app.post("/api/administracion/fotos")
+async def subir_foto(foto: UploadFile = File(...), x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    extensiones = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif"}
+    if foto.content_type not in extensiones:
+        raise HTTPException(415, "El archivo debe ser una imagen.")
+    extension = extensiones[foto.content_type]
+    nombre = f"{uuid.uuid4().hex}{extension}"
+    contenido = await foto.read(8 * 1024 * 1024 + 1)
+    if len(contenido) > 8 * 1024 * 1024:
+        raise HTTPException(413, "La imagen debe pesar menos de 8 MB.")
+    (FOTOS / nombre).write_bytes(contenido)
+    return {"foto": f"/media/{nombre}"}
+
+
+@app.put("/api/administracion/carta")
+def actualizar_carta(nueva: Carta, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    datos = leer_datos()
+    datos["carta"] = nueva.carta
+    guardar_datos(datos)
+    return {"guardado": True}
+
+
+@app.put("/api/administracion/saludos")
+def actualizar_saludos(nuevos: Saludos, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    datos = leer_datos()
+    datos["saludos"] = nuevos.dict()
+    guardar_datos(datos)
+    return {"guardado": True}

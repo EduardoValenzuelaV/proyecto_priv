@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#26192f">
+<meta name="description" content="Un pequeño rincón lleno de recuerdos para Dallana">
+<title>Un rincón para Dallana 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--ink:#271a30;--ink2:#382442;--plum:#52385b;--rose:#f3a4ae;--coral:#de7183;--gold:#f5d9a8;--cream:#fff4e2;--paper:#fff8ed;--paper-ink:#593a49;--muted:#f8e7dfb8;--serif:'Fraunces',Georgia,serif;--script:'Caveat',cursive;--safe-bottom:env(safe-area-inset-bottom,0px)}*{box-sizing:border-box}html{min-height:100%;background:var(--ink)}body{position:relative;isolation:isolate;display:grid;place-items:center;min-height:100svh;margin:0;overflow-x:hidden;padding:max(26px,env(safe-area-inset-top)) 18px calc(28px + var(--safe-bottom));background:radial-gradient(ellipse 70% 55% at 50% 0%,#725179 0%,#4e3657 34%,#34233e 72%,#21172b 100%);color:var(--cream);font-family:var(--serif)}body:before,body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none}body:before{opacity:.65;background-image:radial-gradient(1px 1px at 9% 15%,#fff 98%,transparent),radial-gradient(1.4px 1.4px at 19% 72%,#ffe8c9 98%,transparent),radial-gradient(1px 1px at 30% 33%,#fff 98%,transparent),radial-gradient(1.2px 1.2px at 42% 9%,#ffe6c6 98%,transparent),radial-gradient(1px 1px at 56% 79%,#fff 98%,transparent),radial-gradient(1.6px 1.6px at 67% 23%,#ffedf0 98%,transparent),radial-gradient(1px 1px at 78% 58%,#fff 98%,transparent),radial-gradient(1.3px 1.3px at 91% 35%,#ffe4bd 98%,transparent),radial-gradient(ellipse at 9% 87%,#d79a8c20,transparent 31%),radial-gradient(ellipse at 97% 82%,#bf97ce20,transparent 35%);animation:starDrift 18s ease-in-out infinite alternate}body:after{inset:auto;width:min(82vw,650px);height:min(82vw,650px);left:50%;top:46%;transform:translate(-50%,-50%);border:1px solid #f6d7ba10;border-radius:50%;box-shadow:0 0 0 28px #f6d7ba08,0 0 0 62px #f6d7ba06,0 0 100px #e9a9b00a;z-index:-1}@keyframes starDrift{to{transform:translateY(-9px);opacity:.92}}button,input,textarea,select{font:inherit}button{touch-action:manipulation}main{position:relative;width:min(100%,480px);margin:auto;text-align:center;z-index:1;padding:4px 0 20px}.eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold);font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.9}.eyebrow:before,.eyebrow:after{content:"";width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}.eyebrow:after{transform:rotate(180deg)}h1{margin:8px 0 0;color:#ffc2c5;font:700 clamp(46px,12vw,68px)/.9 var(--script);text-shadow:0 4px 28px #e888a155}.sub{margin:12px 0 18px;color:var(--muted);font:italic 14px var(--serif)}.counter{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid #f5d9a844;border-radius:99px;background:#21172d77;color:var(--gold);font-size:12px;letter-spacing:.02em;box-shadow:inset 0 1px #ffffff0a}.counter:before{content:"✦";font-size:10px}.progress-wrap{max-width:290px;margin:14px auto 0}.progress-meta{display:flex;justify-content:space-between;gap:12px;color:#fae7d7b5;font-size:11px;margin:0 2px 7px}.progress-rail{height:5px;overflow:hidden;border-radius:10px;background:#fff2}.progress-fill{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#e78391,#ffd5a3);box-shadow:0 0 12px #f2a6ad88;transition:width .7s cubic-bezier(.2,.8,.2,1)}.paper{position:relative;margin:21px 0 15px;padding:28px 25px 22px;min-height:206px;border:1px solid #fff9;border-radius:4px 4px 22px 4px;background:linear-gradient(145deg,#fffaf2,#f4dfca);color:var(--paper-ink);box-shadow:0 20px 55px #10091766,0 3px 0 #d9c1ab;transform:rotate(-.7deg);transition:transform .45s,box-shadow .45s}.paper:before{content:"";position:absolute;inset:8px;border:1px solid #b9877433;border-radius:2px 2px 17px 2px;pointer-events:none}.paper:after{content:"✿";position:absolute;right:17px;top:8px;color:#d88991;font-size:19px;opacity:.75}.paper.new{transform:rotate(.45deg) translateY(-3px);box-shadow:0 24px 60px #10091777,0 3px 0 #d9c1ab}.paper-label{display:inline-block;position:relative;z-index:1;margin-bottom:10px;padding:4px 10px;border:1px solid #a96e6d35;border-radius:99px;color:#a66e71;font:500 11px var(--serif);letter-spacing:.06em}#message{position:relative;z-index:1;margin:0;font:600 clamp(26px,7vw,34px)/1.05 var(--script);overflow-wrap:anywhere}.memory{display:none;position:relative;z-index:1;width:100%;max-height:250px;aspect-ratio:4/3;object-fit:cover;margin-top:15px;border:4px solid #fff;border-radius:13px;box-shadow:0 5px 18px #5b3b4030}.memory.show{display:block}.memory-note{display:none;margin:7px 0 0;color:#916c72;font-size:11px;font-style:italic}.memory-note.show{display:block}.actions{display:grid;gap:10px}.action-row{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:10px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;padding:13px 18px;border:1px solid #ffffff20;border-radius:999px;background:linear-gradient(135deg,#e98696,#ce637c);box-shadow:0 9px 23px #c54f7045;color:white;font:500 15px var(--serif);cursor:pointer;transition:transform .18s,filter .18s,box-shadow .18s}.btn:hover{filter:brightness(1.07);box-shadow:0 11px 28px #c54f7060}.btn:active{transform:scale(.97)}.btn.secondary{min-height:47px;border:1px solid #f5d9a84a;background:#ffffff0a;box-shadow:inset 0 1px #ffffff0a;color:#fff0df}.btn.secondary:hover{background:#ffffff15}.icon-btn{width:52px;min-height:52px;border:1px solid #f5d9a866;border-radius:50%;background:#21172d70;color:var(--gold);font-size:23px;cursor:pointer;transition:transform .18s,background .18s}.icon-btn:active{transform:scale(.9)}.icon-btn.favorite{color:#ff9ba9;background:#ff8ca51c}.unlocked{display:none;width:100%;margin-top:2px;color:var(--gold)}.unlocked.show{display:inline-flex}.foot{min-height:22px;margin:13px 0 0;color:#f9e9dfb5;font-size:12px;line-height:1.5}.music{position:fixed;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:4;display:grid;place-items:center;width:44px;height:44px;border:1px solid #f5d9a855;border-radius:50%;background:#20172bbb;color:var(--gold);font-size:19px;cursor:pointer;backdrop-filter:blur(12px)}.music.on{animation:softPulse 2.4s ease-in-out infinite}@keyframes softPulse{50%{box-shadow:0 0 22px #f5d9a855}}.admin-open{position:fixed;right:8px;bottom:calc(8px + var(--safe-bottom));z-index:4;width:36px;height:36px;border:0;background:transparent;color:#fff6;opacity:.25;font-size:14px;cursor:pointer}.admin-open:hover,.admin-open:focus-visible{opacity:1}.envelope{position:fixed;inset:0;z-index:5;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 45%,#725078 0%,#49344f 39%,#21172d 100%);transition:opacity .65s ease,visibility .65s}.envelope:before,.envelope:after{content:"✦";position:absolute;color:#ffe2b2aa;font-size:16px;animation:twinkle 2.8s ease-in-out infinite}.envelope:before{top:24%;left:24%}.envelope:after{right:22%;bottom:25%;animation-delay:1s}@keyframes twinkle{50%{opacity:.3;transform:scale(.72)}}.envelope.closed{opacity:0;visibility:hidden;pointer-events:none}.envelope-content{max-width:360px;text-align:center;color:var(--cream);font:600 23px/1.2 var(--script)}.envelope-content small{display:block;margin-top:14px;color:#fae5d1b8;font:12px var(--serif);letter-spacing:.06em}.env-button{display:block;margin:0 auto 14px;border:0;background:none;color:inherit;font-size:0;cursor:pointer;filter:drop-shadow(0 15px 24px #130b1f55)}.env{display:block;font-size:clamp(92px,26vw,128px);transform-origin:50% 70%;animation:float 2.8s ease-in-out infinite}.env.open{animation:openEnvelope .7s ease forwards}@keyframes float{50%{transform:translateY(-8px) rotate(-2deg)}}@keyframes openEnvelope{to{transform:translateY(-28px) scale(1.22) rotate(7deg);opacity:0}}dialog{width:min(560px,calc(100% - 24px));max-height:min(88vh,850px);overflow:auto;margin:auto;padding:clamp(20px,5vw,30px);border:1px solid #f4d69a55;border-radius:22px;background:linear-gradient(150deg,#34243e,#24192e 70%);color:var(--cream);box-shadow:0 28px 90px #0c0712bb}dialog::backdrop{background:#110c19c9;backdrop-filter:blur(7px)}dialog h2{margin:2px 35px 8px 0;color:#ffc0c6;font:700 36px/1 var(--script)}dialog p{color:#f8e7dfb8;font-size:13px;line-height:1.5}.letter-paper{padding:22px;border-radius:6px 6px 18px 6px;background:linear-gradient(150deg,#fff9ef,#f3dfcb);color:var(--paper-ink);box-shadow:0 12px 30px #130d1e55}.letter-paper p{margin:0;color:var(--paper-ink);white-space:pre-wrap;font:500 25px/1.28 var(--script)}.close{position:absolute;top:14px;right:16px;display:grid;place-items:center;width:38px;height:38px;border:1px solid #ffffff20;border-radius:50%;background:#ffffff0c;color:var(--cream);font-size:22px;cursor:pointer}.field{display:block;margin:13px 0;color:#f6e4d4;font-size:12px}.field input,.field textarea,.field select{display:block;width:100%;min-height:45px;margin-top:6px;padding:11px 12px;border:1px solid #f5d9a844;border-radius:11px;background:#1e1528;color:var(--cream);font:14px var(--serif)}.field textarea{min-height:90px;resize:vertical}.field input[type=file]{padding:8px;font-size:12px}.admin-section{margin:18px 0 0;padding-top:15px;border-top:1px solid #ffffff18}.admin-section h3{margin:0;color:var(--gold);font:600 21px var(--script)}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-grid .btn{min-height:44px;padding:10px;font-size:13px}.adminStatus{min-height:20px;margin-bottom:0;color:var(--gold);font-size:12px}.adminStatus.error{color:#ffb2b8}.hidden{display:none!important}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}::selection{background:#d97d91;color:white}@media(max-width:520px){body{padding:calc(66px + env(safe-area-inset-top)) 16px calc(28px + var(--safe-bottom));place-items:start center}.music{top:calc(12px + env(safe-area-inset-top));right:14px}main{max-width:430px;padding-top:2px}.eyebrow{font-size:10px;letter-spacing:.17em}.eyebrow:before,.eyebrow:after{width:20px}h1{font-size:clamp(47px,14vw,61px)}.sub{margin-top:10px;margin-bottom:16px}.paper{min-height:186px;margin-top:18px;padding:24px 19px 18px}.paper:before{inset:6px}#message{font-size:clamp(27px,8vw,34px)}.memory{max-height:220px}.btn{min-height:54px;padding:12px 12px;font-size:14px}.action-row{grid-template-columns:minmax(0,1fr) 54px;gap:9px}.icon-btn{width:54px;min-height:54px}.btn.secondary{min-height:49px}.foot{margin-top:12px}.envelope-content{font-size:22px}dialog{border-radius:20px}.admin-grid{grid-template-columns:1fr}.letter-paper{padding:19px}.letter-paper p{font-size:23px}}@media(max-height:700px) and (max-width:520px){body{padding-top:62px}.sub{margin-bottom:10px}.progress-wrap{margin-top:9px}.paper{min-height:160px;margin-top:13px;padding-top:18px}.memory{max-height:150px}.actions{gap:8px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.secondary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.flourish{position:absolute;z-index:-1;width:116px;opacity:.24;pointer-events:none;filter:drop-shadow(0 2px 14px #f3a4ae44)}.flourish path,.flourish circle{stroke:#f5d9a8;fill:none;stroke-width:1.3;stroke-linecap:round}.flourish-left{left:-76px;top:190px;transform:rotate(-17deg)}.flourish-right{right:-73px;bottom:117px;transform:rotate(18deg)}@media(max-width:520px){.secondary-row{grid-template-columns:1fr}.flourish{width:64px;opacity:.18}.flourish-left{left:0;top:218px}.flourish-right{right:0;bottom:150px}}
+</style>
+</head>
+<body>
+<button class="music" id="music" aria-label="Activar música" title="Música">♫</button>
+<div class="envelope" id="welcome"><div class="envelope-content"><button class="env-button" id="openEnvelope" aria-label="Abrir sobre"><span class="env" id="env">💌</span></button>Un pequeño rincón hecho para ti<small>TOCA EL SOBRE PARA ABRIR</small></div></div>
+<main>
+  <svg class="flourish flourish-left" viewBox="0 0 100 150" aria-hidden="true"><path d="M48 145C52 112 44 88 57 59 64 42 76 29 87 12M52 111C36 99 24 84 16 67M55 81C70 72 79 62 84 50M35 91C21 91 12 96 5 104M71 65C72 49 67 38 59 30"/><circle cx="87" cy="11" r="5"/><circle cx="15" cy="66" r="4"/><circle cx="84" cy="49" r="4"/><circle cx="5" cy="105" r="4"/><circle cx="58" cy="29" r="4"/></svg>
+  <svg class="flourish flourish-right" viewBox="0 0 100 150" aria-hidden="true"><path d="M48 145C52 112 44 88 57 59 64 42 76 29 87 12M52 111C36 99 24 84 16 67M55 81C70 72 79 62 84 50M35 91C21 91 12 96 5 104M71 65C72 49 67 38 59 30"/><circle cx="87" cy="11" r="5"/><circle cx="15" cy="66" r="4"/><circle cx="84" cy="49" r="4"/><circle cx="5" cy="105" r="4"/><circle cx="58" cy="29" r="4"/></svg>
+  <div class="eyebrow">un detalle para ti</div>
+  <h1>Para Dallana</h1>
+  <p class="sub">Un pedacito de todo lo bonito que eres</p>
+  <div class="counter" id="counter">Nuestra historia sigue escribiéndose</div>
+  <section class="progress-wrap" aria-label="Progreso hacia la carta">
+    <div class="progress-meta"><span id="progressLabel">Descubre recuerdos para abrir tu carta</span><span id="progressCount">0 / 10</span></div>
+    <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+  </section>
+  <article class="paper" id="paper">
+    <span class="paper-label" id="tag">Un mensaje para ti</span>
+    <p id="message">Abre el sobre y descubre un recuerdo…</p>
+    <img id="memory" class="memory" alt="Un recuerdo nuestro">
+    <p id="memoryNote" class="memory-note">Un momento que guardo con mucho cariño</p>
+  </article>
+  <div class="actions">
+    <div class="action-row"><button class="btn" id="random">✧ <span>Regálame una sonrisa</span></button><button class="icon-btn" id="favorite" aria-label="Guardar en favoritos" title="Guardar en favoritos">♡</button></div>
+    <div class="secondary-row"><button class="btn secondary" id="daily">💌 <span>Mi mensaje de hoy</span></button><button class="btn secondary" id="moment">☀ <span>Un mensaje para este momento</span></button></div>
+    <button class="btn secondary unlocked" id="openLetter">✉ Leer mi carta</button>
+  </div>
+  <p class="foot" id="foot" aria-live="polite"></p>
+</main>
+<button class="admin-open" id="adminOpen" aria-label="Abrir panel privado" title="Panel privado">✦</button>
+<dialog id="letterDialog"><button class="close" data-close="letterDialog" aria-label="Cerrar">×</button><h2>Una carta para ti</h2><div class="letter-paper"><p id="letterText"></p></div></dialog>
+<dialog id="adminDialog">
+  <button class="close" data-close="adminDialog" aria-label="Cerrar">×</button>
+  <h2>Tu rincón secreto</h2><p>Añade recuerdos, fotos y palabras nuevas para seguir sorprendiéndola.</p>
+  <label class="field">Clave privada<input id="adminToken" type="password" autocomplete="current-password"></label>
+  <button class="btn secondary" id="loadAdmin">Entrar al panel</button>
+  <div id="adminTools" class="hidden">
+    <section class="admin-section"><h3>Editar un recuerdo</h3>
+      <label class="field">Elige un mensaje<select id="editSelect"></select></label>
+      <label class="field">Mensaje<textarea id="editMessage" maxlength="500"></textarea></label>
+      <label class="field">Foto<input id="editPhoto" maxlength="2000" placeholder="URL de una foto"></label>
+      <label class="field">Subir foto desde el dispositivo<input id="editPhotoFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+      <div class="admin-grid"><button class="btn secondary" id="saveEdit">Guardar cambios</button><button class="btn secondary" id="deleteMessage">Eliminar recuerdo</button></div>
+    </section>
+    <section class="admin-section"><h3>Añadir una sorpresa</h3>
+      <label class="field">Nuevo mensaje<textarea id="newMessage" maxlength="500" placeholder="Un cumplido, una anécdota o un vale"></textarea></label>
+      <label class="field">Foto (opcional)<input id="newPhoto" maxlength="2000" placeholder="URL de una foto"></label>
+      <label class="field">O subir foto<input id="newPhotoFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+      <button class="btn" id="addMessage">Añadir recuerdo</button>
+    </section>
+    <section class="admin-section"><h3>La carta final</h3><label class="field">Texto de la carta<textarea id="adminLetter" maxlength="10000"></textarea></label><button class="btn secondary" id="saveLetter">Guardar carta</button></section>
+    <section class="admin-section"><h3>Sus mensajes especiales</h3><label class="field">Buenos días<textarea id="greetingMorning" maxlength="500"></textarea></label><label class="field">Buenas noches<textarea id="greetingNight" maxlength="500"></textarea></label><button class="btn secondary" id="saveGreetings">Guardar saludos</button></section>
+  </div>
+  <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
+</dialog>
+<audio id="audio" src="musica.mp3" loop preload="none"></audio>
+<script>
+/* Ajusta la URL del backend, fecha de inicio y cantidad de recuerdos para la carta. */
+const URL_BACKEND='https://tu-api-en-render.onrender.com';
+const FECHA_INICIO='2026-10-17';
+const MENSAJES_PARA_CARTA=10;
+const RESPALDO=[
+  {id:'offline-smile',mensaje:'Me encanta tu sonrisa, ilumina cualquier día.',foto:''},
+  {id:'offline-person',mensaje:'Eres mi persona favorita para contarle todo.',foto:''},
+  {id:'offline-love',mensaje:'Te elegiría otra vez, y otra vez, y otra vez. ❤️',foto:''}
+];
+const $=id=>document.getElementById(id),audio=$('audio');
+const leerSet=key=>new Set(JSON.parse(localStorage.getItem(key)||'[]').map(String));
+let ultimo=null,token='',mensajes=[],seen=leerSet('dallanaSeen'),favorites=leerSet('dallanaFavorites'),currentId=null;
+const guardarSet=(key,set)=>localStorage.setItem(key,JSON.stringify([...set]));
+function actualizarContador(){
+  const inicio=new Date(`${FECHA_INICIO}T00:00:00`),hoy=new Date(),dias=Math.floor((hoy-inicio)/864e5);
+  $('counter').textContent=dias<=0?'Nuestra historia empieza hoy 💕':`${dias} ${dias===1?'día':'días'} juntos 💕`;
+}
+function cargarCarta(){
+  fetch(`${URL_BACKEND}/api/carta`).then(r=>r.ok?r.json():Promise.reject()).then(d=>{$('letterText').textContent=d.carta}).catch(()=>{$('letterText').textContent='Dallana, gracias por cada paseo, cada conversación y cada risa. Me haces muy feliz. Te elegiría una y mil veces. Con todo mi cariño, siempre.'});
+}
+function actualizarProgreso(abrirSiNuevo=false){
+  const cantidad=Math.min(seen.size,MENSAJES_PARA_CARTA),porcentaje=cantidad/MENSAJES_PARA_CARTA*100;
+  $('progressCount').textContent=`${cantidad} / ${MENSAJES_PARA_CARTA}`;$('progressFill').style.width=`${porcentaje}%`;
+  const lista=$('openLetter');
+  if(cantidad>=MENSAJES_PARA_CARTA){
+    $('progressLabel').textContent='Tu carta ya está lista, Dallana';lista.classList.add('show');
+    if(abrirSiNuevo&&!localStorage.getItem('dallanaLetterUnlocked')){
+      localStorage.setItem('dallanaLetterUnlocked','true');cargarCarta();$('letterDialog').showModal();
+    }
+  }else{$('progressLabel').textContent='Descubre recuerdos para abrir tu carta';lista.classList.remove('show')}
+}
+function urlFoto(foto){if(!foto)return '';try{return new URL(foto,`${URL_BACKEND}/`).href}catch{return foto}}
+function mostrar(d,label='Un mensaje para ti'){
+  currentId=String(d.id);$('tag').textContent=label;$('message').textContent=d.mensaje;
+  const image=$('memory'),url=urlFoto(d.foto);image.classList.remove('show');$('memoryNote').classList.remove('show');image.removeAttribute('src');
+  if(url){image.onload=()=>{image.classList.add('show');$('memoryNote').classList.add('show')};image.onerror=()=>{image.classList.remove('show');$('memoryNote').classList.remove('show')};image.src=url}
+  seen.add(currentId);guardarSet('dallanaSeen',seen);$('favorite').textContent=favorites.has(currentId)?'♥':'♡';$('favorite').classList.toggle('favorite',favorites.has(currentId));
+  $('paper').classList.add('new');setTimeout(()=>$('paper').classList.remove('new'),500);actualizarProgreso(true);
+}
+async function pedir(url,label){
+  $('foot').textContent='Buscando un recuerdo bonito…';
+  try{const r=await fetch(url);if(!r.ok)throw new Error('No fue posible conectar con la API');const data=await r.json();mostrar(data,data.tipo||label);$('foot').textContent=`${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`}
+  catch{const d=RESPALDO[Math.floor(Math.random()*RESPALDO.length)];mostrar(d,label);$('foot').textContent='Por ahora te dejo un recuerdo guardado en esta página ✨'}
+}
+function vibrar(){if(navigator.vibrate)navigator.vibrate([30,20,42])}
+$('random').onclick=()=>{vibrar();const q=ultimo?`?ultimo=${encodeURIComponent(ultimo)}`:'';pedir(`${URL_BACKEND}/api/cumplido${q}`).then(()=>{if(currentId)ultimo=currentId})};
+$('daily').onclick=()=>{vibrar();pedir(`${URL_BACKEND}/api/del-dia`,'Tu mensaje de hoy')};
+$('moment').onclick=()=>{vibrar();pedir(`${URL_BACKEND}/api/momento`,'Un mensaje para este momento')};
+$('favorite').onclick=()=>{if(!currentId)return;favorites.has(currentId)?favorites.delete(currentId):favorites.add(currentId);guardarSet('dallanaFavorites',favorites);$('favorite').textContent=favorites.has(currentId)?'♥':'♡';$('favorite').classList.toggle('favorite',favorites.has(currentId));$('foot').textContent=favorites.has(currentId)?'Guardado entre tus favoritos ♥':'Quitado de tus favoritos'};
+function empezar(){audio.play().then(()=>$('music').classList.add('on')).catch(()=>{});pedir(`${URL_BACKEND}/api/momento`,'Un mensaje para ti')}
+$('openEnvelope').onclick=()=>{$('env').classList.add('open');setTimeout(()=>{$('welcome').classList.add('closed');empezar()},360)};
+$('music').onclick=()=>{if(audio.paused){audio.play().then(()=>$('music').classList.add('on')).catch(()=>{$('foot').textContent='Agrega musica.mp3 junto a la página para escucharla.'})}else{audio.pause();$('music').classList.remove('on')}};
+$('openLetter').onclick=()=>{cargarCarta();$('letterDialog').showModal()};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
+$('adminOpen').onclick=()=>{$('adminDialog').showModal();$('adminToken').value=token};
+function estadoAdmin(texto,error=false){$('adminStatus').textContent=texto;$('adminStatus').classList.toggle('error',error)}
+async function adminFetch(path,options={}){
+  const headers={'X-Admin-Token':token,...options.headers};
+  if(!(options.body instanceof FormData))headers['Content-Type']='application/json';
+  return fetch(`${URL_BACKEND}${path}`,{...options,headers});
+}
+function seleccionarMensaje(){
+  const id=$('editSelect').value,item=mensajes.find(m=>String(m.id)===id);if(!item)return;
+  $('editMessage').value=item.mensaje;$('editPhoto').value=item.foto||'';$('editPhotoFile').value='';
+}
+function renderMensajes(){
+  const select=$('editSelect');select.replaceChildren();
+  mensajes.forEach((m,i)=>{const option=document.createElement('option');option.value=String(m.id);option.textContent=`${i+1}. ${m.mensaje.slice(0,68)}`;select.append(option)});
+  if(mensajes.length)seleccionarMensaje();
+}
+async function entradaAdmin(){
+  token=$('adminToken').value;
+  try{const r=await adminFetch('/api/administracion');if(!r.ok)throw new Error((await r.json()).detail||'No pude validar la clave');const d=await r.json();
+    mensajes=d.cumplidos;$('adminLetter').value=d.carta;$('greetingMorning').value=d.saludos.manana;$('greetingNight').value=d.saludos.noche;
+    $('adminTools').classList.remove('hidden');renderMensajes();estadoAdmin(`Panel listo · ${mensajes.length} recuerdos guardados.`);
+  }catch(e){estadoAdmin(e.message,true)}
+}
+$('loadAdmin').onclick=entradaAdmin;$('editSelect').onchange=seleccionarMensaje;
+async function subirFoto(fileInput,destination){
+  const file=fileInput.files?.[0];if(!file)return;
+  try{const body=new FormData();body.append('foto',file);const r=await adminFetch('/api/administracion/fotos',{method:'POST',body});if(!r.ok)throw new Error((await r.json()).detail||'No pude subir la imagen');const d=await r.json();$(destination).value=`${URL_BACKEND}${d.foto}`;estadoAdmin('Foto subida. Guarda el recuerdo para aplicar el cambio.')}
+  catch(e){estadoAdmin(e.message,true)}
+}
+$('newPhotoFile').onchange=()=>subirFoto($('newPhotoFile'),'newPhoto');$('editPhotoFile').onchange=()=>subirFoto($('editPhotoFile'),'editPhoto');
+$('saveEdit').onclick=async()=>{
+  const id=$('editSelect').value,item=mensajes.find(m=>String(m.id)===id);if(!item)return;
+  try{const r=await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`,{method:'PUT',body:JSON.stringify({mensaje:$('editMessage').value,foto:$('editPhoto').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar');const updated=await r.json();mensajes=mensajes.map(m=>String(m.id)===id?updated:m);renderMensajes();estadoAdmin('Recuerdo actualizado ♥')}
+  catch(e){estadoAdmin(e.message,true)}
+};
+$('deleteMessage').onclick=async()=>{
+  const id=$('editSelect').value;if(!id)return;
+  if(!confirm('¿Quieres eliminar este recuerdo?'))return;
+  try{const r=await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`,{method:'DELETE'});if(!r.ok)throw new Error((await r.json()).detail||'No pude eliminarlo');mensajes=mensajes.filter(m=>String(m.id)!==id);renderMensajes();estadoAdmin('Recuerdo eliminado.')}
+  catch(e){estadoAdmin(e.message,true)}
+};
+$('addMessage').onclick=async()=>{
+  try{const r=await adminFetch('/api/administracion/cumplidos',{method:'POST',body:JSON.stringify({mensaje:$('newMessage').value,foto:$('newPhoto').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar el recuerdo');$('newMessage').value='';$('newPhoto').value='';$('newPhotoFile').value='';await entradaAdmin();estadoAdmin('Nuevo recuerdo añadido ♥')}
+  catch(e){estadoAdmin(e.message,true)}
+};
+$('saveLetter').onclick=async()=>{
+  try{const r=await adminFetch('/api/administracion/carta',{method:'PUT',body:JSON.stringify({carta:$('adminLetter').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar la carta');estadoAdmin('Carta guardada ♥')}
+  catch(e){estadoAdmin(e.message,true)}
+};
+$('saveGreetings').onclick=async()=>{
+  try{const r=await adminFetch('/api/administracion/saludos',{method:'PUT',body:JSON.stringify({manana:$('greetingMorning').value,noche:$('greetingNight').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar los saludos');estadoAdmin('Saludos guardados ♥')}
+  catch(e){estadoAdmin(e.message,true)}
+};
+actualizarContador();actualizarProgreso(false);setInterval(actualizarContador,60000);
+</script>
+</body>
+</html>
