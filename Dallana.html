@@ -26,6 +26,15 @@ dialog{border-color:#d9c8c7;background:linear-gradient(150deg,#fffaf3,#f0e8e6);c
 @media(max-width:360px){.music-player{grid-template-columns:54px minmax(0,1fr);gap:8px;padding:8px}.album-art{height:54px;min-height:54px}.track-heading h2{font-size:13px}.music-controls{gap:2px}.music-control{width:21px}.music-play{width:25px;height:25px}.music-heart{width:25px;height:25px}.paper{padding:22px 12px}}
 .music-controls{grid-row:5}
 .paper #message:before{content:"“"}.paper #message:after{content:"”"}
+.cover-art .sticker-flower{width:min(100%,300px);max-height:340px;mix-blend-mode:normal;transform:none;filter:drop-shadow(0 7px 8px #60384a22)}.note-sticker{mix-blend-mode:normal}
+@media(max-width:560px){.cover-content{grid-template-columns:minmax(0,1fr) minmax(130px,.72fr)}.cover-art{min-height:0}.cover-art .sticker-flower{width:min(100%,220px);max-height:280px}}
+.cover-art:before{display:none}.cover-art{min-height:0;background:none}.cover-art .sticker-flower{position:relative;inset:auto;width:min(100%,240px);height:auto;max-height:250px;object-fit:contain;mix-blend-mode:multiply;transform:none;filter:drop-shadow(0 7px 8px #60384a22)}
+@media(max-width:560px){.cover-art .sticker-flower{width:min(100%,145px);height:auto;max-height:190px;top:auto;left:auto}}
+.cover-art .sticker-flower{position:absolute;z-index:3;top:2%;left:9%;width:clamp(58px,8vw,82px);height:clamp(78px,11vw,112px);object-fit:contain;mix-blend-mode:multiply;transform:rotate(-9deg);filter:drop-shadow(0 5px 5px #5f354322)}
+.sticker-scatter{position:absolute;inset:0;z-index:2;overflow:visible;pointer-events:none}.note-sticker{position:absolute;width:clamp(55px,8vw,82px);height:clamp(64px,10vw,96px);object-fit:contain;mix-blend-mode:multiply;filter:drop-shadow(0 5px 5px #39232a20)}.sticker-one{top:39px;right:12px;transform:rotate(8deg)}.sticker-two{top:52%;left:-20px;width:clamp(48px,7vw,70px);transform:rotate(-11deg)}.sticker-three{right:-13px;bottom:36px;width:clamp(48px,7vw,70px);transform:rotate(10deg)}.sticker-four{left:12px;bottom:14px;transform:rotate(-7deg)}.sticker-five{right:76px;bottom:8px;width:clamp(50px,7vw,70px);transform:rotate(8deg)}
+@media(max-width:560px){.cover-art .sticker-flower{top:0;left:2%;width:56px;height:78px}.note-sticker{width:53px;height:60px}.sticker-one{top:33px;right:4px}.sticker-two{left:-10px;width:45px}.sticker-three{right:-7px;bottom:30px;width:44px}.sticker-four{left:5px;bottom:8px}.sticker-five{right:54px;bottom:3px;width:45px}}
+.cover-art:before{display:none}.cover-art{min-height:0;background:none}.cover-art .sticker-flower{position:relative;inset:auto;z-index:3;width:min(100%,300px);height:auto;max-height:340px;object-fit:contain;mix-blend-mode:normal;transform:none;filter:drop-shadow(0 7px 8px #60384a22)}.note-sticker{mix-blend-mode:normal}
+@media(max-width:560px){.cover-content{grid-template-columns:minmax(0,1fr) minmax(130px,.72fr)}.cover-art{min-height:0}.cover-art .sticker-flower{width:min(100%,220px);max-height:280px;top:auto;left:auto}}
 </style>
 </head>
 <body>
@@ -41,12 +50,7 @@ dialog{border-color:#d9c8c7;background:linear-gradient(150deg,#fffaf3,#f0e8e6);c
         <p class="sub">Un pedacito de todo lo bonito que eres</p>
         <div class="counter" id="counter">Nuestra historia sigue escribiéndose</div>
       </div>
-      <div class="cover-art" aria-hidden="true"><img class="sticker-flower" src="assets/stickers/flor-rosa.svg" alt="">
-        <div class="art-stamp">CON<br>AMOR</div>
-        <div class="art-envelope">💌</div>
-        <svg class="cherry" viewBox="0 0 100 110"><path d="M49 57C49 30 57 17 73 9M54 54C55 31 43 21 30 18"/><circle cx="34" cy="75" r="19"/><circle cx="70" cy="72" r="20"/><path class="shine" d="M27 67c3-5 7-7 11-7M63 64c3-5 7-7 11-7"/></svg>
-        <span class="art-caption">un recuerdo<br>para guardar</span>
-      </div>
+      <div class="cover-art" aria-hidden="true"><img class="sticker-flower" src="assets/stickers/stikers3.png" alt=""></div>
     </div>
     <div class="cover-bottom"><span>UNA HISTORIA QUE SIGUE</span><span>CONCEPCIÓN · CHILE</span></div>
   </header>
@@ -80,6 +84,13 @@ dialog{border-color:#d9c8c7;background:linear-gradient(150deg,#fffaf3,#f0e8e6);c
 
   <section class="memory-feature" aria-label="Un recuerdo para ti">
     <div class="feature-index"><span>02 — PARA HOY</span><span class="tiny-cherries" aria-hidden="true">♥ ♥</span></div>
+    <div class="sticker-scatter" aria-hidden="true">
+      <img class="note-sticker sticker-one" src="assets/stickers/stikers.png" alt="">
+      <img class="note-sticker sticker-two" src="assets/stickers/stikers1.png" alt="">
+      <img class="note-sticker sticker-three" src="assets/stickers/stikers2.png" alt="">
+      <img class="note-sticker sticker-four" src="assets/stickers/stikers4.png" alt="">
+      <img class="note-sticker sticker-five" src="assets/stickers/stikers5.png" alt="">
+    </div>
     <article class="paper" id="paper">
       <span class="paper-label" id="tag">Un mensaje para ti</span>
       <p id="message">Abre el sobre y descubre un recuerdo…</p>
