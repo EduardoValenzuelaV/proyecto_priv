@@ -43,9 +43,10 @@ dialog{border-color:#d9c8c7;background:linear-gradient(150deg,#fffaf3,#f0e8e6);c
 .env-button{display:grid;place-items:center;width:220px;height:190px;padding:18px;border:0;background:transparent;cursor:pointer;filter:drop-shadow(0 14px 18px #4d425022);transition:transform .25s ease}
 .env-button:hover{transform:translateY(-5px) rotate(-2deg)}.env{display:block;width:min(220px,48vw);transition:transform .4s ease}.envelope-art{display:block;width:100%;height:auto;overflow:visible}.env.open{transform:translateY(-18px) rotate(-5deg) scale(1.08)}
 .welcome-copy{display:block;margin:20px 0 8px;color:#84283e;font:600 34px/1.15 var(--script)}.envelope-content small{color:#826e74;font:10px var(--serif);letter-spacing:.18em}
+.jango-link{grid-column:1/-1;justify-self:end;display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 13px;border:1px solid #dfc6c7;border-radius:999px;background:#fffaf4;color:#8f2941;font:500 11px var(--serif);text-decoration:none;transition:background .2s,transform .2s}.jango-link:hover{transform:translateY(-1px);background:#f9e8e7}.jango-link:focus-visible{outline:3px solid #bd6674;outline-offset:3px}
 @media(min-width:900px){body{padding:36px 28px 54px}main{width:min(100%,980px)}.cover{padding:27px 34px 20px;border-radius:8px 8px 34px 8px}.cover-content{min-height:330px;grid-template-columns:1fr .82fr;gap:48px}.cover h1{font-size:clamp(76px,8vw,110px)}.cover .sub{max-width:430px;font-size:17px}.cover .eyebrow{font-size:12px}.cover-art .sticker-flower{width:clamp(220px,27vw,310px);max-height:330px}.music-player{grid-template-columns:150px minmax(0,1fr);gap:26px;padding:22px 28px}.album-art{height:150px;min-height:150px}.player-main{grid-template-columns:minmax(0,1fr) auto;column-gap:20px}.track-heading{grid-column:1;grid-row:1/4;align-items:center}.track-heading h2{font-size:24px}.track-heading p{font-size:12px}.track-heading .chapter-kicker{font-size:9px}.music-heart{grid-column:2;grid-row:1}.waveform{grid-column:1/-1;height:28px;margin:8px 0 4px}.music-progress,.music-times{grid-column:1/-1}.music-controls{grid-column:2;grid-row:4;justify-content:flex-end}.memory-feature{padding:30px 40px}.paper{min-height:220px;padding:42px 52px}.paper #message{max-width:700px;font-size:42px}.actions{grid-template-columns:1fr 1fr;align-items:start;gap:12px}.action-row{grid-template-columns:minmax(0,1fr) 52px;gap:10px}.secondary-row .btn{height:100%}.discovery{padding:22px 28px}.progress-heading h3{font-size:25px}.letter-feature{padding:34px}.letter-feature h2{font-size:48px}}
 @media(max-width:560px){.envelope-content{min-height:0;padding:34px 20px;border-radius:22px 22px 22px 7px}.env-button{width:170px;height:150px}.env{width:min(175px,55vw)}.welcome-copy{font-size:29px}.welcome-label{font-size:9px}}
-</style>
+.music-player{grid-template-columns:88px minmax(0,1fr);align-items:center;gap:12px;padding:14px}.album-art{width:88px;height:88px;min-height:88px}.player-main{display:block;min-width:0}.track-heading{display:block}.track-heading h2{margin:4px 0;font-size:21px}.track-heading p{font-size:11px}.youtube-card{grid-column:1/-1;display:flex;align-items:center;gap:14px;min-height:88px;padding:16px 20px;border:1px solid #e1c9ca;border-radius:14px;background:linear-gradient(120deg,#fffaf4,#f2e6e8);color:#35435a;text-decoration:none;transition:transform .2s,box-shadow .2s}.youtube-card:hover{transform:translateY(-2px);box-shadow:0 9px 22px #35435a16}.youtube-card:focus-visible{outline:3px solid #bd6674;outline-offset:3px}.youtube-play{display:grid;width:44px;height:44px;place-items:center;border-radius:50%;background:#9d2942;color:white;font-size:15px;box-shadow:0 5px 12px #9d294233}.youtube-card strong,.youtube-card small{display:block}.youtube-card strong{font:600 17px var(--serif)}.youtube-card small{margin-top:4px;color:#8a6971;font-size:11px}.youtube-arrow{margin-left:auto;color:#9d2942;font-size:19px}@media(max-width:560px){.music-player{grid-template-columns:62px minmax(0,1fr);gap:10px;padding:10px}.album-art{width:62px;height:62px;min-height:62px}.youtube-card{min-height:76px;padding:12px 14px}.youtube-card strong{font-size:15px}.youtube-play{width:40px;height:40px}}</style>
 </head>
 <body>
 
@@ -73,18 +74,10 @@ dialog{border-color:#d9c8c7;background:linear-gradient(150deg,#fffaf3,#f0e8e6);c
   </div>
   <div class="player-main">
     <div class="track-heading">
-      <div><span class="chapter-kicker">NUESTRA CANCIÓN</span><h2>Una melodía para ti</h2><p>Un pequeño rincón para Dallana</p></div>
-      <button class="music-heart" id="musicFavorite" type="button" aria-label="Marcar canción como favorita" aria-pressed="false">♡</button>
-    </div>
-    <div class="waveform" id="musicWave" aria-hidden="true"></div>
-    <input class="music-progress" id="musicProgress" type="range" min="0" max="100" value="0" aria-label="Posición de la melodía">
-    <div class="music-times"><span id="musicElapsed">0:00</span><span>0:18</span></div>
-    <div class="music-controls">
-      <button class="music-control skip" id="musicBack" type="button" aria-label="Retroceder cinco segundos">◀</button>
-      <button class="music-play" id="music" type="button" aria-label="Reproducir música" aria-pressed="false">▶</button>
-      <button class="music-control skip" id="musicForward" type="button" aria-label="Avanzar cinco segundos">▶</button>
+      <div><span class="chapter-kicker">NUESTRA CANCIÓN</span><h2>Taylor Swift</h2><p>Tu canción para escuchar juntos</p></div>
     </div>
   </div>
+  <a class="youtube-card" href="https://music.youtube.com/watch?v=dC9QIUKviJU&amp;list=RDAOb1vAi4rwXXeDlr7NZ68C_w" target="_blank" rel="noopener noreferrer" aria-label="Escuchar Blank Space de Taylor Swift en YouTube Music, en una pestaña nueva"><span class="youtube-play" aria-hidden="true">▶</span><span><strong>Blank Space · Taylor Swift</strong><small>Escuchar en YouTube Music</small></span><span class="youtube-arrow" aria-hidden="true">↗</span></a>
 </section>
 <section class="discovery" aria-label="Descubre recuerdos para abrir la carta">
     <div class="progress-heading"><div><span class="chapter-kicker">LA COLECCIÓN</span><h3>Un recuerdo a la vez</h3></div><span id="progressCount">0 / 10</span></div>
@@ -231,32 +224,7 @@ function vibrar(){if(navigator.vibrate)navigator.vibrate([30,20,42])}
 $('random').onclick=()=>{vibrar();const q=currentId?`?ultimo=${encodeURIComponent(currentId)}`:'';pedir(`${URL_BACKEND}/api/cumplido${q}`)};
 $('daily').onclick=()=>{vibrar();if(API_DISPONIBLE){pedir(`${URL_BACKEND}/api/del-dia`,'Tu mensaje de hoy');return}const ahora=new Date(),n=Math.floor(Date.UTC(ahora.getFullYear(),ahora.getMonth(),ahora.getDate())/864e5),item=RESPALDO[((n%RESPALDO.length)+RESPALDO.length)%RESPALDO.length];mostrar(item,'Tu mensaje de hoy');$('foot').textContent=`${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`};
 $('favorite').onclick=()=>{if(!currentId)return;favorites.has(currentId)?favorites.delete(currentId):favorites.add(currentId);guardarSet('dallanaFavorites',favorites);$('favorite').textContent=favorites.has(currentId)?'♥':'♡';$('favorite').classList.toggle('favorite',favorites.has(currentId));$('foot').textContent=favorites.has(currentId)?'Guardado entre tus favoritos ♥':'Quitado de tus favoritos'};
-const DURACION_MUSICA=18,ALTURAS_ONDA=[12,19,27,16,31,22,13,25,34,18,28,14,23,32,17,26,12,21,30,15,25,18,33,13,23,29,16,24,12,20,31,17,26,14,22,33,18,27,13,21,29,16,24,12,19,31,15,26,18,22,30,14,24,33,17,27,12,20,29,15,23,31,18,25,13,21,34,16,26,14,22,30,17,24,12,20,32,15,27,18,23,29,13,25,34,16,21,28,14,24,31,17,22,12,26,33,15,20,29,18];
-let contextoAudio=null,nodosMusica=[],timerMelodia=null,timerReproductor=null,indiceNota=0,tiempoGuardado=0,inicioReproduccion=0;
-const notasMelodia=[523.25,659.25,783.99,659.25,587.33,523.25,392,523.25];
-$('musicWave').innerHTML=ALTURAS_ONDA.map((altura,i)=>`<i class="wave-bar" style="--height:${altura}px;--delay:${(i%16)*.025}s"></i>`).join('');
-function segundosATexto(segundos){const s=Math.max(0,Math.min(DURACION_MUSICA,Math.floor(segundos)));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
-function posicionMusica(){return Math.min(DURACION_MUSICA,tiempoGuardado+( $('music').getAttribute('aria-pressed')==='true'&&contextoAudio?(contextoAudio.currentTime-inicioReproduccion):0))}
-function actualizarReproductor(){const actual=posicionMusica();$('musicProgress').value=String(Math.round(actual/DURACION_MUSICA*100));$('musicElapsed').textContent=segundosATexto(actual);$('musicWave').style.setProperty('--progress',`${actual/DURACION_MUSICA*100}%`);if(actual>=DURACION_MUSICA){tiempoGuardado=0;inicioReproduccion=contextoAudio.currentTime}}
-function tocarNota(){if(!contextoAudio)return;const ahora=contextoAudio.currentTime,tono=contextoAudio.createOscillator(),envolvente=contextoAudio.createGain();tono.type='sine';tono.frequency.value=notasMelodia[indiceNota++%notasMelodia.length];envolvente.gain.setValueAtTime(.0001,ahora);envolvente.gain.exponentialRampToValueAtTime(.045,ahora+.12);envolvente.gain.exponentialRampToValueAtTime(.0001,ahora+1.8);tono.connect(envolvente);envolvente.connect(contextoAudio.destination);tono.start(ahora);tono.stop(ahora+1.85)}
-async function musica(activar){
-  const boton=$('music');
-  if(!activar){if(boton.getAttribute('aria-pressed')==='true')tiempoGuardado=posicionMusica();if(timerMelodia){clearInterval(timerMelodia);timerMelodia=null}if(timerReproductor){clearInterval(timerReproductor);timerReproductor=null}if(contextoAudio)await contextoAudio.suspend();boton.classList.remove('on');boton.setAttribute('aria-pressed','false');boton.textContent='▶';boton.setAttribute('aria-label','Reproducir música');actualizarReproductor();return}
-  try{
-    const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)throw new Error();
-    contextoAudio=contextoAudio||new AudioContext();await contextoAudio.resume();
-    if(tiempoGuardado>=DURACION_MUSICA)tiempoGuardado=0;inicioReproduccion=contextoAudio.currentTime;
-    if(!timerMelodia){tocarNota();timerMelodia=setInterval(tocarNota,2200)}
-    if(!timerReproductor)timerReproductor=setInterval(actualizarReproductor,150);
-    boton.classList.add('on');boton.textContent='Ⅱ';boton.setAttribute('aria-pressed','true');boton.setAttribute('aria-label','Pausar música');actualizarReproductor();
-  }catch{$('foot').textContent='Este navegador no pudo iniciar el audio. Toca el botón de música para volver a intentarlo.'}
-}
-$('musicProgress').oninput=()=>{tiempoGuardado=Number($('musicProgress').value)/100*DURACION_MUSICA;if($('music').getAttribute('aria-pressed')==='true')inicioReproduccion=contextoAudio.currentTime;actualizarReproductor()};
-function saltarMusica(segundos){tiempoGuardado=Math.max(0,Math.min(DURACION_MUSICA,posicionMusica()+segundos));if($('music').getAttribute('aria-pressed')==='true')inicioReproduccion=contextoAudio.currentTime;actualizarReproductor()}
-$('musicBack').onclick=()=>saltarMusica(-5);$('musicForward').onclick=()=>saltarMusica(5);
-$('musicFavorite').onclick=()=>{const b=$('musicFavorite'),on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));b.textContent=on?'♥':'♡'};
-$('openEnvelope').onclick=()=>{musica(true);$('env').classList.add('open');setTimeout(()=>{$('welcome').classList.add('closed');pedir(`${URL_BACKEND}/api/momento`,'Un mensaje para ti')},360)};
-$('music').onclick=()=>musica($('music').getAttribute('aria-pressed')!=='true');
+$('openEnvelope').onclick=()=>{$('env').classList.add('open');setTimeout(()=>{$('welcome').classList.add('closed');pedir(`${URL_BACKEND}/api/momento`,'Un mensaje para ti')},360)};
 $('openLetter').onclick=()=>{cargarCarta();$('letterDialog').showModal()};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
 $('adminOpen').onclick=()=>{$('adminDialog').showModal();$('adminToken').value=token};
