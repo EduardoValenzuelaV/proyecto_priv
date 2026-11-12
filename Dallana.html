@@ -72,6 +72,23 @@ main{z-index:1}
 .letter-feature{border-radius:7px 22px 22px 22px}
 .paper{border-radius:14px 14px 14px 5px}
 @media(max-width:560px){.music-player,.portrait-memory,.discovery,.memory-feature,.letter-feature{border-radius:18px 18px 18px 6px}.album-art{border-radius:15px 15px 15px 5px}}.album-art{box-shadow:0 12px 25px #553c552e,0 0 0 5px #fff5,0 0 0 6px #c9acc355}}.distributed-sticker{position:absolute;z-index:3;display:block;height:auto;object-fit:contain;filter:drop-shadow(0 5px 7px #29384d30);pointer-events:none}.music-player{position:relative}.music-sticker-nine{top:27%;left:5%;width:clamp(60px,8vw,80px);transform:rotate(-8deg)}.music-sticker-ten{right:6%;bottom:18%;width:clamp(56px,7vw,72px);transform:rotate(7deg)}.portrait-memory{position:relative}.portrait-sticker-eleven{top:12%;left:4%;width:58px;transform:rotate(-7deg)}.portrait-sticker-twelve{right:5%;bottom:14%;width:56px;transform:rotate(8deg)}.memory-feature{position:relative}.memory-sticker-thirteen{top:9%;left:5%;width:58px;transform:rotate(-8deg)}.memory-sticker-fourteen{top:49%;right:5%;width:54px;transform:rotate(7deg)}.letter-feature{position:relative}.letter-sticker-fifteen{top:7%;left:6%;width:60px;transform:rotate(-8deg)}.letter-sticker-sixteen{right:6%;bottom:8%;width:56px;transform:rotate(8deg)}@media(max-width:760px){.music-sticker-nine{left:2%;width:55px}.music-sticker-ten{right:2%;width:52px}.portrait-sticker-eleven{left:2%;width:48px}.portrait-sticker-twelve{right:2%;width:46px}.memory-sticker-thirteen{left:2%;width:48px}.memory-sticker-fourteen{right:2%;width:46px}.letter-sticker-fifteen{left:3%;width:48px}.letter-sticker-sixteen{right:3%;width:46px}}@media(max-width:560px){.music-sticker-nine{top:20%;left:0;width:40px}.music-sticker-ten{right:0;bottom:17%;width:39px}.portrait-sticker-eleven{top:5%;left:1%;width:40px}.portrait-sticker-twelve{right:1%;bottom:8%;width:38px}.memory-sticker-thirteen{top:5%;left:1%;width:40px}.memory-sticker-fourteen{top:52%;right:1%;width:38px}.letter-sticker-fifteen{top:2%;left:1%;width:40px}.letter-sticker-sixteen{right:1%;bottom:3%;width:38px}}img.distributed-sticker{position:absolute!important;z-index:3;display:block;height:auto;object-fit:contain;filter:drop-shadow(0 5px 7px #29384d30);pointer-events:none}</style>
+<style>
+@media(max-width:560px){
+  /* En móvil, las decoraciones flotantes no deben cubrir contenido. */
+  .float-sticker,.note-sticker,.sticker-scatter{display:none!important}
+  .music-player{padding-bottom:62px}
+  .music-player>.music-sticker-nine,.music-player>.music-sticker-ten{top:auto;bottom:8px;width:38px;left:calc(50% - 46px);right:auto;transform:rotate(-6deg)}
+  .music-player>.music-sticker-ten{left:calc(50% + 8px);transform:rotate(6deg)}
+  .portrait-memory{display:grid;grid-template-columns:minmax(0,1fr) 125px;grid-template-rows:auto auto auto;align-items:center;gap:7px 10px}
+  .portrait-note{grid-column:1;grid-row:1}
+  .portrait-frame{grid-column:2;grid-row:1/4;margin:0}
+  img.distributed-sticker.portrait-sticker-eleven,img.distributed-sticker.portrait-sticker-twelve{position:relative!important;inset:auto!important;display:block;width:38px;height:44px;object-fit:contain;margin:auto 0}
+  .portrait-sticker-eleven{grid-column:1;grid-row:2}
+  .portrait-sticker-twelve{grid-column:1;grid-row:3}
+  img.distributed-sticker.memory-sticker-thirteen,img.distributed-sticker.memory-sticker-fourteen{position:relative!important;inset:auto!important;display:block;width:38px;height:44px;object-fit:contain;margin:4px auto}
+  img.distributed-sticker.letter-sticker-fifteen,img.distributed-sticker.letter-sticker-sixteen{position:relative!important;inset:auto!important;display:inline-block;width:38px;height:44px;object-fit:contain;margin:0 8px 8px;vertical-align:middle}
+}
+</style>
 </head>
 <body>
 <div class="heart-drift" id="heartDrift" aria-hidden="true"></div>
