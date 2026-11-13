@@ -123,7 +123,7 @@ main > header,
 main > section {
   flex: none;              /* NO crecer: cada sección tiene su propia altura natural */
   width: 100%;
-  max-width: 840px;
+  max-width: 100%;
   /* Padding uniforme: mismo espacio interno en todas las secciones */
   padding: clamp(22px, 4vw, 36px) clamp(18px, 4vw, 32px);
   margin: 10px 0;
@@ -165,13 +165,17 @@ header.cover {
 
   /* Memory feature: columna normal */
   .memory-feature {
+    display: block;
     flex-direction: column;
   }
 
   /* Secciones gift: columna normal */
   .gift-section {
+    display: block;
     flex-direction: column;
   }
+
+  .actions { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ---------- Móvil (≤ 699px) ---------- */
@@ -413,7 +417,7 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
 
 @media (min-width:900px){
   body{padding:36px 28px 54px}
-  main{width:min(100%,1160px)}
+  main{width:min(100%,840px)}
   .cover{padding:27px 34px 20px;border-radius:8px 8px 34px 8px}
   .cover-content{min-height:330px;grid-template-columns:1fr .82fr;gap:48px}
   .cover h1{font-size:clamp(76px,8vw,110px)}
@@ -431,7 +435,7 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
   .memory-feature{padding:30px 40px}
   .paper{min-height:220px;padding:42px 52px}
   .paper #message{max-width:700px;font-size:42px}
-  .actions{grid-template-columns:1fr 1fr;align-items:start;gap:12px}
+  .actions{grid-template-columns:minmax(0,1fr);align-items:stretch;gap:12px}
   .action-row{grid-template-columns:minmax(0,1fr) 52px;gap:10px}
   .secondary-row .btn{height:100%}
   .discovery{padding:22px 28px}
@@ -810,5 +814,56 @@ dialog select {
   .letter-paper p {
     font-size: 1.35rem;
   }
+}
+
+/* ============ PROPORCIONES Y RESPONSIVE UNIFICADOS ============ */
+main {
+  width: min(100%, 900px);
+  align-items: stretch;
+  gap: clamp(12px, 2vw, 20px);
+}
+
+main > header,
+main > section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(18px, 3vw, 30px);
+}
+
+main > header.cover {
+  padding: clamp(16px, 3vw, 27px) clamp(16px, 3.5vw, 34px);
+}
+
+main > section.memory-feature,
+main > section.gift-section,
+main > section.letter-feature,
+main > section.discovery,
+main > section.music-player,
+main > section.portrait-memory {
+  min-width: 0;
+}
+
+.gift-head,
+.actions,
+.paper,
+.letter-grid,
+.mood-options,
+.museum-grid,
+.dream-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 699px) {
+  main { width: 100%; padding-right: 0; padding-left: 0; }
+  main > header,
+  main > section { padding: 18px 16px; }
+  main > header.cover { padding: 16px; }
+  .memory-feature,
+  .gift-section,
+  .letter-feature { display: block; }
+  .actions { grid-template-columns: minmax(0, 1fr); }
 }
 
