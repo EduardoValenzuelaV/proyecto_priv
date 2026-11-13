@@ -788,4 +788,73 @@ const editPhotoFile = $('editPhotoFile');
 if (editPhotoFile) editPhotoFile.onchange = () => subirFoto(editPhotoFile, 'editPhoto');
 
 const saveEdit = $('saveEdit');
-if (saveEdit)
+if (saveEdit) saveEdit.onclick = async () => {
+  const id = $('editSelect')?.value;
+  if (!id) return;
+  try {
+    const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, {
+      method: 'PUT', body: JSON.stringify({ mensaje: $('editMessage').value.trim(), foto: $('editPhoto').value.trim() })
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el recuerdo');
+    const actualizado = await r.json();
+    mensajes = mensajes.map(m => String(m.id) === String(actualizado.id) ? actualizado : m);
+    renderMensajes(); estadoAdmin('Recuerdo actualizado.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
+
+const deleteMessage = $('deleteMessage');
+if (deleteMessage) deleteMessage.onclick = async () => {
+  const id = $('editSelect')?.value;
+  if (!id) return;
+  try {
+    const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude eliminar el recuerdo');
+    mensajes = mensajes.filter(m => String(m.id) !== String(id));
+    renderMensajes(); estadoAdmin('Recuerdo eliminado.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
+
+const addMessage = $('addMessage');
+if (addMessage) addMessage.onclick = async () => {
+  const mensaje = $('newMessage').value.trim();
+  if (!mensaje) return estadoAdmin('Escribe un mensaje antes de guardarlo.', true);
+  try {
+    const r = await adminFetch('/api/administracion/cumplidos', {
+      method: 'POST', body: JSON.stringify({ mensaje, foto: $('newPhoto').value.trim() })
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude añadir el recuerdo');
+    $('newMessage').value = ''; $('newPhoto').value = ''; $('newPhotoFile').value = '';
+    await entradaAdmin(); estadoAdmin('Nuevo recuerdo añadido.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
+
+const saveLetter = $('saveLetter');
+if (saveLetter) saveLetter.onclick = async () => {
+  try {
+    const r = await adminFetch('/api/administracion/carta', { method: 'PUT', body: JSON.stringify({ carta: $('adminLetter').value }) });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar la carta');
+    estadoAdmin('Carta guardada.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
+
+const saveGreetings = $('saveGreetings');
+if (saveGreetings) saveGreetings.onclick = async () => {
+  try {
+    const r = await adminFetch('/api/administracion/saludos', {
+      method: 'PUT', body: JSON.stringify({ manana: $('greetingMorning').value, noche: $('greetingNight').value })
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar los saludos');
+    estadoAdmin('Saludos guardados.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
+
+const saveContent = $('saveContent');
+if (saveContent) saveContent.onclick = async () => {
+  const data = previewContenido();
+  if (!data) return estadoAdmin('Revisa el JSON antes de guardar.', true);
+  try {
+    const r = await adminFetch('/api/administracion/contenido', { method: 'PUT', body: JSON.stringify(data) });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el contenido');
+    contenido = data; estadoAdmin('Contenido guardado.');
+  } catch (e) { estadoAdmin(e.message, true); }
+};
