@@ -58,6 +58,31 @@ CARTA_INICIAL = "Dallana, gracias por cada paseo, cada conversación y cada risa
 SALUDOS_INICIALES = {"manana": "Buenos días, amor. Ojalá hoy encuentres un motivo nuevo para sonreír. Yo ya tengo el mío: tú. ☀️", "noche": "Buenas noches, mi vida. Que descanses bonito y sueñes con todo lo que todavía nos queda por vivir. 🌙"}
 
 
+CONTENIDO_INICIAL = {
+    "autoestima": [
+        {"categoria": "Su personalidad", "icono": "✿", "mensaje": "Tu forma de ser tiene algo que te hace única."}, {"categoria": "Su personalidad", "icono": "♡", "mensaje": "No necesitas cambiar tu esencia para ser suficiente."}, {"categoria": "Su personalidad", "icono": "❀", "mensaje": "Tu manera de ver el mundo es algo muy bonito."}, {"categoria": "Su personalidad", "icono": "☼", "mensaje": "Tienes una forma especial de hacer sentir bien a quienes te rodean."},
+        {"categoria": "Su belleza", "icono": "✧", "mensaje": "Ojalá pudieras verte con los ojos de quienes te admiran."}, {"categoria": "Su belleza", "icono": "❀", "mensaje": "No necesitas cumplir ningún estándar para ser hermosa."}, {"categoria": "Su belleza", "icono": "♡", "mensaje": "Hay belleza en tu sonrisa, pero también en tu manera de ser."}, {"categoria": "Su belleza", "icono": "✿", "mensaje": "Eres mucho más que lo que ves frente al espejo."},
+        {"categoria": "Su inteligencia", "icono": "✦", "mensaje": "Tienes una mente que merece ser valorada."}, {"categoria": "Su inteligencia", "icono": "☼", "mensaje": "No saber algo todavía no significa que no seas capaz."}, {"categoria": "Su inteligencia", "icono": "✧", "mensaje": "Tu curiosidad y tus ideas también son parte de lo maravillosa que eres."}, {"categoria": "Su inteligencia", "icono": "❀", "mensaje": "Nunca minimices lo que puedes lograr."},
+        {"categoria": "Su valentía", "icono": "♡", "mensaje": "Has superado días que quizá nadie conoce."}, {"categoria": "Su valentía", "icono": "✿", "mensaje": "Seguir intentándolo también es una forma de valentía."}, {"categoria": "Su valentía", "icono": "☼", "mensaje": "Está bien descansar, no tienes que poder con todo."}, {"categoria": "Su valentía", "icono": "✦", "mensaje": "No eres menos fuerte por tener días difíciles."},
+        {"categoria": "Su valor personal", "icono": "❀", "mensaje": "No tienes que demostrar nada para merecer cariño."}, {"categoria": "Su valor personal", "icono": "♡", "mensaje": "Tu valor no depende de la opinión de otras personas."}, {"categoria": "Su valor personal", "icono": "✧", "mensaje": "Mereces cosas bonitas, incluso en tus días más complicados."}, {"categoria": "Su valor personal", "icono": "✿", "mensaje": "Eres suficiente, incluso cuando tú misma lo dudas."}
+    ],
+    "cartas": [
+        {"titulo":"Ábreme cuando estés triste","mensaje":"No tienes que arreglarlo todo ahora. Si puedes, respira despacio y date permiso para sentir. Este momento difícil no cuenta toda tu historia; también hay días más amables esperándote."},
+        {"titulo":"Ábreme cuando no te sientas bonita","mensaje":"No hay una sola forma correcta de ser bonita. Tu cuerpo no tiene que cumplir ninguna medida para merecer respeto y ternura. Ojalá hoy puedas hablarte con un poquito de la paciencia que tendrías con alguien que quieres."},
+        {"titulo":"Ábreme cuando dudes de ti misma","mensaje":"No necesitas tener todas las respuestas para seguir siendo capaz. Puedes aprender, cambiar de idea y avanzar a tu ritmo. Lo que todavía no sabes no reduce todo lo que ya eres."},
+        {"titulo":"Ábreme cuando tengas un mal día","mensaje":"Un día pesado no convierte tu vida en una vida pesada. Haz lo que puedas, deja lo demás para después y recuerda que descansar también cuenta como cuidarte."},
+        {"titulo":"Ábreme cuando sientas que no puedes más","mensaje":"No tienes que resolver todo de una vez. Busca un paso pequeño, una pausa o a alguien de confianza con quien compartir el peso. Pedir compañía también es una forma de cuidarte."},
+        {"titulo":"Ábreme cuando estés orgullosa de ti","mensaje":"Detente un momento y reconoce lo que hiciste. No hace falta que sea algo enorme para que importe. Tu esfuerzo merece ser celebrado, sobre todo por ti."},
+        {"titulo":"Ábreme cuando necesites recordar cuánto vales","mensaje":"Tu valor no se gana con logros, aprobación ni días perfectos. Estás aquí, siendo tú, y eso basta para merecer cuidado, respeto y cosas buenas."},
+        {"titulo":"Ábreme cuando simplemente quieras sonreír","mensaje":"Ojalá encuentres una canción que te guste, algo rico para comer y un ratito sin apuro. No necesitas una razón grande para regalarte un momento bonito."}
+    ],
+    "frasco": ["No tienes que ganarte el descanso.","Tu voz y tus ideas merecen espacio.","Un paso pequeño también es avanzar.","Puedes sentir mucho y seguir siendo capaz.","Hoy mereces tratarte con cariño.","Tu valor no depende de cómo salió el día.","Está bien pedir apoyo cuando lo necesitas.","Ojalá notes una cosa bonita de ti hoy."],
+    "museo": [{"titulo":titulo,"descripcion":"","mensaje":"","foto":""} for titulo in ["Su sonrisa","Su forma de ser","Sus pequeños detalles","Sus talentos","Sus sueños","Las cosas que le gustan","Sus logros","Eso especial que quizá ella no nota"]],
+    "suenos": ["Conocer un lugar nuevo","Ver una película juntos","Salir a caminar sin apuro","Compartir una comida rica","Tomarnos fotografías","Vivir una pequeña aventura"],
+}
+CONTENIDO_INICIAL["suenos"] = [{"id": f"sueno-{i+1}", "titulo": titulo, "descripcion": "", "hecho": False} for i, titulo in enumerate(CONTENIDO_INICIAL["suenos"])]
+
+
 def leer_datos():
     try:
         datos = json.loads(DATOS.read_text(encoding="utf-8")) if DATOS.exists() else {}
@@ -72,6 +97,9 @@ def leer_datos():
     datos.setdefault("saludos", dict(SALUDOS_INICIALES))
     for clave, valor in SALUDOS_INICIALES.items():
         datos["saludos"].setdefault(clave, valor)
+    datos.setdefault("contenido", json.loads(json.dumps(CONTENIDO_INICIAL, ensure_ascii=False)))
+    for clave, valor in CONTENIDO_INICIAL.items():
+        datos["contenido"].setdefault(clave, json.loads(json.dumps(valor, ensure_ascii=False)))
     return datos
 
 
@@ -109,6 +137,14 @@ class Carta(BaseModel):
 class Saludos(BaseModel):
     manana: str = Field(min_length=1, max_length=500)
     noche: str = Field(min_length=1, max_length=500)
+
+
+class Contenido(BaseModel):
+    autoestima: list[dict]
+    cartas: list[dict]
+    frasco: list[str]
+    museo: list[dict]
+    suenos: list[dict]
 
 
 @app.get("/")
@@ -155,6 +191,11 @@ def mensaje_del_momento():
 @app.get("/api/carta")
 def obtener_carta():
     return {"carta": leer_datos()["carta"]}
+
+
+@app.get("/api/contenido")
+def obtener_contenido():
+    return leer_datos()["contenido"]
 
 
 @app.get("/api/administracion")
@@ -225,3 +266,16 @@ def actualizar_saludos(nuevos: Saludos, x_admin_token: Optional[str] = Header(de
     datos["saludos"] = nuevos.dict()
     guardar_datos(datos)
     return {"guardado": True}
+
+
+@app.put("/api/administracion/contenido")
+def actualizar_contenido(nuevo: Contenido, x_admin_token: Optional[str] = Header(default=None)):
+    exigir_admin(x_admin_token)
+    contenido = nuevo.dict()
+    for clave in ("autoestima", "cartas", "frasco", "museo", "suenos"):
+        if not contenido[clave]:
+            raise HTTPException(422, f"La colección {clave} debe contener al menos un elemento.")
+    datos = leer_datos()
+    datos["contenido"] = contenido
+    guardar_datos(datos)
+    return {"guardado": True, "contenido": contenido}
