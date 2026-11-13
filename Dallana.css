@@ -108,6 +108,21 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 
 /* ============ GIFT SECTIONS ============ */
 
+/* ---------- Igualar proporciones de todas las secciones ---------- */
+/* Cada sección principal (header y section) dentro de <main> tendrá la misma
+   proporción de altura usando flex‑grow. */
+main > header,
+main > section {
+  flex: 1 1 0;             /* crecer igualmente */
+  min-height: 150px;       /* altura mínima para contenido pequeño */
+  width: 100%;
+  max-width: 840px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
 /* ---------- Desktop (≥600px) ---------- */
 @media (min-width: 600px) {
   /* Main container stays centered with max‑width */
