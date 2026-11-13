@@ -34,7 +34,7 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .cover-art .sticker-flower{position:relative;inset:auto;z-index:3;width:min(100%,270px);height:auto;max-height:none;object-fit:contain;mix-blend-mode:normal;transform:none;filter:drop-shadow(0 10px 12px #7c435026)}
 
 /* ============ MUSIC ============ */
-.music-player{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:20px auto;width:100%;padding:26px 20px;text-align:center;border:1px solid #d6c5db;border-radius:22px;background:radial-gradient(circle at 0 0,#d7e5f8 0,transparent 28%),radial-gradient(circle at 100% 100%,#f4dce7 0,transparent 30%),linear-gradient(125deg,#f8e9ef,#eee8f8 55%,#e2ecf7);box-shadow:0 14px 32px #65506f1c,0 3px 0 #d5c2d7;isolation:isolate}
+.music-player{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:0;width:100%;text-align:center;border:1px solid #d6c5db;border-radius:22px;background:radial-gradient(circle at 0 0,#d7e5f8 0,transparent 28%),radial-gradient(circle at 100% 100%,#f4dce7 0,transparent 30%),linear-gradient(125deg,#f8e9ef,#eee8f8 55%,#e2ecf7);box-shadow:0 14px 32px #65506f1c,0 3px 0 #d5c2d7;isolation:isolate}
 .album-art{position:relative;order:0;display:block;width:min(100%,280px);aspect-ratio:1;height:auto;min-height:0;overflow:hidden;border-radius:18px;margin:0 auto 12px;background:linear-gradient(145deg,#b8c9e5,#e9b9ca 58%,#a9789b);outline:1px solid #fff9;outline-offset:-5px;box-shadow:0 12px 25px #553c552e,0 0 0 5px #fff5,0 0 0 6px #c9acc355}
 .album-photo{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
 .album-heart{position:absolute;z-index:2;top:12px;right:14px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:white;font-size:27px;text-shadow:0 1px 7px #25121b;cursor:pointer}
@@ -61,7 +61,7 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .music-volume output{min-width:30px;color:#992b43;text-align:right;font-variant-numeric:tabular-nums}
 
 /* ============ PORTRAIT ============ */
-.portrait-memory{position:relative;display:flex;min-height:210px;align-items:center;justify-content:center;gap:24px;margin:20px auto;width:100%;padding:26px 30px;overflow:hidden;border:1px solid #d2c4df;border-radius:22px;background:linear-gradient(130deg,#e8e4f5,#f6dfe7 52%,#e0ebf6);box-shadow:0 12px 28px #55426017,0 3px 0 #d8c9df;isolation:isolate}
+.portrait-memory{position:relative;display:flex;min-height:0;align-items:center;justify-content:center;gap:24px;margin:0;width:100%;overflow:hidden;border:1px solid #d2c4df;border-radius:22px;background:linear-gradient(130deg,#e8e4f5,#f6dfe7 52%,#e0ebf6);box-shadow:0 12px 28px #55426017,0 3px 0 #d8c9df;isolation:isolate}
 .portrait-note{display:flex;flex-direction:column;gap:8px;color:#8e3349}
 .portrait-note span{font-size:9px;letter-spacing:.14em}
 .portrait-note strong{font:600 32px var(--script)}
@@ -71,7 +71,7 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .portrait-frame figcaption{position:absolute;right:0;bottom:3px;left:0;color:#865361;text-align:center;font:italic 11px var(--script)}
 
 /* ============ DISCOVERY ============ */
-.discovery{margin:18px 0;padding:19px 21px;border:1px solid #c4d2e6;border-radius:7px 22px 22px 22px;background:linear-gradient(120deg,#dce8f7,#e8e2f4);box-shadow:0 10px 24px #526b9012;isolation:isolate}
+.discovery{margin:0;border:1px solid #c4d2e6;border-radius:7px 22px 22px 22px;background:linear-gradient(120deg,#dce8f7,#e8e2f4);box-shadow:0 10px 24px #526b9012;isolation:isolate}
 .progress-heading{display:flex;align-items:end;justify-content:space-between;gap:12px}
 .progress-heading h3{margin:4px 0 0;color:#304059;font:600 22px var(--serif)}
 .progress-heading>span{color:#992c43;font:italic 19px var(--serif)}
@@ -80,7 +80,7 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .progress-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#a32a45,#e3989d);transition:width .5s}
 
 /* ============ MEMORY FEATURE ============ */
-.memory-feature{position:relative;margin:18px 0;padding:clamp(17px,4vw,30px);border:1px solid #ddc8d6;border-radius:22px 7px 22px 22px;background:linear-gradient(135deg,#fff4f1,#f3e8f4 58%,#e8eff8);box-shadow:0 14px 32px #71475a14,0 3px 0 #d8c9df;isolation:isolate}
+.memory-feature{position:relative;margin:0;border:1px solid #ddc8d6;border-radius:22px 7px 22px 22px;background:linear-gradient(135deg,#fff4f1,#f3e8f4 58%,#e8eff8);box-shadow:0 14px 32px #71475a14,0 3px 0 #d8c9df;isolation:isolate}
 .feature-index{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;color:#8b354a;font-size:9px;letter-spacing:.14em}
 .tiny-cherries{font-size:15px;letter-spacing:.15em}
 .paper{position:relative;text-align:center;min-height:190px;margin:10px 0 15px;padding:clamp(24px,5vw,38px) clamp(19px,5vw,40px);overflow:hidden;border:1px solid #d9c5d0;border-radius:14px 14px 14px 5px;background:radial-gradient(ellipse at 100% 0%,#dfe8f8 0 2%,transparent 46%),linear-gradient(135deg,#fffdf9,#f9e9ec 72%,#f1e9f6);box-shadow:0 10px 26px #563b3d1a,0 3px 0 #d9c3cf}
@@ -106,69 +106,126 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .unlocked{display:none}
 .unlocked.show{display:inline-flex}
 
-/* ============ GIFT SECTIONS ============ */
+/* ============ LAYOUT PROPORCIONAL DE SECCIONES ============ */
 
-/* ---------- Igualar proporciones de todas las secciones ---------- */
-/* Cada sección principal (header y section) dentro de <main> tendrá la misma
-   proporción de altura usando flex‑grow. */
+/*
+  Estrategia:
+  - main es flex-column → las secciones se apilan verticalmente
+  - Cada sección (header, section) ocupa el 100% del ancho de main
+  - El padding interno de cada sección es uniforme con clamp() para que
+    se vean "del mismo tamaño" sin importar cuánto contenido tengan
+  - En desktop se usa max-width 840px centrado
+  - En móvil cada sección ocupa el 100% sin márgenes laterales
+*/
+
+/* Reset de reglas anteriores conflictivas */
 main > header,
 main > section {
-  flex: 1 1 0;             /* crecer igualmente */
-  min-height: 150px;       /* altura mínima para contenido pequeño */
+  flex: none;              /* NO crecer: cada sección tiene su propia altura natural */
   width: 100%;
   max-width: 840px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  /* Padding uniforme: mismo espacio interno en todas las secciones */
+  padding: clamp(22px, 4vw, 36px) clamp(18px, 4vw, 32px);
+  margin: 10px 0;
+  box-sizing: border-box;
 }
 
+/* La portada (cover) ya tiene su propio padding, no duplicar */
+header.cover {
+  padding: 20px 24px 16px;
+}
 
-/* ---------- Desktop (≥600px) ---------- */
-@media (min-width: 600px) {
-  /* Main container stays centered with max‑width */
+/* ---------- Desktop (≥ 700px) ---------- */
+@media (min-width: 700px) {
   main {
     width: min(100%, 840px);
-    padding: 0 24px;
+    padding: 0 20px 36px;
+    align-items: stretch; /* secciones se estiran al 100% de main */
   }
-  /* Cover uses two‑column layout */
+
+  /* Cover: dos columnas */
   .cover-content {
     grid-template-columns: 1.1fr .9fr;
+    min-height: 270px;
   }
-  /* Music player keeps its max width */
-  .music-player { width: 100%; max-width: 380px; }
-  /* Portrait and memory sections keep side‑by‑side layout */
-  .portrait-memory, .memory-feature, .gift-section {
+
+  /* Reproductor: ancho limitado y centrado */
+  .music-player {
+    max-width: 100%;
+    align-self: stretch;
+  }
+
+  /* Portrait: fila horizontal */
+  .portrait-memory {
     flex-direction: row;
     align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+
+  /* Memory feature: columna normal */
+  .memory-feature {
+    flex-direction: column;
+  }
+
+  /* Secciones gift: columna normal */
+  .gift-section {
+    flex-direction: column;
   }
 }
 
-/* ---------- Mobile (≤599px) ---------- */
-@media (max-width: 599px) {
-  /* Main takes full width with small padding */
+/* ---------- Móvil (≤ 699px) ---------- */
+@media (max-width: 699px) {
   main {
     width: 100%;
-    padding: 0 12px;
-  }
-  /* Stack cover content vertically */
-  .cover-content {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .cover-top, .cover-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .cover-copy { text-align: center; }
-  /* Music player expands to full width */
-  .music-player { width: 100%; }
-  /* Portrait and memory sections become column layout */
-  .portrait-memory, .memory-feature, .gift-section {
-    flex-direction: column;
+    padding: 0 10px 24px;
     align-items: stretch;
   }
-  .portrait-frame, .portrait-note { margin: 0 auto; }
+
+  main > header,
+  main > section {
+    padding: 20px 16px;
+    margin: 8px 0;
+  }
+
+  /* Cover: una columna, texto centrado */
+  .cover-content {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    min-height: auto;
+  }
+  .cover-copy { text-align: center; }
+  .cover-top, .cover-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  header.cover {
+    padding: 16px;
+  }
+
+  /* Reproductor: ancho completo */
+  .music-player {
+    width: 100%;
+  }
+
+  /* Portrait: columna */
+  .portrait-memory {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-height: auto;
+  }
+  .portrait-frame { width: 120px; }
+  .portrait-note { text-align: center; align-items: center; }
+
+  /* Gift sections: ancho completo */
+  .gift-section { flex-direction: column; }
   .gift-head { max-width: 100%; }
 }
 
-.gift-section{position:relative;margin:24px 0;padding:clamp(20px,4vw,32px);overflow:hidden;border:1px solid #ead8d4;border-radius:8px 8px 24px 8px;background:linear-gradient(145deg,#fffaf5,#f8eef0 70%,#eff3f8);box-shadow:0 12px 30px #35435a0b}
+/* ============ GIFT SECTIONS ============ */
+.gift-section{position:relative;margin:10px 0;overflow:hidden;border:1px solid #ead8d4;border-radius:8px 8px 24px 8px;background:linear-gradient(145deg,#fffaf5,#f8eef0 70%,#eff3f8);box-shadow:0 12px 30px #35435a0b}
 .gift-section:nth-of-type(even){background:linear-gradient(145deg,#f5f4f8,#fffaf4)}
 .gift-head{max-width:600px;margin-bottom:18px}
 .gift-head .chapter-kicker{color:#9b3047}
@@ -239,7 +296,7 @@ main > section {
 .museum-card small{display:block;margin-top:10px;color:#93394e;font:italic 16px/1.35 var(--script)}
 
 /* ============ LETTER FEATURE ============ */
-.letter-feature{position:relative;margin:20px 0;padding:24px;border:1px solid #c6cde0;border-radius:7px 22px 22px 22px;background:linear-gradient(130deg,#dce8f5,#e8e0f1 55%,#f4dfe5);box-shadow:0 12px 28px #526b9014,0 3px 0 #d8c9df;text-align:center;isolation:isolate}
+.letter-feature{position:relative;margin:0;border:1px solid #c6cde0;border-radius:7px 22px 22px 22px;background:linear-gradient(130deg,#dce8f5,#e8e0f1 55%,#f4dfe5);box-shadow:0 12px 28px #526b9014,0 3px 0 #d8c9df;text-align:center;isolation:isolate}
 .letter-feature h2{margin:10px 0;color:#304059;font:600 clamp(28px,6vw,42px)/1 var(--serif)}
 .letter-feature h2 em{color:#9a2a44;font-weight:400}
 .letter-feature>p{color:#75636a;font:italic 13px/1.5 var(--serif)}
