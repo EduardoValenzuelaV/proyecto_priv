@@ -17,192 +17,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="Dallana.css">
-
-<!-- Refinamiento tipográfico: jerarquía editorial -->
-<style id="typography-refinement">
-  :root {
-    --font-editorial: "Cormorant Garamond", Georgia, serif;
-    --font-interface: "DM Sans", Arial, sans-serif;
-    --font-handwritten: "Caveat", cursive;
-    --type-ink: #59464a;
-    --type-muted: #88777a;
-    --type-accent: #986b75;
-  }
-
-  html {
-    text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    font-family: var(--font-interface);
-    color: var(--type-ink);
-    font-size: 16px;
-    line-height: 1.7;
-    letter-spacing: 0.005em;
-    font-weight: 400;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4,
-  .cover h1,
-  .track-heading h2,
-  .gift-head h2,
-  .letter-feature h2,
-  .paper h2,
-  dialog h2 {
-    font-family: var(--font-editorial);
-    color: var(--type-ink);
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 1.08;
-    text-wrap: balance;
-  }
-
-  .cover h1 {
-    font-size: clamp(3.2rem, 8vw, 6.4rem);
-    line-height: 0.98;
-    letter-spacing: -0.055em;
-  }
-
-  .cover h1 span {
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  h2,
-  .track-heading h2,
-  .gift-head h2,
-  .letter-feature h2,
-  dialog h2 {
-    font-size: clamp(2rem, 4.5vw, 3.35rem);
-  }
-
-  h3 {
-    font-size: clamp(1.55rem, 3.2vw, 2.25rem);
-  }
-
-  p,
-  li,
-  label,
-  input,
-  textarea,
-  select,
-  button {
-    font-family: var(--font-interface);
-  }
-
-  p {
-    line-height: 1.75;
-    text-wrap: pretty;
-  }
-
-  .cover .sub,
-  .track-heading p,
-  .gift-head > p,
-  .music-hint,
-  .welcome-copy {
-    font-size: clamp(0.95rem, 1.6vw, 1.08rem);
-    line-height: 1.7;
-    color: var(--type-muted);
-  }
-
-  .eyebrow,
-  .chapter-kicker,
-  .welcome-label,
-  .cover-top,
-  .cover-bottom,
-  .feature-index,
-  .paper-label,
-  .portrait-note > span,
-  .page-footer > span {
-    font-family: var(--font-interface);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    line-height: 1.5;
-  }
-
-  .paper #message,
-  .letter-paper,
-  .letter-paper p {
-    font-family: var(--font-editorial);
-    font-size: clamp(1.35rem, 2.5vw, 1.8rem);
-    line-height: 1.55;
-    letter-spacing: -0.012em;
-  }
-
-  .portrait-note strong {
-    font-family: var(--font-editorial);
-    font-size: clamp(1.7rem, 3vw, 2.35rem);
-    font-weight: 500;
-    line-height: 1.05;
-  }
-
-  .portrait-note small,
-  .memory-note,
-  figcaption {
-    font-family: var(--font-interface);
-    font-size: 0.82rem;
-    line-height: 1.55;
-    letter-spacing: 0.015em;
-  }
-
-  button,
-  .btn,
-  .icon-btn,
-  .music-control,
-  .music-play {
-    font-weight: 600;
-    letter-spacing: 0.015em;
-  }
-
-  .btn {
-    line-height: 1.35;
-  }
-
-  .progress-heading h3 {
-    font-family: var(--font-editorial);
-    font-weight: 500;
-    letter-spacing: -0.025em;
-  }
-
-  .field,
-  .admin-section h3,
-  dialog,
-  dialog input,
-  dialog textarea,
-  dialog select {
-    font-family: var(--font-interface);
-  }
-
-  @media (max-width: 600px) {
-    body {
-      font-size: 15px;
-      line-height: 1.68;
-    }
-
-    .cover h1 {
-      font-size: clamp(3rem, 15vw, 4.7rem);
-    }
-
-    .chapter-kicker,
-    .eyebrow,
-    .welcome-label {
-      font-size: 0.62rem;
-      letter-spacing: 0.13em;
-    }
-
-    .paper #message,
-    .letter-paper,
-    .letter-paper p {
-      font-size: 1.35rem;
-    }
-  }
-</style>
-
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Dallana">
+<link rel="apple-touch-icon" href="assets/stickers/stikers3.png">
 </head>
 <body>
 
@@ -214,6 +33,7 @@
 </noscript>
 
 <div class="heart-drift" id="heartDrift" aria-hidden="true"></div>
+<div class="celebration-container" id="celebrationContainer" aria-hidden="true"></div>
 
 <div class="envelope" id="welcome">
   <div class="envelope-content">
@@ -334,13 +154,50 @@
       </div>
       <div class="secondary-row">
         <button class="btn secondary" id="daily" type="button">💌 <span>Mi mensaje de hoy</span></button>
+        <button class="text-btn" id="viewFavorites" type="button">♥ <span>Mis favoritos</span> (<span id="favCount">0</span>)</button>
       </div>
     </div>
     <p class="foot" id="foot" aria-live="polite"></p>
   </section>
 
+  <section class="gift-section" id="affirmationsSection" aria-labelledby="affTitle">
+    <div class="gift-head">
+      <span class="chapter-kicker">ALGO BONITO PARA HOY</span>
+      <h2 id="affTitle">Un recordatorio amable</h2>
+    </div>
+    <article class="affirmation-card" id="affirmationCard" aria-live="polite">
+      <span class="affirmation-icon" id="affirmationIcon" aria-hidden="true">✿</span>
+      <p id="affirmationText">Toca el botón para recibir un recordatorio bonito.</p>
+      <small id="affirmationCategory"></small>
+    </article>
+    <div class="gift-actions">
+      <button class="btn secondary" id="positiveNote" type="button">✿ Otro recordatorio</button>
+    </div>
+  </section>
 
+  <section class="gift-section" id="lettersWhenSection" aria-labelledby="lettersWhenTitle">
+    <div class="gift-head">
+      <span class="chapter-kicker">CARTAS PARA MOMENTOS</span>
+      <h2 id="lettersWhenTitle">Ábreme cuando...</h2>
+      <p>Elige el momento y te acompaño con unas palabras.</p>
+    </div>
+    <div class="letter-grid" id="letterCards"></div>
+  </section>
 
+  <section class="gift-section" id="jarSection" aria-labelledby="jarTitle">
+    <div class="gift-head">
+      <span class="chapter-kicker">EL FRASCO DE SORPRESAS</span>
+      <h2 id="jarTitle">Una notita para ti</h2>
+    </div>
+    <div class="jar-wrap">
+      <button class="jar-button" id="jarButton" type="button" aria-label="Sacar una nota del frasco">
+        <span class="jar-lid" aria-hidden="true"></span>
+        <span class="jar-shape" aria-hidden="true"></span>
+        <span class="jar-heart" aria-hidden="true">♥</span>
+      </button>
+      <p class="jar-note" id="jarNote" aria-live="polite">Toca el frasco para descubrir una notita.</p>
+    </div>
+  </section>
 
   <section class="gift-section" id="moodSection" aria-labelledby="moodTitle">
     <div class="gift-head">
@@ -352,6 +209,14 @@
     <div class="mood-response" id="moodResponse" aria-live="polite"></div>
   </section>
 
+  <section class="gift-section" id="dreamsSection" aria-labelledby="dreamsTitle">
+    <div class="gift-head">
+      <span class="chapter-kicker">PEQUEÑAS AVENTURAS</span>
+      <h2 id="dreamsTitle">Cosas que quiero vivir contigo</h2>
+      <p id="dreamProgress" aria-live="polite"></p>
+    </div>
+    <div class="dream-grid" id="dreamGrid"></div>
+  </section>
 
   <section class="gift-section" id="museumSection" aria-labelledby="museumTitle" hidden>
     <div class="gift-head">
@@ -385,6 +250,30 @@
   <div class="letter-paper"><p id="letterText"></p></div>
 </dialog>
 
+<dialog id="openWhenDialog" class="open-when-dialog">
+  <button class="close" data-close="openWhenDialog" aria-label="Cerrar">×</button>
+  <h2 id="openWhenDialogTitle">Una carta para ti</h2>
+  <div class="letter-scene" id="letterScene">
+    <div class="animated-envelope" aria-hidden="true">
+      <div class="envelope-back"></div>
+      <div class="envelope-flap"></div>
+      <div class="envelope-front"></div>
+      <div class="envelope-seal">♥</div>
+    </div>
+    <div class="animated-note">
+      <span class="chapter-kicker">PARA ESTE MOMENTO</span>
+      <h3 id="openWhenNoteTitle">Una carta para ti</h3>
+      <p id="openWhenMessage"></p>
+    </div>
+  </div>
+</dialog>
+
+
+<dialog id="favoritesDialog" class="favorites-dialog">
+  <button class="close" data-close="favoritesDialog" aria-label="Cerrar">×</button>
+  <h2>Tus recuerdos favoritos ♥</h2>
+  <div class="favorites-list" id="favoritesList"></div>
+</dialog>
 
 <dialog id="adminDialog">
   <button class="close" data-close="adminDialog" aria-label="Cerrar">×</button>

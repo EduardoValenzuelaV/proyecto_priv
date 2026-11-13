@@ -5,7 +5,11 @@ const URL_BACKEND = 'https://tu-api-en-render.onrender.com';
 const FECHA_INICIO = '2026-10-17';
 const MENSAJES_PARA_CARTA = 10;
 const CARTA_LOCAL = 'Dallana, gracias por cada paseo, cada conversación y cada risa. Me haces muy feliz. Te elegiría una y mil veces. Con todo mi cariño, siempre.';
-const API_DISPONIBLE = URL_BACKEND.startsWith('https://') && !URL_BACKEND.includes('tu-api-en-render');
+const API_DISPONIBLE = (
+  (URL_BACKEND.startsWith('https://') && !URL_BACKEND.includes('tu-api-en-render')) ||
+  URL_BACKEND.startsWith('http://localhost') ||
+  URL_BACKEND.startsWith('http://127.0.0.1')
+);
 
 /* ============================================================
    CONTENIDO LOCAL
@@ -209,8 +213,31 @@ function actualizarContador() {
 }
 
 /* ============================================================
-   PROGRESO
+   PROGRESO Y CELEBRACIÓN
    ============================================================ */
+function lanzarCelebracion() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const container = $('celebrationContainer');
+  if (!container) return;
+  const simbolos = ['♥', '❀', '✿', '✧', '♡'];
+  const colores = ['#d82148', '#e94560', '#f2789f', '#ff9494', '#f6b8b8'];
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('span');
+    el.className = 'celebration-petal';
+    el.textContent = simbolos[Math.floor(Math.random() * simbolos.length)];
+    el.style.left = `${Math.random() * 100}vw`;
+    el.style.color = colores[Math.floor(Math.random() * colores.length)];
+    el.style.fontSize = `${14 + Math.random() * 22}px`;
+    el.style.setProperty('--fall-duration', `${2.8 + Math.random() * 2.4}s`);
+    el.style.setProperty('--drift-x', `${-60 + Math.random() * 120}px`);
+    el.style.setProperty('--rot', `${-180 + Math.random() * 360}deg`);
+    setTimeout(() => {
+      container.append(el);
+      setTimeout(() => el.remove(), 5500);
+    }, i * 75);
+  }
+}
+
 function actualizarProgreso(abrirSiNuevo = false) {
   const cantidad = Math.min(seen.size, MENSAJES_PARA_CARTA);
   const porcentaje = cantidad / MENSAJES_PARA_CARTA * 100;
@@ -224,6 +251,7 @@ function actualizarProgreso(abrirSiNuevo = false) {
     try { desbloqueada = localStorage.getItem('dallanaLetterUnlocked') === 'true'; } catch {}
     if (abrirSiNuevo && !desbloqueada) {
       try { localStorage.setItem('dallanaLetterUnlocked', 'true'); } catch {}
+      lanzarCelebracion();
       cargarCarta();
       const dlg = $('letterDialog'); if (dlg) dlg.showModal();
     }
@@ -275,15 +303,22 @@ function mostrar(d, label = 'Un mensaje para ti') {
 
 async function pedir(url, label = 'Un mensaje para ti') {
   const foot = $('foot'); if (foot) foot.textContent = 'Buscando un recuerdo bonito…';
+  let wakeTimer = null;
   if (API_DISPONIBLE) {
+    wakeTimer = setTimeout(() => {
+      if (foot) foot.textContent = 'Despertando nuestro rincón en el servidor... 💌';
+    }, 1400);
     try {
       const r = await fetch(url);
+      clearTimeout(wakeTimer);
       if (!r.ok) throw new Error();
       const data = await r.json();
       mostrar(data, data.tipo || label);
       if (foot) foot.textContent = `${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`;
       return;
-    } catch {}
+    } catch {
+      clearTimeout(wakeTimer);
+    }
   }
   const opciones = RESPALDO.filter(item => item.id !== currentId);
   const item = opciones[Math.floor(Math.random() * opciones.length)] || RESPALDO[0];
@@ -546,12 +581,90 @@ if (favBtn) favBtn.onclick = () => {
   guardarSet('dallanaFavorites', favorites);
   favBtn.textContent = favorites.has(currentId) ? '♥' : '♡';
   favBtn.classList.toggle('favorite', favorites.has(currentId));
+  actualizarBotonFavoritos();
   const foot = $('foot');
   if (foot) foot.textContent = favorites.has(currentId) ? 'Guardado entre tus favoritos ♥' : 'Quitado de tus favoritos';
 };
 
+/* ============================================================
+   FAVORITOS
+   ============================================================ */
+function actualizarBotonFavoritos() {
+  const count = $('favCount');
+  if (count) count.textContent = String(favorites.size);
+}
+
+function encontrarMensajePorId(id) {
+  let item = mensajes.find(m => String(m.id) === String(id));
+  if (item) return item;
+  item = RESPALDO.find(m => String(m.id) === String(id));
+  if (item) return item;
+  const auto = (contenido.autoestima || []).map((it, i) => ({ id: `autoestima-${i}`, mensaje: it.mensaje }));
+  item = auto.find(m => String(m.id) === String(id));
+  if (item) return item;
+  const fr = (contenido.frasco || []).map((m, i) => ({ id: `frasco-${i}`, mensaje: m }));
+  item = fr.find(m => String(m.id) === String(id));
+  return item || { id, mensaje: 'Un recuerdo guardado con amor ♥' };
+}
+
+function renderFavoritos() {
+  const host = $('favoritesList');
+  if (!host) return;
+  host.replaceChildren();
+  if (favorites.size === 0) {
+    const p = document.createElement('p');
+    p.className = 'favorite-empty';
+    p.textContent = 'Aún no has guardado recuerdos favoritos. Toca el corazón ♡ en cualquier recuerdo para guardarlo aquí.';
+    host.append(p);
+    return;
+  }
+  favorites.forEach(id => {
+    const item = encontrarMensajePorId(id);
+    const card = document.createElement('article');
+    card.className = 'favorite-item';
+    const text = document.createElement('p');
+    text.textContent = item.mensaje || '';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'icon-btn';
+    btn.textContent = '✕';
+    btn.title = 'Quitar de favoritos';
+    btn.setAttribute('aria-label', 'Quitar de favoritos');
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      favorites.delete(String(id));
+      guardarSet('dallanaFavorites', favorites);
+      actualizarBotonFavoritos();
+      const fav = $('favorite');
+      if (fav && currentId === String(id)) {
+        fav.textContent = '♡';
+        fav.classList.remove('favorite');
+      }
+      renderFavoritos();
+    };
+    card.onclick = () => {
+      mostrar(item, 'Un recuerdo favorito');
+      const dlg = $('favoritesDialog');
+      if (dlg) dlg.close();
+      const paper = $('paper');
+      if (paper) paper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    card.style.cursor = 'pointer';
+    card.append(text, btn);
+    host.append(card);
+  });
+}
+
+const viewFavoritesBtn = $('viewFavorites');
+if (viewFavoritesBtn) viewFavoritesBtn.onclick = () => {
+  renderFavoritos();
+  const dlg = $('favoritesDialog');
+  if (dlg) dlg.showModal();
+};
+
 const openLetterBtn = $('openLetter');
 if (openLetterBtn) openLetterBtn.onclick = () => {
+  lanzarCelebracion();
   cargarCarta();
   const dlg = $('letterDialog'); if (dlg) dlg.showModal();
 };
@@ -567,6 +680,7 @@ if (resetBtn) resetBtn.onclick = () => {
   if (!confirm('¿Quieres reiniciar tu progreso en este rincón?')) return;
   ['dallanaSeen', 'dallanaFavorites', 'dallanaDreamsDone', 'dallanaLetterUnlocked'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   seen = new Set(); favorites = new Set();
+  actualizarBotonFavoritos();
   actualizarProgreso(false);
   location.reload();
 };
@@ -586,22 +700,42 @@ if (letterDlg) letterDlg.addEventListener('close', () => {
 });
 
 /* ============================================================
-   MÚSICA
+   MÚSICA (Cajita de música delicada)
    ============================================================ */
 let audioContext, masterGain, melodyTimer, melodyStep = 0, melodyIndex = 0;
 
 function tocarNota() {
   if (!audioContext || !masterGain) return;
   const notas = MELODIAS[melodyIndex].notas;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.type = 'sine';
-  osc.frequency.value = notas[melodyStep++ % notas.length];
-  gain.gain.setValueAtTime(.0001, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(.045, audioContext.currentTime + .08);
-  gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + .65);
-  osc.connect(gain); gain.connect(masterGain);
-  osc.start(); osc.stop(audioContext.currentTime + .7);
+  const freq = notas[melodyStep++ % notas.length];
+  const now = audioContext.currentTime;
+
+  // 1. Tono principal fundamental
+  const osc1 = audioContext.createOscillator();
+  const gain1 = audioContext.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(freq, now);
+  gain1.gain.setValueAtTime(0.0001, now);
+  gain1.gain.exponentialRampToValueAtTime(0.048, now + 0.015);
+  gain1.gain.exponentialRampToValueAtTime(0.018, now + 0.22);
+  gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.82);
+  osc1.connect(gain1);
+  gain1.connect(masterGain);
+  osc1.start(now);
+  osc1.stop(now + 0.85);
+
+  // 2. Armónico metálico sutil (brillo de cajita de música)
+  const osc2 = audioContext.createOscillator();
+  const gain2 = audioContext.createGain();
+  osc2.type = 'triangle';
+  osc2.frequency.setValueAtTime(freq * 3, now);
+  gain2.gain.setValueAtTime(0.0001, now);
+  gain2.gain.exponentialRampToValueAtTime(0.011, now + 0.008);
+  gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+  osc2.connect(gain2);
+  gain2.connect(masterGain);
+  osc2.start(now);
+  osc2.stop(now + 0.26);
 }
 
 function seleccionarMelodia(indice) {
@@ -858,3 +992,19 @@ if (saveContent) saveContent.onclick = async () => {
     contenido = data; estadoAdmin('Contenido guardado.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
+
+/* ============================================================
+   INICIALIZACIÓN
+   ============================================================ */
+actualizarContador();
+actualizarProgreso(false);
+actualizarBotonFavoritos();
+renderContenido();
+setInterval(actualizarContador, 60000);
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+

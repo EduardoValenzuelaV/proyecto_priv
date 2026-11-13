@@ -1,0 +1,19 @@
+{
+  "name": "Un rincón para Dallana",
+  "short_name": "Dallana",
+  "description": "Un pequeño rincón lleno de recuerdos para Dallana 💌",
+  "start_url": "./Dallana.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f1e8",
+  "theme_color": "#f6f1e8",
+  "icons": [
+    {
+      "src": "assets/stickers/stikers3.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

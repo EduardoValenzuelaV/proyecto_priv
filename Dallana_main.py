@@ -294,7 +294,7 @@ def listar_admin(x_admin_token: Optional[str] = Header(default=None)):
 def agregar_cumplido(nuevo: Cumplido, x_admin_token: Optional[str] = Header(default=None)):
     exigir_admin(x_admin_token)
     datos = leer_datos()
-    datos["cumplidos"].append({"id": uuid.uuid4().hex, **nuevo.dict()})
+    datos["cumplidos"].append({"id": uuid.uuid4().hex, **nuevo.model_dump()})
     guardar_datos(datos)
     return {"total": len(datos["cumplidos"])}
 
@@ -304,7 +304,7 @@ def editar_cumplido(mensaje_id: str, cambio: Cumplido, x_admin_token: Optional[s
     exigir_admin(x_admin_token)
     datos = leer_datos()
     item = encontrar(datos, mensaje_id)
-    item.update(cambio.dict())
+    item.update(cambio.model_dump())
     guardar_datos(datos)
     return item
 
@@ -334,6 +334,22 @@ async def subir_foto(foto: UploadFile = File(...), x_admin_token: Optional[str] 
     if not firma_imagen_valida(foto.content_type, contenido):
         raise HTTPException(415, "El archivo no coincide con el formato de imagen declarado.")
     nombre = f"{uuid.uuid4().hex}{extension}"
+    try:
+        from PIL import Image
+        import io
+        if foto.content_type != "image/gif":
+            with Image.open(io.BytesIO(contenido)) as img:
+                img.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+                buffer = io.BytesIO()
+                if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+                    img.save(buffer, "WEBP", quality=85, method=6)
+                    nombre = f"{uuid.uuid4().hex}.webp"
+                else:
+                    img.convert("RGB").save(buffer, "JPEG", quality=85, optimize=True)
+                    nombre = f"{uuid.uuid4().hex}.jpg"
+                contenido = buffer.getvalue()
+    except Exception:
+        pass
     (FOTOS / nombre).write_bytes(contenido)
     return {"foto": f"/media/{nombre}"}
 
@@ -351,7 +367,7 @@ def actualizar_carta(nueva: Carta, x_admin_token: Optional[str] = Header(default
 def actualizar_saludos(nuevos: Saludos, x_admin_token: Optional[str] = Header(default=None)):
     exigir_admin(x_admin_token)
     datos = leer_datos()
-    datos["saludos"] = nuevos.dict()
+    datos["saludos"] = nuevos.model_dump()
     guardar_datos(datos)
     return {"guardado": True}
 
@@ -359,7 +375,7 @@ def actualizar_saludos(nuevos: Saludos, x_admin_token: Optional[str] = Header(de
 @app.put("/api/administracion/contenido")
 def actualizar_contenido(nuevo: Contenido, x_admin_token: Optional[str] = Header(default=None)):
     exigir_admin(x_admin_token)
-    contenido = nuevo.dict()
+    contenido = nuevo.model_dump()
     for clave in ("autoestima", "cartas", "frasco", "museo", "suenos"):
         if not contenido[clave]:
             raise HTTPException(422, f"La colección {clave} debe contener al menos un elemento.")

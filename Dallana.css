@@ -5,7 +5,7 @@ body{margin:0;overflow-x:hidden;display:block;min-height:100svh;padding:18px 18p
 body:after{display:block;position:fixed;inset:0;z-index:0;content:"";pointer-events:none;opacity:.22;background-image:radial-gradient(2px 2px at 14% 28%,#a52b45 98%,transparent),radial-gradient(2px 2px at 84% 66%,#627fa8 98%,transparent),radial-gradient(2px 2px at 72% 14%,#bd5364 98%,transparent),radial-gradient(1px 1px at 38% 78%,#536b91 98%,transparent);background-size:190px 190px,230px 230px,270px 270px,160px 160px}
 button,input,textarea,select{font:inherit}
 button{touch-action:manipulation}
-main{position:relative;z-index:1;width:min(100%,760px);margin:0 auto;padding:0 0 28px;text-align:left}
+main{position:relative;z-index:1;width:min(100%,1160px);margin:0 auto;padding:0 0 28px;text-align:left}
 
 /* ============ NO-JS ============ */
 .noscript-banner{position:relative;z-index:20;margin:16px;padding:16px 20px;border:1px solid #e0cfce;border-radius:12px;background:#fffaf4;color:#35435a;font:15px/1.55 var(--serif)}
@@ -295,13 +295,21 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
 
 @media (min-width:900px){
   body{padding:36px 28px 54px}
-  main{width:min(100%,980px)}
+  main{width:min(100%,1160px)}
   .cover{padding:27px 34px 20px;border-radius:8px 8px 34px 8px}
   .cover-content{min-height:330px;grid-template-columns:1fr .82fr;gap:48px}
   .cover h1{font-size:clamp(76px,8vw,110px)}
   .cover .sub{max-width:430px;font-size:17px}
   .cover .eyebrow{font-size:12px}
   .cover-art .sticker-flower{width:clamp(220px,27vw,310px)}
+  .music-player{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);grid-template-rows:auto auto auto auto;gap:12px 48px;padding:38px 48px;text-align:left}
+  .album-art{grid-column:1;grid-row:1/5;width:min(100%,420px)}
+  .player-main{grid-column:2;grid-row:1;text-align:left}
+  .waveform{grid-column:2;grid-row:2;width:100%;max-width:none;margin:0}
+  .music-controls{grid-column:2;grid-row:3;justify-content:flex-start;width:100%;max-width:none}
+  .music-hint{grid-column:2;grid-row:4;text-align:left}
+  .portrait-memory{min-height:280px;gap:44px}
+  .portrait-frame{width:190px}
   .memory-feature{padding:30px 40px}
   .paper{min-height:220px;padding:42px 52px}
   .paper #message{max-width:700px;font-size:42px}
@@ -376,6 +384,11 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
   .reset-link{font-size:9px;padding:8px}
 }
 
+@media (min-width:561px) and (max-width:899px){
+  main{width:min(100%,820px)}
+  body{padding-right:24px;padding-left:24px}
+}
+
 @media (max-width:360px){
   .cover-content{grid-template-columns:1fr .52fr}
   .cover h1{font-size:48px}
@@ -397,4 +410,287 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
   .envelope.opening .envelope-content,.envelope.opening .welcome-label,.envelope.opening .welcome-copy,.envelope.opening .envelope-content small,.env.open,.env.open .envelope-art path:first-of-type,dialog#letterDialog[open],dialog#letterDialog[open]::backdrop,.letter-paper,.letter-paper:before,.affirmation-card,.letter-reveal,.jar-note,.museum-prompt-card,.mood-response,.open-card{animation:none!important;transition:none!important}
   .letter-scene.is-open .animated-note{opacity:1;transform:none;clip-path:none}
   .letter-scene.is-open .animated-envelope{opacity:0}
+  .celebration-container{display:none}
 }
+
+/* ============ CELEBRACIÓN / LLUVIA DE PÉTALOS ============ */
+.celebration-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+.celebration-petal {
+  position: absolute;
+  top: -30px;
+  opacity: 0.9;
+  will-change: transform, opacity;
+  animation: petal-fall var(--fall-duration, 3.5s) linear forwards;
+}
+@keyframes petal-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(105vh) translateX(var(--drift-x, 40px)) rotate(var(--rot, 360deg)) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* ============ FAVORITOS MODAL & BOTÓN ============ */
+.text-btn {
+  background: transparent;
+  border: 1px dashed #c99da5;
+  color: #8f3448;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.text-btn:hover {
+  background: #fdf2f4;
+  border-color: #8f3448;
+  transform: translateY(-1px);
+}
+.favorites-dialog {
+  width: min(560px, calc(100% - 24px));
+  max-height: 80vh;
+  padding: 28px 24px;
+  border-radius: 16px;
+  border: 1px solid #e2cad0;
+  background: #fffdfa;
+  box-shadow: 0 20px 45px rgba(60, 40, 50, 0.2);
+}
+.favorites-dialog h2 {
+  margin: 0 0 16px;
+  font-size: clamp(22px, 4vw, 30px);
+  color: #8c253d;
+}
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.favorite-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff8f9;
+  border: 1px solid #f0d5db;
+  border-radius: 10px;
+}
+.favorite-item p {
+  margin: 0;
+  color: #4f3b42;
+  font-size: 15px;
+  line-height: 1.5;
+  font-family: var(--font-editorial, Georgia, serif);
+  font-size: 17px;
+}
+.favorite-empty {
+  text-align: center;
+  color: #88777a;
+  padding: 30px 10px;
+  font-style: italic;
+}
+
+/* ============ REFINAMIENTO TIPOGRÁFICO ============ */
+:root {
+  --font-editorial: "Cormorant Garamond", Georgia, serif;
+  --font-interface: "DM Sans", Arial, sans-serif;
+  --font-handwritten: "Caveat", cursive;
+  --type-ink: #59464a;
+  --type-muted: #88777a;
+  --type-accent: #986b75;
+}
+
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-interface);
+  color: var(--type-ink);
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: 0.005em;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4,
+.cover h1,
+.track-heading h2,
+.gift-head h2,
+.letter-feature h2,
+.paper h2,
+dialog h2 {
+  font-family: var(--font-editorial);
+  color: var(--type-ink);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.cover h1 {
+  font-size: clamp(3.2rem, 8vw, 6.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.cover h1 span {
+  font-style: italic;
+  font-weight: 400;
+}
+
+h2,
+.track-heading h2,
+.gift-head h2,
+.letter-feature h2,
+dialog h2 {
+  font-size: clamp(2rem, 4.5vw, 3.35rem);
+}
+
+h3 {
+  font-size: clamp(1.55rem, 3.2vw, 2.25rem);
+}
+
+p,
+li,
+label,
+input,
+textarea,
+select,
+button {
+  font-family: var(--font-interface);
+}
+
+p {
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.cover .sub,
+.track-heading p,
+.gift-head > p,
+.music-hint,
+.welcome-copy {
+  font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+  line-height: 1.7;
+  color: var(--type-muted);
+}
+
+.eyebrow,
+.chapter-kicker,
+.welcome-label,
+.cover-top,
+.cover-bottom,
+.feature-index,
+.paper-label,
+.portrait-note > span,
+.page-footer > span {
+  font-family: var(--font-interface);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+}
+
+.paper #message,
+.letter-paper,
+.letter-paper p {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+  line-height: 1.55;
+  letter-spacing: -0.012em;
+}
+
+.portrait-note strong {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.portrait-note small,
+.memory-note,
+figcaption {
+  font-family: var(--font-interface);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  letter-spacing: 0.015em;
+}
+
+button,
+.btn,
+.icon-btn,
+.music-control,
+.music-play {
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+.btn {
+  line-height: 1.35;
+}
+
+.progress-heading h3 {
+  font-family: var(--font-editorial);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.field,
+.admin-section h3,
+dialog,
+dialog input,
+dialog textarea,
+dialog select {
+  font-family: var(--font-interface);
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 15px;
+    line-height: 1.68;
+  }
+
+  .cover h1 {
+    font-size: clamp(3rem, 15vw, 4.7rem);
+  }
+
+  .chapter-kicker,
+  .eyebrow,
+  .welcome-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.13em;
+  }
+
+  .paper #message,
+  .letter-paper,
+  .letter-paper p {
+    font-size: 1.35rem;
+  }
+}
+
