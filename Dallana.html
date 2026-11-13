@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=2.1">
+<link rel="stylesheet" href="Dallana.css?v=2.2">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -169,14 +169,16 @@
     <div class="letter-grid" id="letterCards"></div>
   </section>
 
-  <section class="gift-section" id="moodSection" aria-labelledby="moodTitle">
+  <section class="gift-section photo-section" id="photoSection" aria-labelledby="photoTitle">
     <div class="gift-head">
-      <span class="chapter-kicker">¿CÓMO TE SIENTES HOY?</span>
-      <h2 id="moodTitle">Un espacio para ti</h2>
-      <p>No tienes que explicarlo todo. Elige lo que necesitas ahora.</p>
+      <span class="chapter-kicker">NUESTROS MOMENTOS</span>
+      <h2 id="photoTitle">Nuestra historia en fotos</h2>
+      <p>Guarda aquí las fotos que más te gusta recordar. Se conservarán en este dispositivo.</p>
     </div>
-    <div class="mood-options" id="moodOptions" role="group" aria-label="Elige cómo te sientes"></div>
-    <div class="mood-response" id="moodResponse" aria-live="polite"></div>
+    <button class="btn photo-upload" id="photoPick" type="button">＋ Añadir fotos</button>
+    <input class="photo-input" id="photoUpload" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple aria-label="Elegir fotos de ustedes" hidden>
+    <p class="photo-status" id="photoStatus" aria-live="polite">Puedes añadir fotos JPG, PNG, WebP o GIF de hasta 8 MB cada una.</p>
+    <div class="photo-grid" id="photoGrid" aria-live="polite"></div>
   </section>
 
   <section class="gift-section" id="museumSection" aria-labelledby="museumTitle" hidden>
@@ -300,6 +302,6 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<script src="Dallana.js?v=2.1" defer></script>
+<script src="Dallana.js?v=2.2" defer></script>
 </body>
 </html>

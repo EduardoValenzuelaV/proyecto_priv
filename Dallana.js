@@ -456,54 +456,113 @@ function renderMuseo() {
 }
 
 /* ============================================================
-   MOODS
-   ============================================================ */
-function limpiarAnimo() {
-  document.querySelectorAll('.mood-options button').forEach(b => {
-    b.setAttribute('aria-pressed', 'false'); b.classList.remove('selected');
-  });
-  const resp = $('moodResponse'); if (!resp) return;
-  resp.replaceChildren();
-  const p = document.createElement('p'); p.className = 'mood-prompt';
-  p.textContent = 'Elige lo que necesitas ahora. No tienes que explicarlo ni resolverlo todo.';
-  resp.append(p);
-}
-
-function renderMoods() {
-  const host = $('moodOptions'); if (!host) return;
-  host.replaceChildren();
-  Object.keys(moodCopy).forEach(label => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'mood-option';
-    b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', label);
-    b.textContent = `${moodIcons[label] || '♡'} ${label}`;
-    b.onclick = () => {
-      host.querySelectorAll('button').forEach(o => {
-        o.setAttribute('aria-pressed', String(o === b));
-        o.classList.toggle('selected', o === b);
-      });
-      const resp = $('moodResponse'); if (!resp) return;
-      resp.replaceChildren();
-      const k = document.createElement('span'); k.className = 'mood-response-kicker'; k.textContent = 'PARA ESTE MOMENTO';
-      const h = document.createElement('h3'); h.textContent = label;
-      const m = document.createElement('p'); m.className = 'mood-message'; m.textContent = moodCopy[label];
-      const s = document.createElement('p'); s.className = 'mood-next-step';
-      const strong = document.createElement('strong'); strong.textContent = 'Si te sirve: ';
-      s.append(strong, document.createTextNode(moodSteps[label] || 'Puedes ir a tu ritmo.'));
-      const reset = document.createElement('button');
-      reset.type = 'button'; reset.className = 'mood-reset'; reset.textContent = 'Elegir otra opción';
-      reset.onclick = limpiarAnimo;
-      resp.append(k, h, m, s, reset);
-    };
-    host.append(b);
-  });
-  limpiarAnimo();
-}
-
-/* ============================================================
    RENDER GLOBAL
    ============================================================ */
-function renderContenido() { renderCartas(); renderMuseo(); renderMoods(); }
+function renderContenido() { renderCartas(); renderMuseo(); }
+
+/* ============================================================
+   ÁLBUM DE FOTOS LOCAL
+   ============================================================ */
+const ALBUM_DB = 'dallanaAlbumFotos';
+const albumUrls = new Set();
+
+function abrirAlbumDB() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) return reject(new Error('Este navegador no permite guardar fotos.'));
+    const request = indexedDB.open(ALBUM_DB, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore('fotos', { keyPath: 'id' });
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('No pude abrir el álbum.'));
+  });
+}
+
+async function operarAlbum(mode, action) {
+  const db = await abrirAlbumDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('fotos', mode);
+    const store = tx.objectStore('fotos');
+    const request = action(store);
+    tx.oncomplete = () => { db.close(); resolve(request?.result); };
+    tx.onerror = tx.onabort = () => { db.close(); reject(tx.error || new Error('No pude guardar los cambios del álbum.')); };
+  });
+}
+
+async function renderAlbum() {
+  const host = $('photoGrid');
+  if (!host) return;
+  try {
+    const photos = await operarAlbum('readonly', store => store.getAll());
+    albumUrls.forEach(URL.revokeObjectURL);
+    albumUrls.clear();
+    host.replaceChildren();
+    if (!photos.length) {
+      const empty = document.createElement('p');
+      empty.className = 'photo-empty';
+      empty.textContent = 'Las fotos que añadas aparecerán aquí.';
+      host.append(empty);
+      return;
+    }
+    photos.sort((a, b) => a.created - b.created).forEach(photo => {
+      const card = document.createElement('figure');
+      card.className = 'photo-card';
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(photo.file);
+      image.alt = 'Un recuerdo juntos';
+      image.loading = 'lazy';
+      albumUrls.add(image.src);
+      const caption = document.createElement('figcaption');
+      caption.textContent = photo.name || 'Un recuerdo juntos';
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'photo-delete';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', `Eliminar foto ${photo.name || ''}`);
+      remove.onclick = async () => {
+        try {
+          await operarAlbum('readwrite', store => store.delete(photo.id));
+          await renderAlbum();
+          $('photoStatus').textContent = 'Foto eliminada del álbum.';
+        } catch { $('photoStatus').textContent = 'No pude eliminar la foto.'; }
+      };
+      card.append(image, caption, remove);
+      host.append(card);
+    });
+  } catch {
+    const status = $('photoStatus');
+    if (status) status.textContent = 'No se pudo abrir el álbum en este navegador.';
+  }
+}
+
+const photoUpload = $('photoUpload');
+const photoPick = $('photoPick');
+if (photoPick && photoUpload) photoPick.onclick = () => photoUpload.click();
+if (photoUpload) photoUpload.onchange = async () => {
+  const status = $('photoStatus');
+  const files = [...(photoUpload.files || [])];
+  let saved = 0;
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    if (file.size > 8 * 1024 * 1024) {
+      status.textContent = `${file.name} supera el límite de 8 MB y no se añadió.`;
+      continue;
+    }
+    try {
+      await operarAlbum('readwrite', store => store.add({
+        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+        name: file.name,
+        created: Date.now(),
+        file
+      }));
+      saved++;
+    } catch {
+      status.textContent = 'No se pudo guardar la foto. Puede que el almacenamiento esté lleno.';
+      break;
+    }
+  }
+  photoUpload.value = '';
+  if (saved) status.textContent = `${saved} ${saved === 1 ? 'foto añadida' : 'fotos añadidas'} al álbum de este dispositivo.`;
+  await renderAlbum();
+};
 
 /* ============================================================
    CARTA FINAL
@@ -995,6 +1054,7 @@ actualizarContador();
 actualizarProgreso(false);
 actualizarBotonFavoritos();
 renderContenido();
+renderAlbum();
 setInterval(actualizarContador, 60000);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
