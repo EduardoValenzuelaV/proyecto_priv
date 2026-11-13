@@ -81,6 +81,7 @@ main{z-index:1}
   .music-player{padding-bottom:62px}
   .music-player>.music-sticker-nine,.music-player>.music-sticker-ten{top:auto;bottom:8px;width:38px;left:calc(50% - 46px);right:auto;transform:rotate(-6deg)}
   .music-player>.music-sticker-ten{left:calc(50% + 8px);transform:rotate(6deg)}
+  .music-volume{width:min(100%,280px)}
   .portrait-memory{display:grid;grid-template-columns:minmax(0,1fr) 125px;grid-template-rows:auto auto auto;align-items:center;gap:7px 10px}
   .portrait-note{grid-column:1;grid-row:1}
   .portrait-frame{grid-column:2;grid-row:1/4;margin:0}
@@ -90,6 +91,10 @@ main{z-index:1}
   img.distributed-sticker.memory-sticker-thirteen,img.distributed-sticker.memory-sticker-fourteen{position:relative!important;inset:auto!important;display:block;width:38px;height:44px;object-fit:contain;margin:4px auto}
   img.distributed-sticker.letter-sticker-fifteen,img.distributed-sticker.letter-sticker-sixteen{position:relative!important;inset:auto!important;display:inline-block;width:38px;height:44px;object-fit:contain;margin:0 8px 8px;vertical-align:middle}
 }
+.music-player>.music-controls{width:min(100%,460px);gap:clamp(6px,2vw,16px)}
+.music-volume{display:flex;align-items:center;justify-content:center;gap:6px;width:auto;margin:0;color:#806d72;font-size:10px;white-space:nowrap}
+.music-volume input{width:clamp(58px,15vw,110px);min-width:48px;height:4px;accent-color:#9d2942;cursor:pointer}
+.music-volume output{min-width:30px;color:#992b43;text-align:right;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -123,7 +128,14 @@ main{z-index:1}
       <div><span class="chapter-kicker">NUESTRA CANCIÓN</span><h2>Nuestra canción</h2><p>Una melodía para escuchar juntos</p></div>
     </div>
   </div>
-  <div class="waveform" aria-hidden="true"><i class="wave-bar" style="--height:35%"></i><i class="wave-bar" style="--height:75%"></i><i class="wave-bar" style="--height:48%"></i><i class="wave-bar" style="--height:90%"></i><i class="wave-bar" style="--height:56%"></i><i class="wave-bar" style="--height:72%"></i><i class="wave-bar" style="--height:40%"></i><i class="wave-bar" style="--height:82%"></i><i class="wave-bar" style="--height:52%"></i><i class="wave-bar" style="--height:68%"></i><i class="wave-bar" style="--height:38%"></i><i class="wave-bar" style="--height:88%"></i></div><div class="music-controls"><button class="music-play" id="musicPlay" type="button" aria-label="Reproducir música" aria-pressed="false">▶</button></div><p class="music-hint" id="musicHint">Toca para escuchar una melodía</p>
+  <div class="waveform" aria-hidden="true"><i class="wave-bar" style="--height:35%"></i><i class="wave-bar" style="--height:75%"></i><i class="wave-bar" style="--height:48%"></i><i class="wave-bar" style="--height:90%"></i><i class="wave-bar" style="--height:56%"></i><i class="wave-bar" style="--height:72%"></i><i class="wave-bar" style="--height:40%"></i><i class="wave-bar" style="--height:82%"></i><i class="wave-bar" style="--height:52%"></i><i class="wave-bar" style="--height:68%"></i><i class="wave-bar" style="--height:38%"></i><i class="wave-bar" style="--height:88%"></i></div>
+  <div class="music-controls" aria-label="Controles de música">
+    <button class="music-control" id="musicPrev" type="button" aria-label="Canción anterior">◀|</button>
+    <button class="music-play" id="musicPlay" type="button" aria-label="Reproducir música" aria-pressed="false">▶</button>
+    <button class="music-control" id="musicNext" type="button" aria-label="Canción siguiente">|▶</button>
+    <label class="music-volume" for="musicVolume"><span aria-hidden="true">🔊</span><input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Volumen"><output id="musicVolumeValue" for="musicVolume">35%</output></label>
+  </div>
+  <p class="music-hint" id="musicHint">Toca para escuchar una melodía</p>
 </section>
 <section class="portrait-memory" aria-label="Un retrato especial de Migeo"><img class="distributed-sticker portrait-sticker portrait-sticker-eleven" src="assets/stickers/stikers11.png" alt="" aria-hidden="true"><img class="distributed-sticker portrait-sticker portrait-sticker-twelve" src="assets/stickers/stikers12.png" alt="" aria-hidden="true"><div class="portrait-note"><span>UN PEDACITO DE CIELO</span><strong>Mi geóloga favorita</strong><small>Siempre tan linda ♡</small></div><figure class="portrait-frame"><img src="assets/fotos/migeo.jpg" alt="Retrato de Migeo"><figcaption>Mi persona favorita</figcaption></figure><img class="float-sticker sticker-six" src="assets/stickers/stikers6.png" alt=""><img class="float-sticker sticker-seven" src="assets/stickers/stikers7.png" alt=""><img class="float-sticker sticker-eight" src="assets/stickers/stikers8.png" alt=""></section><section class="discovery" aria-label="Descubre recuerdos para abrir la carta">
     <div class="progress-heading"><div><span class="chapter-kicker">LA COLECCIÓN</span><h3>Un recuerdo a la vez</h3></div><span id="progressCount">0 / 10</span></div>
@@ -298,9 +310,20 @@ $('deleteMessage').onclick=async()=>{const id=$('editSelect').value;if(!id)retur
 $('addMessage').onclick=async()=>{try{const r=await adminFetch('/api/administracion/cumplidos',{method:'POST',body:JSON.stringify({mensaje:$('newMessage').value,foto:$('newPhoto').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar el recuerdo');$('newMessage').value='';$('newPhoto').value='';$('newPhotoFile').value='';await entradaAdmin();estadoAdmin('Nuevo recuerdo añadido ♥')}catch(e){estadoAdmin(e.message,true)}};
 $('saveLetter').onclick=async()=>{try{const r=await adminFetch('/api/administracion/carta',{method:'PUT',body:JSON.stringify({carta:$('adminLetter').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar la carta');estadoAdmin('Carta guardada ♥')}catch(e){estadoAdmin(e.message,true)}};
 $('saveGreetings').onclick=async()=>{try{const r=await adminFetch('/api/administracion/saludos',{method:'PUT',body:JSON.stringify({manana:$('greetingMorning').value,noche:$('greetingNight').value})});if(!r.ok)throw new Error((await r.json()).detail||'No pude guardar los saludos');estadoAdmin('Saludos guardados ♥')}catch(e){estadoAdmin(e.message,true)}};
-let audioContext, melodyTimer, melodyStep=0;
-function tocarNota(){if(!audioContext)return;const notas=[261.63,329.63,392,329.63,293.66,349.23,440,392];const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.type='sine';osc.frequency.value=notas[melodyStep++%notas.length];gain.gain.setValueAtTime(.0001,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.045,audioContext.currentTime+.08);gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.65);osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+.7)}
-$('musicPlay').onclick=async()=>{const button=$('musicPlay');if(melodyTimer){clearInterval(melodyTimer);melodyTimer=null;button.textContent='▶';button.setAttribute('aria-label','Reproducir música');button.setAttribute('aria-pressed','false');$('musicHint').textContent='Toca para escuchar una melodía';return}audioContext??=new(window.AudioContext||window.webkitAudioContext)();await audioContext.resume();tocarNota();melodyTimer=setInterval(tocarNota,700);button.textContent='Ⅱ';button.setAttribute('aria-label','Pausar música');button.setAttribute('aria-pressed','true');$('musicHint').textContent='Melodía romántica';};actualizarContador();actualizarProgreso(false);setInterval(actualizarContador,60000);
+const MELODIAS=[
+  {nombre:'Una melodía para ti',notas:[261.63,329.63,392,329.63,293.66,349.23,440,392]},
+  {nombre:'Paseo al atardecer',notas:[293.66,369.99,440,392,349.23,293.66,261.63,329.63]},
+  {nombre:'Un baile tranquilo',notas:[220,261.63,329.63,293.66,246.94,293.66,349.23,329.63]},
+  {nombre:'Un recuerdo bonito',notas:[392,440,392,329.63,349.23,392,293.66,329.63]}
+];
+let audioContext,masterGain,melodyTimer,melodyStep=0,melodyIndex=0;
+function tocarNota(){if(!audioContext||!masterGain)return;const notas=MELODIAS[melodyIndex].notas,osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.type='sine';osc.frequency.value=notas[melodyStep++%notas.length];gain.gain.setValueAtTime(.0001,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.045,audioContext.currentTime+.08);gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.65);osc.connect(gain);gain.connect(masterGain);osc.start();osc.stop(audioContext.currentTime+.7)}
+function seleccionarMelodia(indice){melodyIndex=(indice+MELODIAS.length)%MELODIAS.length;melodyStep=0;document.querySelector('.track-heading h2').textContent=MELODIAS[melodyIndex].nombre;document.querySelector('.track-heading p').textContent=`Melodía ${melodyIndex+1} de ${MELODIAS.length}`;if(melodyTimer){clearInterval(melodyTimer);tocarNota();melodyTimer=setInterval(tocarNota,700)}}
+$('musicPrev').onclick=()=>seleccionarMelodia(melodyIndex-1);
+$('musicNext').onclick=()=>seleccionarMelodia(melodyIndex+1);
+$('musicVolume').oninput=()=>{const valor=Number($('musicVolume').value);$('musicVolumeValue').value=`${Math.round(valor*100)}%`;if(masterGain&&audioContext)masterGain.gain.setTargetAtTime(valor,audioContext.currentTime,.04)};
+$('musicPlay').onclick=async()=>{const button=$('musicPlay');if(melodyTimer){clearInterval(melodyTimer);melodyTimer=null;button.textContent='▶';button.setAttribute('aria-label','Reproducir música');button.setAttribute('aria-pressed','false');$('musicHint').textContent='Melodía en pausa';return}const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(!AudioContextClass){$('musicHint').textContent='Tu navegador no admite estas melodías.';return}audioContext??=new AudioContextClass();if(!masterGain){masterGain=audioContext.createGain();masterGain.gain.value=Number($('musicVolume').value);masterGain.connect(audioContext.destination)}await audioContext.resume();tocarNota();melodyTimer=setInterval(tocarNota,700);button.textContent='Ⅱ';button.setAttribute('aria-label','Pausar música');button.setAttribute('aria-pressed','true');$('musicHint').textContent=`Reproduciendo: ${MELODIAS[melodyIndex].nombre}`};
+actualizarContador();actualizarProgreso(false);setInterval(actualizarContador,60000);
 </script>
 </body>
 </html>
