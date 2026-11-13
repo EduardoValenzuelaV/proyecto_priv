@@ -503,7 +503,7 @@ function renderMoods() {
 /* ============================================================
    RENDER GLOBAL
    ============================================================ */
-function renderContenido() { renderCartas(); renderSuenos(); renderMuseo(); renderMoods(); }
+function renderContenido() { renderCartas(); renderMuseo(); renderMoods(); }
 
 /* ============================================================
    CARTA FINAL
@@ -669,11 +669,6 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
   const dlg = $('letterDialog'); if (dlg) dlg.showModal();
 };
 
-const positiveBtn = $('positiveNote');
-if (positiveBtn) positiveBtn.onclick = mostrarRecordatorioPositivo;
-
-const jarBtn = $('jarButton');
-if (jarBtn) jarBtn.onclick = sacarNotaDelFrasco;
 
 const resetBtn = $('resetProgress');
 if (resetBtn) resetBtn.onclick = () => {
