@@ -6,7 +6,7 @@ Abre `Dallana.html` directamente o publica el proyecto con GitHub Pages:
 
 `https://eduardovalenzuelav.github.io/proyecto_priv/Dallana.html`
 
-La página carga sus estilos desde `Dallana.css` y su lógica desde `Dallana.js`; conserva los tres archivos juntos en la misma carpeta. Las cartas «Ábreme cuando…», el frasco de notas, «Hoy necesito…» y los recordatorios positivos funcionan con el contenido local aunque la API no esté configurada. La carta final se puede abrir cuando quieras. Las actividades marcadas se guardan en el navegador de cada visitante.
+La página carga sus estilos desde `Dallana.css` y su lógica desde `Dallana.js`; conserva los tres archivos juntos en la misma carpeta. «Cosas bonitas sobre ti» reúne afirmaciones y notas sorpresa del antiguo frasco. El mensaje de bienvenida cambia una vez al día. Las cartas «Ábreme cuando…», «Hoy necesito…», el museo de Dallana y las aventuras usan contenido local aunque la API no esté configurada. La carta final se puede abrir cuando quieras; las aventuras marcadas se guardan en el navegador de cada visitante.
 
 Para habilitar la API, asigna la URL HTTPS del servicio a `URL_BACKEND` en `Dallana.js` (sin una ruta final; por ejemplo `https://nombre-del-servicio.onrender.com`). Actualmente está vacía a propósito, así que no hay un backend remoto configurado.
 
@@ -44,7 +44,7 @@ Crea un Web Service conectado al repositorio con:
 
 Después configura en `Dallana.js` la URL HTTPS asignada al servicio. Sin disco persistente, el proveedor puede reiniciar y perder los datos y fotos guardados.
 
-El panel protegido permite administrar recuerdos, carta final, saludos y colecciones de autoestima, cartas «Ábreme cuando», frasco, museo y aventuras. El contenido del museo se conserva como material para los recordatorios positivos unificados, no como una sección pública separada. Las fotos PNG, JPG, WebP y GIF pueden pesar hasta 8 MB; el servidor contrasta el tipo declarado con la firma del archivo.
+El panel protegido permite administrar recuerdos, carta final, saludos y colecciones de autoestima, cartas «Ábreme cuando», notas sorpresa, museo y aventuras. El museo muestra detalles de Dallana, separados de las afirmaciones y notas sorpresa. Las fotos PNG, JPG, WebP y GIF pueden pesar hasta 8 MB; el servidor contrasta el tipo declarado con la firma del archivo.
 
 Cada cambio de datos conserva la versión anterior en `DALLANA_DATA_FILE.bak`. Si el JSON principal queda ilegible, la API se detiene con un error para evitar reemplazarlo con valores iniciales. Revisa el archivo `.bak` y restáuralo como `DALLANA_DATA_FILE` antes de volver a iniciar el servicio.
 

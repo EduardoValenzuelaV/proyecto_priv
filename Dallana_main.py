@@ -78,7 +78,12 @@ CONTENIDO_INICIAL = {
         {"titulo":"Ábreme cuando simplemente quieras sonreír","mensaje":"Ojalá encuentres una canción que te guste, algo rico para comer y un ratito sin apuro. No necesitas una razón grande para regalarte un momento bonito."}
     ],
     "frasco": ["No tienes que ganarte el descanso.","Tu voz y tus ideas merecen espacio.","Un paso pequeño también es avanzar.","Puedes sentir mucho y seguir siendo capaz.","Hoy mereces tratarte con cariño.","Tu valor no depende de cómo salió el día.","Está bien pedir apoyo cuando lo necesitas.","Ojalá notes una cosa bonita de ti hoy."],
-    "museo": [{"titulo":titulo,"descripcion":"","mensaje":"","foto":""} for titulo in ["Su sonrisa","Su forma de ser","Sus pequeños detalles","Sus talentos","Sus sueños","Las cosas que le gustan","Sus logros","Eso especial que quizá ella no nota"]],
+    "museo": [
+        {"titulo":"Tu vocación","descripcion":"Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.","mensaje":"Mi geóloga favorita.","foto":""},
+        {"titulo":"Tu sonrisa","descripcion":"Me encanta tu sonrisa; puede hacer más amable hasta un día común.","mensaje":"Una de mis cosas favoritas de ti.","foto":""},
+        {"titulo":"Tus gustos","descripcion":"Sushi, un helado en Sweet Cream y esos momentos simples que disfrutamos juntos.","mensaje":"Me gusta aprender qué cosas te hacen feliz.","foto":""},
+        {"titulo":"Nuestros paseos","descripcion":"Caminar contigo por Paicaví siempre es un buen plan.","mensaje":"A tu lado, cualquier camino se vuelve mi favorito.","foto":""},
+    ],
     "suenos": ["Conocer un lugar nuevo","Ver una película juntos","Salir a caminar sin apuro","Compartir una comida rica","Tomarnos fotografías","Vivir una pequeña aventura"],
 }
 CONTENIDO_INICIAL["suenos"] = [{"id": f"sueno-{i+1}", "titulo": titulo, "descripcion": "", "hecho": False} for i, titulo in enumerate(CONTENIDO_INICIAL["suenos"])]
