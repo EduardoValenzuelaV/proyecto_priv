@@ -107,6 +107,52 @@ button:focus-visible,[role="button"]:focus-visible,a:focus-visible,input:focus-v
 .unlocked.show{display:inline-flex}
 
 /* ============ GIFT SECTIONS ============ */
+
+/* ---------- Desktop (≥600px) ---------- */
+@media (min-width: 600px) {
+  /* Main container stays centered with max‑width */
+  main {
+    width: min(100%, 840px);
+    padding: 0 24px;
+  }
+  /* Cover uses two‑column layout */
+  .cover-content {
+    grid-template-columns: 1.1fr .9fr;
+  }
+  /* Music player keeps its max width */
+  .music-player { width: 100%; max-width: 380px; }
+  /* Portrait and memory sections keep side‑by‑side layout */
+  .portrait-memory, .memory-feature, .gift-section {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ---------- Mobile (≤599px) ---------- */
+@media (max-width: 599px) {
+  /* Main takes full width with small padding */
+  main {
+    width: 100%;
+    padding: 0 12px;
+  }
+  /* Stack cover content vertically */
+  .cover-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .cover-top, .cover-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cover-copy { text-align: center; }
+  /* Music player expands to full width */
+  .music-player { width: 100%; }
+  /* Portrait and memory sections become column layout */
+  .portrait-memory, .memory-feature, .gift-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .portrait-frame, .portrait-note { margin: 0 auto; }
+  .gift-head { max-width: 100%; }
+}
+
 .gift-section{position:relative;margin:24px 0;padding:clamp(20px,4vw,32px);overflow:hidden;border:1px solid #ead8d4;border-radius:8px 8px 24px 8px;background:linear-gradient(145deg,#fffaf5,#f8eef0 70%,#eff3f8);box-shadow:0 12px 30px #35435a0b}
 .gift-section:nth-of-type(even){background:linear-gradient(145deg,#f5f4f8,#fffaf4)}
 .gift-head{max-width:600px;margin-bottom:18px}
