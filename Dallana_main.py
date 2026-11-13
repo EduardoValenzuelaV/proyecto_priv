@@ -2,6 +2,7 @@ import json
 import os
 import random
 import secrets
+import shutil
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -84,9 +85,14 @@ CONTENIDO_INICIAL["suenos"] = [{"id": f"sueno-{i+1}", "titulo": titulo, "descrip
 
 
 def leer_datos():
-    try:
-        datos = json.loads(DATOS.read_text(encoding="utf-8")) if DATOS.exists() else {}
-    except (OSError, json.JSONDecodeError):
+    if DATOS.exists():
+        try:
+            datos = json.loads(DATOS.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            respaldo = DATOS.with_suffix(DATOS.suffix + ".bak")
+            detalle = f" Revisa el respaldo {respaldo}." if respaldo.exists() else ""
+            raise RuntimeError(f"No se pudo leer {DATOS}; se conservó el archivo para recuperación.{detalle}") from error
+    else:
         datos = {}
     cumplidos = datos.get("cumplidos") or [dict(item, id=str(i)) for i, item in enumerate(INICIALES)]
     for i, item in enumerate(cumplidos):
@@ -106,7 +112,12 @@ def leer_datos():
 def guardar_datos(datos):
     DATOS.parent.mkdir(parents=True, exist_ok=True)
     temporal = DATOS.with_suffix(DATOS.suffix + ".tmp")
+    respaldo = DATOS.with_suffix(DATOS.suffix + ".bak")
+    respaldo_temporal = DATOS.with_suffix(DATOS.suffix + ".bak.tmp")
     temporal.write_text(json.dumps(datos, ensure_ascii=False, indent=2), encoding="utf-8")
+    if DATOS.exists():
+        shutil.copy2(DATOS, respaldo_temporal)
+        respaldo_temporal.replace(respaldo)
     temporal.replace(DATOS)
 
 
@@ -116,6 +127,17 @@ def exigir_admin(token: Optional[str]):
         raise HTTPException(503, "Configura DALLANA_ADMIN_TOKEN en el servidor.")
     if not token or not secrets.compare_digest(token, esperado):
         raise HTTPException(401, "Clave incorrecta.")
+
+
+def firma_imagen_valida(tipo: str, contenido: bytes) -> bool:
+    firmas = {
+        "image/png": lambda data: data.startswith(b"\x89PNG\r\n\x1a\n"),
+        "image/jpeg": lambda data: data.startswith(b"\xff\xd8\xff"),
+        "image/webp": lambda data: len(data) >= 12 and data.startswith(b"RIFF") and data[8:12] == b"WEBP",
+        "image/gif": lambda data: data.startswith((b"GIF87a", b"GIF89a")),
+    }
+    validar = firmas.get(tipo)
+    return bool(contenido and validar and validar(contenido))
 
 
 def encontrar(datos, mensaje_id):
@@ -242,10 +264,12 @@ async def subir_foto(foto: UploadFile = File(...), x_admin_token: Optional[str] 
     if foto.content_type not in extensiones:
         raise HTTPException(415, "El archivo debe ser una imagen.")
     extension = extensiones[foto.content_type]
-    nombre = f"{uuid.uuid4().hex}{extension}"
     contenido = await foto.read(8 * 1024 * 1024 + 1)
     if len(contenido) > 8 * 1024 * 1024:
         raise HTTPException(413, "La imagen debe pesar menos de 8 MB.")
+    if not firma_imagen_valida(foto.content_type, contenido):
+        raise HTTPException(415, "El archivo no coincide con el formato de imagen declarado.")
+    nombre = f"{uuid.uuid4().hex}{extension}"
     (FOTOS / nombre).write_bytes(contenido)
     return {"foto": f"/media/{nombre}"}
 
