@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dallana-v1';
+const CACHE_NAME = 'dallana-v2.1';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
