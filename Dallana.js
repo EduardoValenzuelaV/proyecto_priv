@@ -490,16 +490,13 @@ async function operarAlbum(mode, action) {
 async function renderAlbum() {
   const host = $('photoGrid');
   if (!host) return;
+  const featured = [...host.querySelectorAll('.photo-featured')];
   try {
     const photos = await operarAlbum('readonly', store => store.getAll());
     albumUrls.forEach(URL.revokeObjectURL);
     albumUrls.clear();
-    host.replaceChildren();
+    host.replaceChildren(...featured);
     if (!photos.length) {
-      const empty = document.createElement('p');
-      empty.className = 'photo-empty';
-      empty.textContent = 'Las fotos que añadas aparecerán aquí.';
-      host.append(empty);
       return;
     }
     photos.sort((a, b) => a.created - b.created).forEach(photo => {
@@ -1054,7 +1051,6 @@ actualizarContador();
 actualizarProgreso(false);
 actualizarBotonFavoritos();
 renderContenido();
-renderAlbum();
 setInterval(actualizarContador, 60000);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
