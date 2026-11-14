@@ -4,3 +4,9 @@ __pycache__/
 cumplidos.json
 cumplidos.json.bak
 fotos/
+!assets/fotos/
+assets/fotos/*
+!assets/fotos/Dallana1.jpg
+!assets/fotos/Dallana2.jpg
+!assets/fotos/Dallana3.jpg
+!assets/fotos/Dallana4.jpg
