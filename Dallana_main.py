@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import random
@@ -134,7 +135,7 @@ def leer_datos() -> dict:
     if DATOS.exists():
         mtime = DATOS.stat().st_mtime
         if _cache_data is not None and _cache_mtime == mtime:
-            return json.loads(json.dumps(_cache_data))
+            return copy.deepcopy(_cache_data)
         try:
             _cache_data = json.loads(DATOS.read_text(encoding="utf-8"))
             _cache_mtime = mtime
@@ -142,7 +143,7 @@ def leer_datos() -> dict:
             respaldo = DATOS.with_suffix(DATOS.suffix + ".bak")
             detalle = f" Revisa el respaldo {respaldo}." if respaldo.exists() else ""
             raise RuntimeError(f"No se pudo leer {DATOS}; se conservó el archivo para recuperación.{detalle}") from error
-        datos = json.loads(json.dumps(_cache_data))
+        datos = copy.deepcopy(_cache_data)
     else:
         datos = {}
 
@@ -155,9 +156,9 @@ def leer_datos() -> dict:
     datos.setdefault("saludos", dict(SALUDOS_INICIALES))
     for clave, valor in SALUDOS_INICIALES.items():
         datos["saludos"].setdefault(clave, valor)
-    datos.setdefault("contenido", json.loads(json.dumps(CONTENIDO_INICIAL, ensure_ascii=False)))
+    datos.setdefault("contenido", copy.deepcopy(CONTENIDO_INICIAL))
     for clave, valor in CONTENIDO_INICIAL.items():
-        datos["contenido"].setdefault(clave, json.loads(json.dumps(valor, ensure_ascii=False)))
+        datos["contenido"].setdefault(clave, copy.deepcopy(valor))
     return datos
 
 
@@ -172,7 +173,7 @@ def guardar_datos(datos: dict) -> None:
         shutil.copy2(DATOS, respaldo_temporal)
         respaldo_temporal.replace(respaldo)
     temporal.replace(DATOS)
-    _cache_data = json.loads(json.dumps(datos))
+    _cache_data = copy.deepcopy(datos)
     _cache_mtime = DATOS.stat().st_mtime
 
 
@@ -277,6 +278,11 @@ def mensaje_del_momento():
 @app.get("/api/carta")
 def obtener_carta():
     return {"carta": leer_datos()["carta"]}
+
+
+@app.get("/api/saludos")
+def obtener_saludos():
+    return leer_datos()["saludos"]
 
 
 @app.get("/api/contenido")
