@@ -1,46 +1,9 @@
 /* ============================================================
    CONFIGURACIÓN
    ============================================================ */
-const URL_BACKEND = '';
+const URL_BACKEND = 'https://tu-api-en-render.onrender.com';
 const FECHA_INICIO = '2026-10-17';
 const MENSAJES_PARA_CARTA = 10;
-
-/* Versión corta anterior de la carta (conservada como referencia local).
-const CARTA_LOCAL_CORTA = `Para mi Dallana 💙
-
-Nuestro primer mes
-
-Un mes. Dicho así parece poco, pero cuando miro hacia atrás siento que han pasado muchas cosas, y quería dejarlas por escrito para que algún día puedas volver a leer esto y acordarte de cómo empezó todo.
-
-Te escribo porque desde que te conozco no paro de encontrar cosas que me gustan de ti, y quería que vieras lo que yo veo cuando te miro.
-
-Tu sonrisa me desarma, eso ya lo sabes. Pero lo que más me tiene así es tu forma de ser: cómo defiendes lo que piensas, lo tierna que puedes ser y, al rato, lo payasa. Me encanta escucharte hablar. Cada vez que conversamos me quedo con ganas de saber más de ti, y creo que eso es lo que más me gusta: que no me canso de conocerte.
-
-Me gustan hasta las cosas más raras. Que te gusten las Nik de chirimoya alegre. Que comas por colores y lo defiendas con tanta lógica que casi me convences (casi). Que cantes tan bonito, sobre todo cuando cantas [canción]. Que puedas estar hablándome con toda la pasión del mundo sobre [tema que le apasiona] y de repente salirme con una tontera que me hace reír. Seguramente para ti son detalles, pero para mí son las cosas que hacen que me encante estar contigo.
-
-El 31 de octubre lo tengo guardado como uno de mis días favoritos. Nos reímos muchísimo, comimos [qué comieron] y terminamos viendo las películas de los Minions y esa parodia de terror jsjsj. No hicimos nada del otro mundo, y aun así fue una de las mejores noches que he tenido. Ahí me di cuenta de que lo que más me gusta de cualquier plan es que estés tú.
-
-Y hay una frase tuya que no se me olvida: «Tú eres mi Arauco y yo soy tu Talca». No la voy a explicar, porque es nuestra y así está bien. Solo te digo que cada vez que me acuerdo, sonrío.
-
-Gracias por preocuparte de cómo amanecí, de si llegué bien o de si comí. Gracias por alegrarte cuando algo me sale bien. Cuando me dijiste que estabas demasiado orgullosa de mí, no te imaginas lo que significó leer eso. Y yo también estoy muy orgulloso de ti, de cómo te esfuerzas y de cómo cuidas a la gente que quieres.
-
-Conmigo siempre vas a tener a alguien que te escuche. En los días buenos, obvio, pero también en los malos, en esos en que ni tú misma sabes bien qué te pasa y lo único que necesitas es un abrazo largo. No tienes que estar siempre bien conmigo ni fingir que lo estás. Yo quiero estar contigo en todas, no solo en las fáciles.
-
-Ojalá pudieras mirarte como yo te miro. No solo por lo bonita que eres o por lo bien que te queda tu forma de vestir, sino por cómo te brillan los ojos cuando algo te emociona. No tienes que ser perfecta ni demostrarme nada. Me gustas tal como eres, y no quiero que cambies eso por nada.
-
-No te voy a prometer que todo va a ser perfecto, pero sí que siempre voy a escucharte, respetarte y estar aquí para ti. Y que voy a seguir haciendo lo posible por sacarte esa risa, porque es de mis cosas favoritas.
-
-Todavía nos queda tanto por vivir juntos, tantas conversaciones, tantas risas y un montón de momentos que ni siquiera imaginamos. Una vez me dijiste que íbamos a tener un futuro muy bonito juntos. Lo dijiste tan segura que me lo creí, y hasta ahora no me has dado ninguna razón para dudarlo.
-
-Gracias por este primer mes, por todo lo que nos hemos reído y por dejarme conocerte. Es solo el comienzo, y ya es de las mejores cosas que me han pasado.
-
-Si tuviera que elegir de nuevo con quién empezar esto, no lo pensaría ni un segundo: te elegiría a ti otra vez.
-
-Feliz primer mes, mi Dallana. Estoy enamorado de ti, y cada día un poquito más.
-
-Te quiero muchísimo, mi niña bonita 💙`;
-*/
-
 const CARTA_LOCAL = `Para mi Dallana 💙
 
 Nuestro primer mes juntos
@@ -88,44 +51,67 @@ const API_DISPONIBLE = (
    CONTENIDO LOCAL
    ============================================================ */
 const CONTENIDO_LOCAL = {
-  cartas: [
-    {titulo:'Ábreme cuando estés triste',mensaje:'No tienes que arreglarlo todo ahora. Si puedes, respira despacio y date permiso para sentir. Este momento difícil no cuenta toda tu historia; también hay días más amables esperándote.'},
-    {titulo:"Ábreme cuando no te sientas bonita",mensaje:"Mi amor, sé que hoy el espejo no está siendo amable contigo. Pero déjame decirte algo: el espejo solo ve un reflejo, y yo te veo a ti. Veo cómo se te arruga la nariz cuando te ríes de verdad, cómo se te iluminan los ojitos cuando algo te emociona, cómo te ves cuando estás concentrada y no te das cuenta de que te estoy mirando. Esas son las veces en que más bonita te encuentro, y ninguna foto las alcanza a capturar. No necesitas maquillaje, ni la ropa perfecta, ni un buen día para ser hermosa. Ya lo eres, incluso hoy. Sobre todo hoy."},
-    {titulo:'Ábreme cuando dudes de ti misma',mensaje:'No necesitas tener todas las respuestas para seguir siendo capaz. Puedes aprender, cambiar de idea y avanzar a tu ritmo.'},
-    {titulo:'Ábreme cuando tengas un mal día',mensaje:'Un día pesado no convierte tu vida en una vida pesada. Haz lo que puedas, deja lo demás para después y recuerda que descansar también cuenta como cuidarte.'},
-    {titulo:'Ábreme cuando sientas que no puedes más',mensaje:'No tienes que resolver todo de una vez. Busca un paso pequeño, una pausa o a alguien de confianza con quien compartir el peso.'},
-    {titulo:'Ábreme cuando estés orgullosa de ti',mensaje:'Detente un momento y reconoce lo que hiciste. No hace falta que sea algo enorme para que importe. Tu esfuerzo merece ser celebrado.'},
-    {titulo:"Ábreme cuando necesites recordar cuánto vales",mensaje:"Quiero que leas esto despacito. Vales muchísimo, y no lo digo por decir. No vales por tus notas, ni por lo que logras, ni por lo que piensen los demás. Vales porque eres tú: porque te preocupas de si los que quieres comieron o llegaron bien, porque defiendes lo que crees aunque cueste, porque tienes un corazón enorme que a veces ni tú misma ves. Si alguien te hizo sentir menos, se equivocó. Si fuiste tú misma, te pido que te trates con la misma ternura con la que tratas a los demás. Tú mereces todo lo bonito que le das al mundo, y yo voy a estar aquí para recordártelo cada vez que se te olvide."},
-    {titulo:"Ábreme cuando simplemente quieras sonreír",mensaje:"Ok, cierra los ojos un segundo y acuérdate: tú, súper seria, explicándome con toda la lógica del mundo por qué hay que comer por colores, y yo asintiendo como si fuera lo más razonable que he escuchado. Tú con tu Nik de chirimoya alegre como si fuera un tesoro nacional. Nosotros la noche del 31, muertos de la risa con esa parodia de terror. ¿Ya sonreíste? Si no, aquí va otra: en este mismo momento, en algún lugar, hay un tonto enamorado de ti pensando en lo afortunado que es. Ese soy yo. Tú eres mi Talca y yo soy tu Arauco, para siempre. Te quiero, payasa linda. 💙"}
-  ],
-  museo: [
-    {titulo:'Tu vocación',descripcion:'Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.',mensaje:'Mi geóloga favorita.',foto:''},
-    {titulo:'Tu sonrisa',descripcion:'Tu sonrisa tiene el poder de arreglarme el día, aunque venga malo.',mensaje:'Mi lugar favorito del mundo.',foto:''},
-    {titulo:'Tus gustos',descripcion:'Sushi, un helado en Sweet Cream y esos momentos simples que disfrutamos juntos.',mensaje:'Me gusta aprender qué cosas te hacen feliz.',foto:''},
-    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Paicaví siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',foto:''},
-    {titulo:"Tu voz",descripcion:"Me encanta escucharte cantar; podría quedarme horas así.",mensaje:"Mi cantante favorita.",foto:''},
-    {titulo:"Tu manera de cuidar",descripcion:"Siempre te preocupas de si llegué bien, de si comí, de cómo amanecí.",mensaje:"Me haces sentir muy querido.",foto:''},
-    {titulo:"Tu carácter",descripcion:"Defiendes lo que piensas con seguridad, y eso me encanta de ti.",mensaje:"Nunca dejes de hacerlo.",foto:''},
-    {titulo:"Tu lado divertido",descripcion:"Pasas de hablar súper en serio a decir una tontera en segundos.",mensaje:"Contigo me río de verdad.",foto:''},
-    {titulo:"Tu estilo",descripcion:"Me encanta tu forma de vestir; tiene algo muy tuyo.",mensaje:"Siempre te ves linda.",foto:''},
-    {titulo:"Tus ojitos hermosos",descripcion:"Podría quedarme mirándolos por horas; dicen todo lo que sientes sin que hables.",mensaje:"Me pierdo en ellos cada vez.",foto:''},
-    {titulo:"La mejor cocinera del mundo",descripcion:"Todo lo que cocinas sabe a cariño, y eso no se aprende en ninguna receta.",mensaje:"Mi chef favorita, sin discusión.",foto:''}
-  ],
   autoestima: [
-    {texto:'Eres valiente, incluso en los días difíciles.'},
-    {texto:'Tu bondad marca la diferencia en quienes te rodean.'},
-    {texto:'Mereces todo el cariño del mundo.'}
+    {categoria:'Su personalidad',icono:'✿',mensaje:'Tu forma de ser tiene algo que te hace única.'},
+    {categoria:'Su personalidad',icono:'♡',mensaje:'No necesitas cambiar tu esencia para ser suficiente.'},
+    {categoria:'Su personalidad',icono:'❀',mensaje:'Tu manera de ver el mundo es algo muy bonito.'},
+    {categoria:'Su personalidad',icono:'☼',mensaje:'Tienes una forma especial de hacer sentir bien a quienes te rodean.'},
+    {categoria:'Su belleza',icono:'✧',mensaje:'Ojalá pudieras verte con los ojos de quienes te admiran.'},
+    {categoria:'Su belleza',icono:'❀',mensaje:'No necesitas cumplir ningún estándar para ser hermosa.'},
+    {categoria:'Su belleza',icono:'♡',mensaje:'Hay belleza en tu sonrisa, pero también en tu manera de ser.'},
+    {categoria:'Su belleza',icono:'✿',mensaje:'Eres mucho más que lo que ves frente al espejo.'},
+    {categoria:'Su inteligencia',icono:'✦',mensaje:'Tienes una mente que merece ser valorada.'},
+    {categoria:'Su inteligencia',icono:'☼',mensaje:'No saber algo todavía no significa que no seas capaz.'},
+    {categoria:'Su inteligencia',icono:'✧',mensaje:'Tu curiosidad y tus ideas también son parte de lo maravillosa que eres.'},
+    {categoria:'Su inteligencia',icono:'❀',mensaje:'Nunca minimices lo que puedes lograr.'},
+    {categoria:'Su valentía',icono:'♡',mensaje:'Has superado días que quizá nadie conoce.'},
+    {categoria:'Su valentía',icono:'✿',mensaje:'Seguir intentándolo también es una forma de valentía.'},
+    {categoria:'Su valentía',icono:'☼',mensaje:'Está bien descansar, no tienes que poder con todo.'},
+    {categoria:'Su valentía',icono:'✦',mensaje:'No eres menos fuerte por tener días difíciles.'},
+    {categoria:'Su valor personal',icono:'❀',mensaje:'No tienes que demostrar nada para merecer cariño.'},
+    {categoria:'Su valor personal',icono:'♡',mensaje:'Tu valor no depende de la opinión de otras personas.'},
+    {categoria:'Su valor personal',icono:'✧',mensaje:'Mereces cosas bonitas, incluso en tus días más complicados.'},
+    {categoria:'Su valor personal',icono:'✿',mensaje:'Eres suficiente, incluso cuando tú misma lo dudas.'}
   ],
-  frasco: [
-    'Un abrazo cuando lo necesites.',
-    'Una sonrisa para alegrar tu día.',
-    'Recuerda que eres importante.'
+  cartas: [
+    {titulo:'Ábreme cuando estés triste',mensaje:'si estás leyendo esto es porque algo te duele, y me gustaría estar ahí ahora mismo para abrazarte fuerte y no soltarte. No voy a decirte que no estés triste, porque tienes derecho a sentirte así. Solo quiero que sepas que no estás sola, ni ahora ni nunca. No tienes que explicarme nada ni tener las palabras correctas. Llora si lo necesitas, y después escríbeme, aunque sea solo un “estoy mal”. Yo voy a entender. Y cuando esto pase, porque va a pasar, voy a seguir aquí, igual que hoy.'},
+    {titulo:'Ábreme cuando no te sientas bonita',mensaje:'No hay una sola forma correcta de ser bonita. Tu cuerpo no tiene que cumplir ninguna medida para merecer respeto y ternura.'},
+    {titulo:'Ábreme cuando dudes de ti misma',mensaje:'Ya sé, esa vocecita que te dice que no eres suficiente. Yo también la conozco. Pero déjame contarte lo que yo veo: una mujer que estudia algo difícil porque le apasiona, que defiende lo que piensa aunque cueste, que no se rinde fácil. Todo lo que has logrado hasta ahora lo hiciste tú, con tu esfuerzo y tu cabeza. Esa voz miente. Y si hoy no te crees capaz, no pasa nada: yo creo en ti por los dos hasta que vuelvas a verlo.'},
+    {titulo:'Ábreme cuando tengas un mal día',mensaje:'No tienes que arreglarlo todo hoy. Date permiso de que sea un mal día y nada más. Come algo rico, ponte cómoda, y si quieres contarme todo con lujo de detalles, aquí estoy para escucharte y enojarme contigo con lo que sea que te haya pasado. Mañana vas a despertar y esto se va a ver más chiquito. Mientras tanto, te mando el abrazo más largo que puedas imaginar.'},
+    {titulo:'Ábreme cuando sientas que no puedes más',mensaje:'Para. Respira conmigo un segundo. No tienes que poder con todo, y no tienes que hacerlo sola. Sé que eres fuerte, pero ser fuerte no significa aguantarlo todo calladita. A veces ser fuerte es decir “necesito ayuda”. Así que hoy te pido algo: descansa, apóyate en mí, en tu familia, en la gente que te quiere. Llámame, a la hora que sea, de verdad. Nada de lo que tengas pendiente vale más que tú. Lo que importa ahora es que estés bien, y yo quiero ayudarte a llegar ahí.'},
+    {titulo:'Ábreme cuando estés orgullosa de ti',mensaje:'Mírate Te lo dije, o no? Sabía que ibas a poder. Quiero que te quedes un ratito con esta sensación y la disfrutes, porque te costó y te la ganaste. A veces pasas tan rápido a lo siguiente que no te das tiempo de celebrar, así que hoy celebra. Yo estoy feliz, orgulloso, emocionado, todo junto. Y una vez me dijiste que estabas demasiado orgullosa de mí; hoy me toca a mí decírtelo a ti: estoy demasiado orgulloso de ti, mi Amor.'},
+    {titulo:'Ábreme cuando necesites recordar cuánto vales',mensaje:'Tu valor no se gana con logros, aprobación ni días perfectos. Estás aquí, siendo tú, y eso basta para merecer cuidado, respeto y cosas buenas.'},
+    {titulo:'Ábreme cuando simplemente quieras sonreír',mensaje:'Ojalá encuentres una canción que te guste, algo rico para comer y un ratito sin apuro. No necesitas una razón grande para regalarte un momento bonito.'}
   ],
-  suenos: [
-    {id:'sueno-1',titulo:'Conocer un lugar nuevo',descripcion:'',hecho:false},
-    {id:'sueno-2',titulo:'Ver una película juntos',descripcion:'',hecho:false},
-    {id:'sueno-3',titulo:'Salir a caminar sin apuro',descripcion:'',hecho:false}
-  ]
+  
+  museo: [
+    {titulo:'Tu voz',descripcion:'TMe encanta escucharte cantar; podría quedarme horas así.Notita: Mi cantante favorita.',foto:''},
+    {titulo:'Tu sonrisa',descripcion:'Me encanta tu sonrisa; puede hacer más amable hasta un día común.',mensaje:'Una de mis cosas favoritas de ti.',foto:''},
+    {titulo:'Tus gustos',descripcion:'Sushi, un helado en Sweet Cream y esos momentos simples que disfrutamos juntos.',mensaje:'Me gusta aprender qué cosas te hacen feliz.',foto:''},
+    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Paicaví siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',foto:''}
+  ],
+  suenos: ['Conocer un lugar nuevo','Ver una película juntos','Salir a caminar sin apuro','Compartir una comida rica','Tomarnos fotografías','Vivir una pequeña aventura']
+    .map((titulo,i)=>({id:`sueno-${i+1}`,titulo,descripcion:'',hecho:false}))
+};
+
+const moodCopy = {
+  'Necesito cariño':'Ojalá puedas recibir el cariño que necesitas, también de ti misma. Si te ayuda, busca a alguien de confianza y dile que te vendría bien compañía.',
+  'Estoy triste':'No tienes que justificar tu tristeza. Puedes ir despacio, atender lo básico y dejar que alguien te acompañe si eso te hace bien.',
+  'No me siento bonita':'No hay nada que tengas que corregir para merecer ternura. Tu cuerpo merece respeto hoy, tal como es y tal como está.',
+  'Dudo de mí misma':'La duda puede aparecer incluso cuando eres capaz. Elige un paso pequeño; no tienes que sentir seguridad completa para intentarlo.',
+  'Estoy orgullosa de mí':'Qué lindo que puedas reconocerlo. Guarda este momento: tu esfuerzo y lo que lograste también te pertenecen.',
+  'Solo quiero sentirme querida':'Mereces sentirte querida y acompañada. Puedes pedir un abrazo, escribirle a alguien cercano o darte un momento amable.',
+  'Necesito motivación':'No tienes que resolverlo entero. Elige el siguiente paso más pequeño y date crédito por empezarlo.'
+};
+const moodIcons = {'Necesito cariño':'♡','Estoy triste':'☁','No me siento bonita':'❀','Dudo de mí misma':'✧','Estoy orgullosa de mí':'✦','Solo quiero sentirme querida':'♡','Necesito motivación':'☀'};
+const moodSteps = {
+  'Necesito cariño':'Si te nace, escribe a alguien de confianza: «¿Me acompañas un ratito?»',
+  'Estoy triste':'Toma un poco de agua y elige solo una cosa amable para hacer por ti ahora.',
+  'No me siento bonita':'Aléjate un momento del espejo y ponte algo cómodo que te haga sentir cuidada.',
+  'Dudo de mí misma':'Piensa en algo difícil que ya aprendiste y da solo el siguiente paso pequeño.',
+  'Estoy orgullosa de mí':'Anota qué hiciste para llegar aquí; puedes celebrar el esfuerzo, además del resultado.',
+  'Solo quiero sentirme querida':'Pide compañía de forma sencilla, aunque sea compartir un mensaje o un rato en silencio.',
+  'Necesito motivación':'Pon un temporizador de cinco minutos y empieza por la parte más fácil.'
 };
 
 const RESPALDO = [
@@ -158,35 +144,27 @@ const RESPALDO = [
   'Te quiero un poquito más con cada recuerdo que sumamos.',
   'Gracias por hacerme feliz de tantas formas pequeñas.',
   'Si pudiera repetir un día, elegiría uno de los que pasé contigo.',
-  'Este es solo el comienzo de muchas cosas bonitas juntos.',
-  // Más mensajes, de más tiernos a más profundos
-  "Si estás leyendo esto, ya te sacaste la lotería: tienes a alguien que te piensa todo el día.",
-  "Mi geóloga favorita, eres la piedra más preciosa que he encontrado.",
-  "Tu comida es buena, pero lo que más me gusta es que la cocines tú.",
-  "Ojalá supieras lo bonita que te ves cuando no sabes que te estoy mirando.",
-  "Tus ojitos son mi paisaje favorito, y eso que he caminado mucho por Paicaví.",
-  "Me gusta cómo me miras, como si yo fuera algo importante.",
-  "No necesito un plan perfecto, solo necesito que estés tú.",
-  "Gracias por preocuparte por mí incluso en los días en que yo no lo hago.",
-  "Me gusta pensar que en algún lugar del futuro nos estamos riendo de esto mismo.",
-  "A veces me sorprende lo mucho que puede cambiar la vida en un mes. Contigo cambió toda.",
-  "No sé qué hice para tenerte, pero lo volvería a hacer mil veces.",
-  "Contigo aprendí que querer bonito sí existe.",
-  "Si alguna vez dudas de lo que siento, vuelve a este mensaje: te elijo, hoy y todos los días.",
-  "No viniste a completar mi vida, viniste a hacerla más bonita. Y lo lograste.",
-  "De todas las personas del mundo, la que más quiero ver feliz eres tú.",
-  "Eres de esas cosas que uno no busca, pero que cuando llegan, uno sabe que se quedan."
+  'Este es solo el comienzo de muchas cosas bonitas juntos.'
 ].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
 
-const PLAYLIST = [
-  {nombre:'Taylor Swift - Love Story', archivo:'Taylor Swift - Love Story.mp3'},
-  {nombre:'The Weeknd, Ariana Grande - Die For You (Remix Lyric Video)', archivo:'The Weeknd, Ariana Grande - Die For You (Remix Lyric Video).mp3'},
-  {nombre:'The Weeknd & Ariana Grande - Save Your Tears (Remix) (Official Video)', archivo:'The Weeknd & Ariana Grande - Save Your Tears (Remix) (Official Video).mp3'},
-  {nombre:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video)', archivo:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video).mp3'},
-  {nombre:'Billie Eilish - CHIHIRO (Official Music Video)', archivo:'Billie Eilish - CHIHIRO (Official Music Video).mp3'},
-  {nombre:'Nessa Barrett - die first (official music video)', archivo:'Nessa Barrett - die first (official music video).mp3'},
-  {nombre:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video)', archivo:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video).mp3'},
-  {nombre:'The Verve - Bitter Sweet Symphony', archivo:'The Verve - Bitter Sweet Symphony.mp3'}
+const MELODIAS = [
+  {nombre:'Una melodía para ti',notas:[261.63,329.63,392,329.63,293.66,349.23,440,392]},
+  {nombre:'Paseo al atardecer',notas:[293.66,369.99,440,392,349.23,293.66,261.63,329.63]},
+  {nombre:'Un baile tranquilo',notas:[220,261.63,329.63,293.66,246.94,293.66,349.23,329.63]},
+  {nombre:'Un recuerdo bonito',notas:[392,440,392,329.63,349.23,392,293.66,329.63]}
+];
+
+const FRASES_DE_ENTRADA = [
+  'Un recordatorio amable para hoy: no tienes que hacerlo todo de una vez.',
+  'Que hoy encuentres un momento para tratarte con la misma ternura que das.',
+  'Tu historia también merece pausas, cambios y comienzos nuevos.',
+  'No necesitas sentirte perfecta para merecer un día bonito.',
+  'Ojalá hoy puedas reconocer una cosa que te guste de ti.'
+];
+const FRASES_DE_CIERRE = [
+  'Gracias por regalarte este ratito. Ojalá te lleves contigo una palabra amable.',
+  'Antes de irte, recuerda: también mereces estar de tu propio lado.',
+  'Que lo bonito que encontraste aquí te acompañe un poquito más.'
 ];
 
 /* ============================================================
@@ -196,26 +174,21 @@ const $ = id => document.getElementById(id);
 const leerJSON = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; } catch { return fallback; } };
 const leerSet = key => { try { return new Set(JSON.parse(localStorage.getItem(key) || '[]').map(String)); } catch { return new Set(); } };
 const guardarSet = (key, set) => { try { localStorage.setItem(key, JSON.stringify([...set])); } catch {} };
-const guardarJSON = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
-// Los saludos de mañana/noche no son recuerdos: no cuentan para desbloquear la carta.
-const esSaludo = id => String(id).startsWith('saludo-');
+const escogerIndice = (total, anterior) => { if (total < 2) return 0; let n; do { n = Math.floor(Math.random() * total); } while (n === anterior); return n; };
 const vibrar = () => { if (navigator.vibrate) navigator.vibrate([30, 20, 42]); };
 
 /* ============================================================
    ESTADO
    ============================================================ */
 let contenido = CONTENIDO_LOCAL;
-// Copia completa del contenido del servidor (incluye colecciones que esta página
-// ya no muestra) para no borrarlas al guardar desde el panel.
-let contenidoServidor = null;
 let currentId = null;
-let currentMensaje = '';
+let affirmationIndex = -1;
+let lastJarIndex = -1;
 let token = '';
 let mensajes = [];
-let seen = new Set([...leerSet('dallanaSeen')].filter(id => !esSaludo(id)));
+let seen = leerSet('dallanaSeen');
 let favorites = leerSet('dallanaFavorites');
-// Texto de cada favorito, para poder mostrarlo aunque venga de la API.
-let favoriteTexts = leerJSON('dallanaFavoriteTexts', {});
+let cartaTimer = null;
 let toquesSecretos = 0;
 
 /* ============================================================
@@ -231,7 +204,7 @@ if (!HTMLDialogElement.prototype.showModal) {
    ============================================================ */
 const heartDrift = $('heartDrift');
 if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const heartColors = ['#e0303f', '#3d72c4', '#4f9a4a', '#ff5a5f', '#6fa0e8', '#7cc46a'];
+  const heartColors = ['#d71945', '#2878d0', '#269b68'];
   function lanzarCorazon() {
     const heart = document.createElement('span');
     heart.className = 'drift-heart';
@@ -242,13 +215,13 @@ if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     heart.style.setProperty('--heart-duration', `${7 + Math.random() * 5}s`);
     heart.style.setProperty('--heart-opacity', `${.42 + Math.random() * .28}`);
     heart.style.setProperty('--heart-drift', `${-24 + Math.random() * 48}px`);
-    if (heartDrift.childElementCount >= 8) heartDrift.firstElementChild.remove();
+    if (heartDrift.childElementCount >= 18) heartDrift.firstElementChild.remove();
     heartDrift.append(heart);
     heart.addEventListener('animationend', () => heart.remove(), { once: true });
     setTimeout(() => heart.remove(), 13000);
   }
-  for (let i = 0; i < 3; i++) setTimeout(lanzarCorazon, i * 900);
-  setInterval(lanzarCorazon, 2600);
+  for (let i = 0; i < 7; i++) setTimeout(lanzarCorazon, i * 650);
+  setInterval(lanzarCorazon, 850);
 }
 
 /* ============================================================
@@ -274,7 +247,7 @@ function lanzarCelebracion() {
   const container = $('celebrationContainer');
   if (!container) return;
   const simbolos = ['♥', '❀', '✿', '✧', '♡'];
-  const colores = ['#e0303f', '#ff5a5f', '#3d72c4', '#6fa0e8', '#4f9a4a', '#f2c14e'];
+  const colores = ['#d82148', '#e94560', '#f2789f', '#ff9494', '#f6b8b8'];
   for (let i = 0; i < 40; i++) {
     const el = document.createElement('span');
     el.className = 'celebration-petal';
@@ -326,7 +299,6 @@ function urlFoto(foto) {
 function mostrar(d, label = 'Un mensaje para ti') {
   if (!d) return;
   currentId = String(d.id);
-  currentMensaje = d.mensaje || '';
   const tag = $('tag'); if (tag) tag.textContent = label;
   const msg = $('message'); if (msg) msg.textContent = d.mensaje || '';
   const image = $('memory');
@@ -341,7 +313,7 @@ function mostrar(d, label = 'Un mensaje para ti') {
       image.src = url;
     }
   }
-  if (!esSaludo(currentId)) { seen.add(currentId); guardarSet('dallanaSeen', seen); }
+  seen.add(currentId); guardarSet('dallanaSeen', seen);
   const fav = $('favorite');
   if (fav) {
     fav.textContent = favorites.has(currentId) ? '♥' : '♡';
@@ -349,6 +321,7 @@ function mostrar(d, label = 'Un mensaje para ti') {
   }
   const paper = $('paper');
   if (paper) {
+    paper.classList.toggle('surprise', Boolean(d.sorpresa));
     paper.classList.add('new');
     setTimeout(() => paper.classList.remove('new'), 500);
   }
@@ -381,30 +354,59 @@ async function pedir(url, label = 'Un mensaje para ti') {
 }
 
 /* ============================================================
-   CARTAS "ÁBREME CUANDO..."
+   RECORDATORIO POSITIVO
    ============================================================ */
-// Como una carta escrita a mano: las primeras palabras de cada frase van resaltadas con marcador
-function escribirConResaltes(el, texto) {
-  const tonos = ['r', 'a', 'v', 'm'];
-  const frases = String(texto).match(/[^.!?]+[.!?]*\s*/g) || [String(texto)];
-  el.replaceChildren();
-  frases.forEach((f, i) => {
-    const m = f.match(/^(\s*)(\S+\s+\S+)([\s\S]*)$/);
-    if (!m) { el.append(f); return; }
-    const mk = document.createElement('mark');
-    mk.className = `resalte resalte--${tonos[i % tonos.length]}`;
-    mk.textContent = m[2];
-    el.append(m[1], mk, m[3]);
-  });
+function renderAffirmation(frase) {
+  const card = $('affirmationCard'); if (!card) return;
+  const icon = $('affirmationIcon'); if (icon) icon.textContent = frase.icono || '✿';
+  const text = $('affirmationText'); if (text) text.textContent = frase.mensaje || '';
+  const cat = $('affirmationCategory'); if (cat) cat.textContent = frase.categoria || '';
+  card.classList.remove('is-beauty', 'is-mind', 'is-brave', 'is-worth');
+  const c = (frase.categoria || '').toLowerCase();
+  if (c.includes('belleza')) card.classList.add('is-beauty');
+  else if (c.includes('inteligencia')) card.classList.add('is-mind');
+  else if (c.includes('valent')) card.classList.add('is-brave');
+  else if (c.includes('valor')) card.classList.add('is-worth');
 }
 
+function mostrarRecordatorioPositivo() {
+  const frases = [
+    ...(contenido.autoestima || []).map((item, i) => ({ id: `autoestima-${i}`, mensaje: item.mensaje || '', categoria: item.categoria || '', icono: item.icono || '✿', tipo: item.categoria || 'Cosas bonitas sobre ti' })),
+    ...(contenido.frasco || []).map((m, i) => ({ id: `frasco-${i}`, mensaje: m, categoria: 'Una sorpresa para ti', icono: '✨', tipo: 'Una sorpresa para ti', sorpresa: true }))
+  ].filter(f => f.mensaje);
+  if (!frases.length) return;
+  affirmationIndex = escogerIndice(frases.length, affirmationIndex);
+  const frase = frases[affirmationIndex];
+  renderAffirmation(frase);
+  mostrar({ ...frase, foto: '' }, frase.tipo);
+  const foot = $('foot');
+  if (foot) foot.textContent = frase.sorpresa ? 'Sacaste una notita sorpresa ♥' : 'Cosas bonitas sobre ti ♥';
+}
+
+/* ============================================================
+   FRASCO
+   ============================================================ */
+function sacarNotaDelFrasco() {
+  const frases = (contenido.frasco || []).filter(Boolean);
+  if (!frases.length) return;
+  lastJarIndex = escogerIndice(frases.length, lastJarIndex);
+  const note = $('jarNote'); if (!note) return;
+  const btn = $('jarButton');
+  if (btn) { btn.classList.add('is-drawing'); setTimeout(() => btn.classList.remove('is-drawing'), 850); }
+  note.textContent = frases[lastJarIndex];
+  note.classList.remove('new'); void note.offsetWidth; note.classList.add('new');
+}
+
+/* ============================================================
+   CARTAS "ÁBREME CUANDO..."
+   ============================================================ */
 function abrirCartaDeAnimo(carta) {
   const scene = $('letterScene');
   const dlg = $('openWhenDialog');
   if (!scene || !dlg) return;
   scene.classList.remove('is-opening', 'is-open');
   const t1 = $('openWhenNoteTitle'); if (t1) t1.textContent = carta.titulo || 'Una carta para ti';
-  const m = $('openWhenMessage'); if (m) escribirConResaltes(m, carta.mensaje || 'Aquí tienes unas palabras para este momento.');
+  const m = $('openWhenMessage'); if (m) m.textContent = carta.mensaje || 'Aquí tienes unas palabras para este momento.';
   const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
   dlg.showModal();
   requestAnimationFrame(() => scene.classList.add('is-opening'));
@@ -415,29 +417,48 @@ function abrirCartaDeAnimo(carta) {
 function renderCartas() {
   const host = $('letterCards'); if (!host) return;
   host.replaceChildren();
-  if (!(contenido.cartas || []).length) {
-    const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H12.2l-1.1 3.3c-.4 1.2-1.5 2-2.8 2h0c-1.3 0-2.4-.8-2.8-2L10.2 4H4c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2z"/><path d="M19 16V8a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v8"/><path d="M7 4h2"/><path d="M17 4h2"/><path d="M11 19h2"/><path d="M11 7h2"/></svg>';
-    empty.innerHTML += '<p>Aún no hay cartas escritas. Pronto llegarán unas palabras para ti.</p>';
-    host.append(empty);
-    return;
-  }
   (contenido.cartas || []).forEach((c, i) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'open-card';
-    const titulo = c.titulo || `Carta ${i + 1}`;
-    // Sobre: solapa, carta asomando y sello; "Ábreme cuando" va como etiqueta y el resto a mano
-    const m = titulo.match(/^(ábreme cuando)\s+(.+)$/i);
-    const deco = cls => { const s = document.createElement('span'); s.className = cls; s.setAttribute('aria-hidden', 'true'); return s; };
-    const sello = deco('oc-seal'); sello.textContent = '♥';
-    const etiqueta = deco('oc-label'); etiqueta.textContent = m ? m[1] : `Carta Nº ${i + 1}`;
-    const texto = document.createElement('span'); texto.className = 'oc-title'; texto.textContent = m ? m[2] : titulo;
-    b.append(deco('oc-letter'), deco('oc-flap'), sello, deco('oc-deco oc-deco--i'), deco('oc-deco oc-deco--d'), etiqueta, texto);
-    b.setAttribute('aria-label', titulo);
+    b.textContent = c.titulo || `Carta ${i + 1}`;
     b.setAttribute('aria-haspopup', 'dialog');
     b.onclick = () => abrirCartaDeAnimo(c);
     host.append(b);
   });
+}
+
+/* ============================================================
+   SUEÑOS
+   ============================================================ */
+function renderSuenos() {
+  const host = $('dreamGrid'); if (!host) return;
+  host.replaceChildren();
+  const done = leerSet('dallanaDreamsDone');
+  const dreams = contenido.suenos || [];
+  dreams.forEach((item, i) => {
+    const id = String(item.id || `sueno-${i}`);
+    const label = document.createElement('label');
+    label.className = 'dream-card' + (done.has(id) ? ' done' : '');
+    const input = document.createElement('input');
+    input.type = 'checkbox'; input.checked = done.has(id);
+    input.setAttribute('aria-label', `Marcar como realizada: ${item.titulo || 'actividad'}`);
+    input.onchange = () => {
+      const next = leerSet('dallanaDreamsDone');
+      input.checked ? next.add(id) : next.delete(id);
+      guardarSet('dallanaDreamsDone', next);
+      renderSuenos();
+    };
+    const text = document.createElement('span');
+    text.textContent = item.titulo || '';
+    label.append(input, text);
+    if (item.descripcion) { const d = document.createElement('small'); d.textContent = item.descripcion; label.append(d); }
+    host.append(label);
+  });
+  const prog = $('dreamProgress');
+  if (prog) {
+    const activos = dreams.filter((it, i) => done.has(String(it.id || `sueno-${i}`))).length;
+    prog.textContent = `${activos} de ${dreams.length} pequeñas aventuras marcadas como realizadas.`;
+  }
 }
 
 /* ============================================================
@@ -449,13 +470,6 @@ function renderMuseo() {
   host.replaceChildren();
   const items = (contenido.museo || []).filter(it => it && it.titulo && (it.descripcion || it.mensaje));
   section.hidden = items.length === 0;
-  if (!items.length) {
-    const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-    empty.innerHTML += '<p>El museo está vacío. Pronto se llenará de vitrinas sobre ti.</p>';
-    host.append(empty);
-    return;
-  }
   items.forEach((item, i) => {
     const card = document.createElement('article'); card.className = 'museum-card';
     const icon = document.createElement('span'); icon.className = 'museum-icon';
@@ -468,128 +482,136 @@ function renderMuseo() {
   });
 }
 
-function renderFrasco() {
-  const host = $('frascoNotes'); if (!host) return;
-  host.replaceChildren();
-  if (!(contenido.frasco || []).length) {
-    const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>';
-    empty.innerHTML += '<p>El frasco está vacío. Pronto aparecerán notas sorpresa aquí.</p>';
-    host.append(empty);
-    return;
-  }
-  (contenido.frasco || []).forEach((nota, i) => {
-    const el = document.createElement('div');
-    el.className = 'jar-note';
-    el.textContent = nota;
-    el.style.setProperty('--i', String(i));
-    host.append(el);
-  });
-}
-
-function renderSuenos() {
-  const host = $('suenosList'); if (!host) return;
-  host.replaceChildren();
-  const done = leerSet('dallanaDreamsDone');
-  if (!(contenido.suenos || []).length) {
-    const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l-1-8z"/><path d="M13 18H6"/><path d="M17 12H7"/></svg>';
-    empty.innerHTML += '<p>No hay aventuras registradas todavía. Pronto llenarás esta lista.</p>';
-    host.append(empty);
-    return;
-  }
-  (contenido.suenos || []).forEach((s, i) => {
-    const el = document.createElement('div');
-    el.className = 'sueno-item' + (done.has(s.id || String(i)) ? ' done' : '');
-    const t = document.createElement('h3'); t.textContent = s.titulo || `Sueño ${i + 1}`;
-    const m = document.createElement('p'); m.textContent = s.descripcion || '';
-    el.append(t, m);
-    el.onclick = () => {
-      const id = s.id || String(i);
-      if (done.has(id)) { done.delete(id); el.classList.remove('done'); }
-      else { done.add(id); el.classList.add('done'); }
-      guardarSet('dallanaDreamsDone', done);
-    };
-    host.append(el);
-  });
-}
-
-function renderAutoestima() {
-  const host = $('autoestimaList'); if (!host) return;
-  host.replaceChildren();
-  if (!(contenido.autoestima || []).length) {
-    const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="12" cy="8" r="7"/></svg>';
-    empty.innerHTML += '<p>Aquí aparecerán recordatorios bonitos sobre ti.</p>';
-    host.append(empty);
-    return;
-  }
-  (contenido.autoestima || []).forEach((item, i) => {
-    const el = document.createElement('div');
-    el.className = 'affirmation-card';
-    const texto = typeof item === 'string' ? item : item.texto || '';
-    el.textContent = texto;
-    host.append(el);
-  });
-}
-
 /* ============================================================
    RENDER GLOBAL
    ============================================================ */
-function renderContenido() { renderCartas(); renderMuseo(); renderFrasco(); renderSuenos(); renderAutoestima(); }
+function renderContenido() { renderCartas(); renderMuseo(); }
 
-// Reemplaza el contenido local por el que se editó en el panel (si la API responde).
-async function cargarContenido() {
-  if (!API_DISPONIBLE) return;
-  try {
-    const r = await fetch(`${URL_BACKEND}/api/contenido`);
-    if (!r.ok) return;
-    const d = await r.json();
-    const c = d.contenido || d;
-    const local = CONTENIDO_LOCAL;
-    contenido = {
-      autoestima: Array.isArray(c.autoestima) && c.autoestima.length ? c.autoestima : local.autoestima,
-      cartas: Array.isArray(c.cartas) && c.cartas.length ? c.cartas : local.cartas,
-      frasco: Array.isArray(c.frasco) && c.frasco.length ? c.frasco : local.frasco,
-      museo: Array.isArray(c.museo) ? c.museo : local.museo,
-      suenos: Array.isArray(c.suenos) ? c.suenos : local.suenos
-    };
-    renderContenido();
-  } catch {}
+/* ============================================================
+   ÁLBUM DE FOTOS LOCAL
+   ============================================================ */
+const ALBUM_DB = 'dallanaAlbumFotos';
+const albumUrls = new Set();
+
+function abrirAlbumDB() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) return reject(new Error('Este navegador no permite guardar fotos.'));
+    const request = indexedDB.open(ALBUM_DB, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore('fotos', { keyPath: 'id' });
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('No pude abrir el álbum.'));
+  });
 }
+
+async function operarAlbum(mode, action) {
+  const db = await abrirAlbumDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('fotos', mode);
+    const store = tx.objectStore('fotos');
+    const request = action(store);
+    tx.oncomplete = () => { db.close(); resolve(request?.result); };
+    tx.onerror = tx.onabort = () => { db.close(); reject(tx.error || new Error('No pude guardar los cambios del álbum.')); };
+  });
+}
+
+async function renderAlbum() {
+  const host = $('photoGrid');
+  if (!host) return;
+  const featured = [...host.querySelectorAll('.photo-featured')];
+  try {
+    const photos = await operarAlbum('readonly', store => store.getAll());
+    albumUrls.forEach(URL.revokeObjectURL);
+    albumUrls.clear();
+    host.replaceChildren(...featured);
+    if (!photos.length) {
+      return;
+    }
+    photos.sort((a, b) => a.created - b.created).forEach(photo => {
+      const card = document.createElement('figure');
+      card.className = 'photo-card';
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(photo.file);
+      image.alt = 'Un recuerdo juntos';
+      image.loading = 'lazy';
+      albumUrls.add(image.src);
+      const caption = document.createElement('figcaption');
+      caption.textContent = photo.name || 'Un recuerdo juntos';
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'photo-delete';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', `Eliminar foto ${photo.name || ''}`);
+      remove.onclick = async () => {
+        try {
+          await operarAlbum('readwrite', store => store.delete(photo.id));
+          await renderAlbum();
+          $('photoStatus').textContent = 'Foto eliminada del álbum.';
+        } catch { $('photoStatus').textContent = 'No pude eliminar la foto.'; }
+      };
+      card.append(image, caption, remove);
+      host.append(card);
+    });
+  } catch {
+    const status = $('photoStatus');
+    if (status) status.textContent = 'No se pudo abrir el álbum en este navegador.';
+  }
+}
+
+const photoUpload = $('photoUpload');
+const photoPick = $('photoPick');
+if (photoPick && photoUpload) photoPick.onclick = () => photoUpload.click();
+if (photoUpload) photoUpload.onchange = async () => {
+  const status = $('photoStatus');
+  const files = [...(photoUpload.files || [])];
+  let saved = 0;
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    if (file.size > 8 * 1024 * 1024) {
+      status.textContent = `${file.name} supera el límite de 8 MB y no se añadió.`;
+      continue;
+    }
+    try {
+      await operarAlbum('readwrite', store => store.add({
+        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+        name: file.name,
+        created: Date.now(),
+        file
+      }));
+      saved++;
+    } catch {
+      status.textContent = 'No se pudo guardar la foto. Puede que el almacenamiento esté lleno.';
+      break;
+    }
+  }
+  photoUpload.value = '';
+  if (saved) status.textContent = `${saved} ${saved === 1 ? 'foto añadida' : 'fotos añadidas'} al álbum de este dispositivo.`;
+  await renderAlbum();
+};
 
 /* ============================================================
    CARTA FINAL
    ============================================================ */
-// Divide la carta en saludo, subtítulo, cuerpo y firma para darle formato.
-function mostrarCarta(texto) {
+function animarCarta(texto) {
   const destino = $('letterText'); if (!destino) return;
-  const partes = String(texto || '').split(/\n\s*\n/).map(t => t.trim()).filter(Boolean);
-  let finFirma = partes.length;
-  while (finFirma > 2 && partes.length - finFirma < 2 && partes[finFirma - 1].length <= 30) finFirma--;
-  let primerCuerpo = true;
-  destino.replaceChildren(...partes.map((t, i) => {
-    let el;
-    if (i === 0 && t.length <= 60) { el = document.createElement('h3'); el.className = 'letter-greeting'; }
-    else if (i === 1 && t.length <= 60 && partes.length > 3) { el = document.createElement('p'); el.className = 'letter-subtitle'; }
-    else if (i >= finFirma) { el = document.createElement('p'); el.className = 'letter-sign'; }
-    else { el = document.createElement('p'); if (primerCuerpo) { el.className = 'letter-first'; primerCuerpo = false; } }
-    el.textContent = t;
-    return el;
-  }));
+  if (cartaTimer) clearInterval(cartaTimer);
+  cartaTimer = null;
+  destino.setAttribute('aria-label', texto);
+  // El contenido debe estar disponible completo al abrir la carta; así los
+  // mensajes largos no quedan a medio escribir ni dependen de una animación.
+  destino.textContent = texto;
 }
 
-// La carta local es la versión completa. Solo se reemplaza si en el servidor
-// hay una carta escrita desde el panel (el backend devuelve '' por defecto).
 async function cargarCarta() {
-  mostrarCarta(CARTA_LOCAL);
-  if (!API_DISPONIBLE) return;
-  try {
-    const r = await fetch(`${URL_BACKEND}/api/carta`);
-    if (!r.ok) return;
-    const d = await r.json();
-    if (typeof d.carta === 'string' && d.carta.trim()) mostrarCarta(d.carta);
-  } catch {}
+  animarCarta(CARTA_LOCAL);
+  if (API_DISPONIBLE) {
+    try {
+      const r = await fetch(`${URL_BACKEND}/api/carta`);
+      if (r.ok) {
+        const d = await r.json();
+        animarCarta(d.carta || CARTA_LOCAL);
+      }
+    } catch {}
+  }
 }
 
 /* ============================================================
@@ -631,15 +653,8 @@ if (dailyBtn) dailyBtn.onclick = () => {
 const favBtn = $('favorite');
 if (favBtn) favBtn.onclick = () => {
   if (!currentId) return;
-  if (favorites.has(currentId)) {
-    favorites.delete(currentId);
-    delete favoriteTexts[currentId];
-  } else {
-    favorites.add(currentId);
-    favoriteTexts[currentId] = currentMensaje;
-  }
+  favorites.has(currentId) ? favorites.delete(currentId) : favorites.add(currentId);
   guardarSet('dallanaFavorites', favorites);
-  guardarJSON('dallanaFavoriteTexts', favoriteTexts);
   favBtn.textContent = favorites.has(currentId) ? '♥' : '♡';
   favBtn.classList.toggle('favorite', favorites.has(currentId));
   actualizarBotonFavoritos();
@@ -656,10 +671,16 @@ function actualizarBotonFavoritos() {
 }
 
 function encontrarMensajePorId(id) {
-  const clave = String(id);
-  if (favoriteTexts[clave]) return { id: clave, mensaje: favoriteTexts[clave], foto: '' };
-  const item = mensajes.find(m => String(m.id) === clave) || RESPALDO.find(m => m.id === clave);
-  return item || { id: clave, mensaje: 'Un recuerdo guardado con amor ♥' };
+  let item = mensajes.find(m => String(m.id) === String(id));
+  if (item) return item;
+  item = RESPALDO.find(m => String(m.id) === String(id));
+  if (item) return item;
+  const auto = (contenido.autoestima || []).map((it, i) => ({ id: `autoestima-${i}`, mensaje: it.mensaje }));
+  item = auto.find(m => String(m.id) === String(id));
+  if (item) return item;
+  const fr = (contenido.frasco || []).map((m, i) => ({ id: `frasco-${i}`, mensaje: m }));
+  item = fr.find(m => String(m.id) === String(id));
+  return item || { id, mensaje: 'Un recuerdo guardado con amor ♥' };
 }
 
 function renderFavoritos() {
@@ -688,9 +709,7 @@ function renderFavoritos() {
     btn.onclick = (e) => {
       e.stopPropagation();
       favorites.delete(String(id));
-      delete favoriteTexts[String(id)];
       guardarSet('dallanaFavorites', favorites);
-      guardarJSON('dallanaFavoriteTexts', favoriteTexts);
       actualizarBotonFavoritos();
       const fav = $('favorite');
       if (fav && currentId === String(id)) {
@@ -730,8 +749,8 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
 const resetBtn = $('resetProgress');
 if (resetBtn) resetBtn.onclick = () => {
   if (!confirm('¿Quieres reiniciar tu progreso en este rincón?')) return;
-  ['dallanaSeen', 'dallanaFavorites', 'dallanaFavoriteTexts', 'dallanaDreamsDone', 'dallanaLetterUnlocked'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
-  seen = new Set(); favorites = new Set(); favoriteTexts = {};
+  ['dallanaSeen', 'dallanaFavorites', 'dallanaDreamsDone', 'dallanaLetterUnlocked'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  seen = new Set(); favorites = new Set();
   actualizarBotonFavoritos();
   actualizarProgreso(false);
   location.reload();
@@ -746,74 +765,100 @@ if (openWhenDlg) openWhenDlg.addEventListener('close', () => {
   const scene = $('letterScene'); if (scene) scene.classList.remove('is-opening', 'is-open');
 });
 
-/* ============================================================
-   MÚSICA
-   ============================================================ */
-let musicIndex = 0;
-const musicAudio = $('musicAudio');
+const letterDlg = $('letterDialog');
+if (letterDlg) letterDlg.addEventListener('close', () => {
+  if (cartaTimer) { clearInterval(cartaTimer); cartaTimer = null; }
+});
 
-function actualizarPista(indice, reproducir = false) {
-  musicIndex = (indice + PLAYLIST.length) % PLAYLIST.length;
-  const pista = PLAYLIST[musicIndex];
-  const h = document.querySelector('.track-heading h2'); if (h) h.textContent = pista.nombre;
-  const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Canción ${musicIndex + 1} de ${PLAYLIST.length}`;
-  if (!musicAudio) return;
-  musicAudio.src = `assets/musica/${encodeURIComponent(pista.archivo)}`;
-  if (reproducir) musicAudio.play().then(() => {
-    const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${pista.nombre}`;
-  }).catch(() => {
-    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo reproducir esta canción.';
-  });
+/* ============================================================
+   MÚSICA (Cajita de música delicada)
+   ============================================================ */
+let audioContext, masterGain, melodyTimer, melodyStep = 0, melodyIndex = 0;
+
+function tocarNota() {
+  if (!audioContext || !masterGain) return;
+  const notas = MELODIAS[melodyIndex].notas;
+  const freq = notas[melodyStep++ % notas.length];
+  const now = audioContext.currentTime;
+
+  // 1. Tono principal fundamental
+  const osc1 = audioContext.createOscillator();
+  const gain1 = audioContext.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(freq, now);
+  gain1.gain.setValueAtTime(0.0001, now);
+  gain1.gain.exponentialRampToValueAtTime(0.048, now + 0.015);
+  gain1.gain.exponentialRampToValueAtTime(0.018, now + 0.22);
+  gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.82);
+  osc1.connect(gain1);
+  gain1.connect(masterGain);
+  osc1.start(now);
+  osc1.stop(now + 0.85);
+
+  // 2. Armónico metálico sutil (brillo de cajita de música)
+  const osc2 = audioContext.createOscillator();
+  const gain2 = audioContext.createGain();
+  osc2.type = 'triangle';
+  osc2.frequency.setValueAtTime(freq * 3, now);
+  gain2.gain.setValueAtTime(0.0001, now);
+  gain2.gain.exponentialRampToValueAtTime(0.011, now + 0.008);
+  gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+  osc2.connect(gain2);
+  gain2.connect(masterGain);
+  osc2.start(now);
+  osc2.stop(now + 0.26);
 }
 
-// Deja la primera pista lista antes de que se pulse reproducir. Así el gesto del
-// usuario no compite con un cambio de fuente que algunos navegadores cancelan.
-actualizarPista(musicIndex);
+function seleccionarMelodia(indice) {
+  melodyIndex = (indice + MELODIAS.length) % MELODIAS.length;
+  melodyStep = 0;
+  const h = document.querySelector('.track-heading h2'); if (h) h.textContent = MELODIAS[melodyIndex].nombre;
+  const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Melodía ${melodyIndex + 1} de ${MELODIAS.length}`;
+  if (melodyTimer) { clearInterval(melodyTimer); tocarNota(); melodyTimer = setInterval(tocarNota, 700); }
+}
 
 const musicPrev = $('musicPrev');
-if (musicPrev) musicPrev.onclick = () => actualizarPista(musicIndex - 1, Boolean(musicAudio && !musicAudio.paused));
+if (musicPrev) musicPrev.onclick = () => seleccionarMelodia(melodyIndex - 1);
 
 const musicNext = $('musicNext');
-if (musicNext) musicNext.onclick = () => actualizarPista(musicIndex + 1, Boolean(musicAudio && !musicAudio.paused));
+if (musicNext) musicNext.onclick = () => seleccionarMelodia(melodyIndex + 1);
 
 const musicVolume = $('musicVolume');
 if (musicVolume) musicVolume.oninput = () => {
   const valor = Number(musicVolume.value);
   const out = $('musicVolumeValue'); if (out) out.value = `${Math.round(valor * 100)}%`;
-  if (musicAudio) musicAudio.volume = valor;
+  if (masterGain && audioContext) masterGain.gain.setTargetAtTime(valor, audioContext.currentTime, .04);
 };
 
 const musicPlay = $('musicPlay');
 if (musicPlay) musicPlay.onclick = async () => {
-  if (!musicAudio) return;
-  if (!musicAudio.paused) {
-    musicAudio.pause();
-    musicPlay.closest('.music-player')?.classList.remove('is-playing');
+  if (melodyTimer) {
+    clearInterval(melodyTimer); melodyTimer = null;
     musicPlay.textContent = '▶';
     musicPlay.setAttribute('aria-label', 'Reproducir música');
     musicPlay.setAttribute('aria-pressed', 'false');
     const hint = $('musicHint'); if (hint) hint.textContent = 'Melodía en pausa';
     return;
   }
-  if (!musicAudio.src) actualizarPista(musicIndex);
-  musicAudio.volume = Number(musicVolume ? musicVolume.value : 0.35);
-  try { await musicAudio.play(); } catch {
-    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo iniciar la reproducción.';
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) {
+    const hint = $('musicHint'); if (hint) hint.textContent = 'Tu navegador no admite estas melodías.';
     return;
   }
-  musicPlay.closest('.music-player')?.classList.add('is-playing');
+  audioContext ??= new AudioContextClass();
+  if (!masterGain) {
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = Number(musicVolume ? musicVolume.value : 0.35);
+    masterGain.connect(audioContext.destination);
+  }
+  await audioContext.resume();
+  tocarNota();
+  melodyTimer = setInterval(tocarNota, 700);
   musicPlay.textContent = 'Ⅱ';
   musicPlay.setAttribute('aria-label', 'Pausar música');
   musicPlay.setAttribute('aria-pressed', 'true');
-  const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${PLAYLIST[musicIndex].nombre}`;
+  const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${MELODIAS[melodyIndex].nombre}`;
 };
-
-if (musicAudio) {
-  musicAudio.onended = () => actualizarPista(musicIndex + 1, true);
-  musicAudio.onerror = () => {
-    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo cargar esta canción.';
-  };
-}
 
 /* ============================================================
    CORAZÓN SECRETO
@@ -845,16 +890,6 @@ async function adminFetch(path, options = {}) {
   return fetch(`${URL_BACKEND}${path}`, { ...options, headers });
 }
 
-// FastAPI devuelve `detail` como texto o como lista de errores de validación.
-async function errorDeApi(r, fallback) {
-  try {
-    const { detail } = await r.json();
-    if (typeof detail === 'string') return new Error(detail);
-    if (Array.isArray(detail) && detail.length) return new Error(detail.map(d => d.msg || String(d)).join(' · '));
-  } catch {}
-  return new Error(`${fallback} (error ${r.status}).`);
-}
-
 function seleccionarMensaje() {
   const id = $('editSelect')?.value;
   const item = mensajes.find(m => String(m.id) === id);
@@ -879,21 +914,15 @@ function renderMensajes() {
 function previewContenido() {
   try {
     const data = {
-      autoestima: JSON.parse($('adminAffirmations').value || '[]'),
-      cartas: JSON.parse($('adminCards').value || '[]'),
-      frasco: JSON.parse($('adminJar').value || '[]'),
-      museo: JSON.parse($('adminMuseum').value || '[]'),
-      suenos: JSON.parse($('adminDreams').value || '[]')
+      autoestima: JSON.parse($('adminAffirmations').value),
+      cartas: JSON.parse($('adminCards').value),
+      frasco: JSON.parse($('adminJar').value),
+      museo: JSON.parse($('adminMuseum').value),
+      suenos: JSON.parse($('adminDreams').value)
     };
     if (!Object.values(data).every(Array.isArray)) throw new Error();
-    for (const item of data.cartas) {
-      if (!item || typeof item.titulo !== 'string' || typeof item.mensaje !== 'string') throw new Error('Cada carta necesita título y mensaje.');
-    }
-    for (const item of data.museo) {
-      if (!item || typeof item.titulo !== 'string') throw new Error('Cada vitrina del museo necesita título.');
-    }
     const prev = $('contentPreview');
-    if (prev) prev.textContent = `${data.autoestima.length} autoestima · ${data.cartas.length} cartas · ${data.frasco.length} frasco · ${data.museo.length} museo · ${data.suenos.length} sueños`;
+    if (prev) prev.textContent = `${data.autoestima.length} recordatorios · ${data.cartas.length} cartas · ${data.frasco.length} sorpresas · ${data.museo.length} vitrinas · ${data.suenos.length} actividades`;
     return data;
   } catch {
     const prev = $('contentPreview');
@@ -906,21 +935,19 @@ async function entradaAdmin() {
   token = $('adminToken').value;
   try {
     const r = await adminFetch('/api/administracion');
-    if (!r.ok) throw await errorDeApi(r, 'No pude validar la clave');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude validar la clave');
     const d = await r.json();
-    mensajes = Array.isArray(d.cumplidos) ? d.cumplidos : [];
-    // Si aún no se ha escrito una carta en el servidor, se parte de la carta local completa.
-    $('adminLetter').value = d.carta || CARTA_LOCAL;
-    $('greetingMorning').value = d.saludos?.manana || '';
-    $('greetingNight').value = d.saludos?.noche || '';
-    contenidoServidor = d.contenido || null;
-    const c = contenidoServidor || contenido;
+    mensajes = d.cumplidos;
+    $('adminLetter').value = d.carta;
+    $('greetingMorning').value = d.saludos.manana;
+    $('greetingNight').value = d.saludos.noche;
+    const c = d.contenido || contenido;
     const setVal = (id, v) => { const el = $(id); if (el) el.value = v; };
-    setVal('adminAffirmations', JSON.stringify(c.autoestima || [], null, 2));
-    setVal('adminCards', JSON.stringify(c.cartas || [], null, 2));
-    setVal('adminJar', JSON.stringify(c.frasco || [], null, 2));
-    setVal('adminMuseum', JSON.stringify(c.museo || [], null, 2));
-    setVal('adminDreams', JSON.stringify(c.suenos || [], null, 2));
+    setVal('adminAffirmations', JSON.stringify(c.autoestima, null, 2));
+    setVal('adminCards', JSON.stringify(c.cartas, null, 2));
+    setVal('adminJar', JSON.stringify(c.frasco, null, 2));
+    setVal('adminMuseum', JSON.stringify(c.museo, null, 2));
+    setVal('adminDreams', JSON.stringify(c.suenos, null, 2));
     previewContenido();
     $('adminTools').classList.remove('hidden');
     renderMensajes();
@@ -935,15 +962,15 @@ async function subirFoto(fileInput, destination) {
     const body = new FormData();
     body.append('foto', file);
     const r = await adminFetch('/api/administracion/fotos', { method: 'POST', body });
-    if (!r.ok) throw await errorDeApi(r, 'No pude subir la imagen');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude subir la imagen');
     const d = await r.json();
     $(destination).value = `${URL_BACKEND}${d.foto}`;
     estadoAdmin('Foto subida. Guarda el recuerdo para aplicar el cambio.');
   } catch (e) { estadoAdmin(e.message, true); }
 }
 
-const adminLoginForm = $('adminLoginForm');
-if (adminLoginForm) adminLoginForm.onsubmit = e => { e.preventDefault(); entradaAdmin(); };
+const loadAdmin = $('loadAdmin');
+if (loadAdmin) loadAdmin.onclick = entradaAdmin;
 
 const editSelect = $('editSelect');
 if (editSelect) editSelect.onchange = seleccionarMensaje;
@@ -973,7 +1000,7 @@ if (saveEdit) saveEdit.onclick = async () => {
     const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, {
       method: 'PUT', body: JSON.stringify({ mensaje: $('editMessage').value.trim(), foto: $('editPhoto').value.trim() })
     });
-    if (!r.ok) throw await errorDeApi(r, 'No pude guardar el recuerdo');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el recuerdo');
     const actualizado = await r.json();
     mensajes = mensajes.map(m => String(m.id) === String(actualizado.id) ? actualizado : m);
     renderMensajes(); estadoAdmin('Recuerdo actualizado.');
@@ -986,7 +1013,7 @@ if (deleteMessage) deleteMessage.onclick = async () => {
   if (!id) return;
   try {
     const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, { method: 'DELETE' });
-    if (!r.ok) throw await errorDeApi(r, 'No pude eliminar el recuerdo');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude eliminar el recuerdo');
     mensajes = mensajes.filter(m => String(m.id) !== String(id));
     renderMensajes(); estadoAdmin('Recuerdo eliminado.');
   } catch (e) { estadoAdmin(e.message, true); }
@@ -1000,7 +1027,7 @@ if (addMessage) addMessage.onclick = async () => {
     const r = await adminFetch('/api/administracion/cumplidos', {
       method: 'POST', body: JSON.stringify({ mensaje, foto: $('newPhoto').value.trim() })
     });
-    if (!r.ok) throw await errorDeApi(r, 'No pude añadir el recuerdo');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude añadir el recuerdo');
     $('newMessage').value = ''; $('newPhoto').value = ''; $('newPhotoFile').value = '';
     await entradaAdmin(); estadoAdmin('Nuevo recuerdo añadido.');
   } catch (e) { estadoAdmin(e.message, true); }
@@ -1010,7 +1037,7 @@ const saveLetter = $('saveLetter');
 if (saveLetter) saveLetter.onclick = async () => {
   try {
     const r = await adminFetch('/api/administracion/carta', { method: 'PUT', body: JSON.stringify({ carta: $('adminLetter').value }) });
-    if (!r.ok) throw await errorDeApi(r, 'No pude guardar la carta');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar la carta');
     estadoAdmin('Carta guardada.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
@@ -1021,7 +1048,7 @@ if (saveGreetings) saveGreetings.onclick = async () => {
     const r = await adminFetch('/api/administracion/saludos', {
       method: 'PUT', body: JSON.stringify({ manana: $('greetingMorning').value, noche: $('greetingNight').value })
     });
-    if (!r.ok) throw await errorDeApi(r, 'No pude guardar los saludos');
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar los saludos');
     estadoAdmin('Saludos guardados.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
@@ -1030,16 +1057,10 @@ const saveContent = $('saveContent');
 if (saveContent) saveContent.onclick = async () => {
   const data = previewContenido();
   if (!data) return estadoAdmin('Revisa el JSON antes de guardar.', true);
-  if (!contenidoServidor) return estadoAdmin('Vuelve a entrar al panel antes de guardar.', true);
   try {
-    // El backend exige todas las colecciones: se reenvían las que esta página no edita.
-    const body = { ...contenidoServidor, ...data };
-    const r = await adminFetch('/api/administracion/contenido', { method: 'PUT', body: JSON.stringify(body) });
-    if (!r.ok) throw await errorDeApi(r, 'No pude guardar el contenido');
-    contenidoServidor = body;
-    contenido = data;
-    renderContenido();
-    estadoAdmin('Contenido guardado.');
+    const r = await adminFetch('/api/administracion/contenido', { method: 'PUT', body: JSON.stringify(data) });
+    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el contenido');
+    contenido = data; estadoAdmin('Contenido guardado.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
 
@@ -1050,7 +1071,6 @@ actualizarContador();
 actualizarProgreso(false);
 actualizarBotonFavoritos();
 renderContenido();
-cargarContenido();
 setInterval(actualizarContador, 60000);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
