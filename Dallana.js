@@ -169,7 +169,7 @@ if (!HTMLDialogElement.prototype.showModal) {
    ============================================================ */
 const heartDrift = $('heartDrift');
 if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const heartColors = ['#d71945', '#2878d0', '#269b68'];
+  const heartColors = ['#c0386a', '#ff8fa3', '#f7b3c7'];
   function lanzarCorazon() {
     const heart = document.createElement('span');
     heart.className = 'drift-heart';
@@ -180,13 +180,13 @@ if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     heart.style.setProperty('--heart-duration', `${7 + Math.random() * 5}s`);
     heart.style.setProperty('--heart-opacity', `${.42 + Math.random() * .28}`);
     heart.style.setProperty('--heart-drift', `${-24 + Math.random() * 48}px`);
-    if (heartDrift.childElementCount >= 18) heartDrift.firstElementChild.remove();
+    if (heartDrift.childElementCount >= 8) heartDrift.firstElementChild.remove();
     heartDrift.append(heart);
     heart.addEventListener('animationend', () => heart.remove(), { once: true });
     setTimeout(() => heart.remove(), 13000);
   }
-  for (let i = 0; i < 7; i++) setTimeout(lanzarCorazon, i * 650);
-  setInterval(lanzarCorazon, 850);
+  for (let i = 0; i < 3; i++) setTimeout(lanzarCorazon, i * 900);
+  setInterval(lanzarCorazon, 2600);
 }
 
 /* ============================================================
@@ -353,7 +353,6 @@ function renderCartas() {
     b.onclick = () => abrirCartaDeAnimo(c);
     host.append(b);
   });
-  initTilt('.open-card');
 }
 
 /* ============================================================
@@ -382,7 +381,6 @@ function renderMuseo() {
     if (item.descripcion && item.mensaje) { const s = document.createElement('small'); s.textContent = item.mensaje; card.append(s); }
     host.append(card);
   });
-  initTilt('.museum-card');
 }
 
 function renderFrasco() {
@@ -450,26 +448,6 @@ function renderAutoestima() {
   });
 }
 
-function initTilt(selector) {
-  document.querySelectorAll(selector).forEach(card => {
-    if (card.dataset.tilt) return;
-    card.dataset.tilt = '1';
-    card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.transform = `
-        perspective(1000px)
-        rotateX(${(0.5 - y / rect.height) * 6}deg)
-        rotateY(${(x / rect.width - 0.5) * 6}deg)
-      `;
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-    });
-  });
-}
-
 /* ============================================================
    RENDER GLOBAL
    ============================================================ */
@@ -498,8 +476,22 @@ async function cargarContenido() {
 /* ============================================================
    CARTA FINAL
    ============================================================ */
+// Divide la carta en saludo, subtítulo, cuerpo y firma para darle formato.
 function mostrarCarta(texto) {
-  const destino = $('letterText'); if (destino) destino.textContent = texto;
+  const destino = $('letterText'); if (!destino) return;
+  const partes = String(texto || '').split(/\n\s*\n/).map(t => t.trim()).filter(Boolean);
+  let finFirma = partes.length;
+  while (finFirma > 2 && partes.length - finFirma < 2 && partes[finFirma - 1].length <= 30) finFirma--;
+  let primerCuerpo = true;
+  destino.replaceChildren(...partes.map((t, i) => {
+    let el;
+    if (i === 0 && t.length <= 60) { el = document.createElement('h3'); el.className = 'letter-greeting'; }
+    else if (i === 1 && t.length <= 60 && partes.length > 3) { el = document.createElement('p'); el.className = 'letter-subtitle'; }
+    else if (i >= finFirma) { el = document.createElement('p'); el.className = 'letter-sign'; }
+    else { el = document.createElement('p'); if (primerCuerpo) { el.className = 'letter-first'; primerCuerpo = false; } }
+    el.textContent = t;
+    return el;
+  }));
 }
 
 // La carta local es la versión completa. Solo se reemplaza si en el servidor
@@ -733,6 +725,7 @@ const musicPlay = $('musicPlay');
 if (musicPlay) musicPlay.onclick = async () => {
   if (melodyTimer) {
     clearInterval(melodyTimer); melodyTimer = null;
+    musicPlay.closest('.music-player')?.classList.remove('is-playing');
     musicPlay.textContent = '▶';
     musicPlay.setAttribute('aria-label', 'Reproducir música');
     musicPlay.setAttribute('aria-pressed', 'false');
@@ -753,6 +746,7 @@ if (musicPlay) musicPlay.onclick = async () => {
   await audioContext.resume();
   tocarNota();
   melodyTimer = setInterval(tocarNota, 700);
+  musicPlay.closest('.music-player')?.classList.add('is-playing');
   musicPlay.textContent = 'Ⅱ';
   musicPlay.setAttribute('aria-label', 'Pausar música');
   musicPlay.setAttribute('aria-pressed', 'true');
@@ -996,14 +990,6 @@ actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();
 setInterval(actualizarContador, 60000);
-
-// Fondo dinámico que sigue al mouse
-window.addEventListener('mousemove', e => {
-  const x = (e.clientX / window.innerWidth) * 100;
-  const y = (e.clientY / window.innerHeight) * 100;
-  document.body.style.setProperty('--mouse-x', `${x}%`);
-  document.body.style.setProperty('--mouse-y', `${y}%`);
-});
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', () => {
