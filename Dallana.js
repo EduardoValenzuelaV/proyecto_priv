@@ -90,19 +90,26 @@ const API_DISPONIBLE = (
 const CONTENIDO_LOCAL = {
   cartas: [
     {titulo:'Ábreme cuando estés triste',mensaje:'No tienes que arreglarlo todo ahora. Si puedes, respira despacio y date permiso para sentir. Este momento difícil no cuenta toda tu historia; también hay días más amables esperándote.'},
-    {titulo:'Ábreme cuando no te sientas bonita',mensaje:'No hay una sola forma correcta de ser bonita. Tu cuerpo no tiene que cumplir ninguna medida para merecer respeto y ternura.'},
+    {titulo:"Ábreme cuando no te sientas bonita",mensaje:"Mi amor, sé que hoy el espejo no está siendo amable contigo. Pero déjame decirte algo: el espejo solo ve un reflejo, y yo te veo a ti. Veo cómo se te arruga la nariz cuando te ríes de verdad, cómo se te iluminan los ojitos cuando algo te emociona, cómo te ves cuando estás concentrada y no te das cuenta de que te estoy mirando. Esas son las veces en que más bonita te encuentro, y ninguna foto las alcanza a capturar. No necesitas maquillaje, ni la ropa perfecta, ni un buen día para ser hermosa. Ya lo eres, incluso hoy. Sobre todo hoy."},
     {titulo:'Ábreme cuando dudes de ti misma',mensaje:'No necesitas tener todas las respuestas para seguir siendo capaz. Puedes aprender, cambiar de idea y avanzar a tu ritmo.'},
     {titulo:'Ábreme cuando tengas un mal día',mensaje:'Un día pesado no convierte tu vida en una vida pesada. Haz lo que puedas, deja lo demás para después y recuerda que descansar también cuenta como cuidarte.'},
     {titulo:'Ábreme cuando sientas que no puedes más',mensaje:'No tienes que resolver todo de una vez. Busca un paso pequeño, una pausa o a alguien de confianza con quien compartir el peso.'},
     {titulo:'Ábreme cuando estés orgullosa de ti',mensaje:'Detente un momento y reconoce lo que hiciste. No hace falta que sea algo enorme para que importe. Tu esfuerzo merece ser celebrado.'},
-    {titulo:'Ábreme cuando necesites recordar cuánto vales',mensaje:'Tu valor no se gana con logros, aprobación ni días perfectos. Estás aquí, siendo tú, y eso basta para merecer cuidado, respeto y cosas buenas.'},
-    {titulo:'Ábreme cuando simplemente quieras sonreír',mensaje:'Ojalá encuentres una canción que te guste, algo rico para comer y un ratito sin apuro. No necesitas una razón grande para regalarte un momento bonito.'}
+    {titulo:"Ábreme cuando necesites recordar cuánto vales",mensaje:"Quiero que leas esto despacito. Vales muchísimo, y no lo digo por decir. No vales por tus notas, ni por lo que logras, ni por lo que piensen los demás. Vales porque eres tú: porque te preocupas de si los que quieres comieron o llegaron bien, porque defiendes lo que crees aunque cueste, porque tienes un corazón enorme que a veces ni tú misma ves. Si alguien te hizo sentir menos, se equivocó. Si fuiste tú misma, te pido que te trates con la misma ternura con la que tratas a los demás. Tú mereces todo lo bonito que le das al mundo, y yo voy a estar aquí para recordártelo cada vez que se te olvide."},
+    {titulo:"Ábreme cuando simplemente quieras sonreír",mensaje:"Ok, cierra los ojos un segundo y acuérdate: tú, súper seria, explicándome con toda la lógica del mundo por qué hay que comer por colores, y yo asintiendo como si fuera lo más razonable que he escuchado. Tú con tu Nik de chirimoya alegre como si fuera un tesoro nacional. Nosotros la noche del 31, muertos de la risa con esa parodia de terror. ¿Ya sonreíste? Si no, aquí va otra: en este mismo momento, en algún lugar, hay un tonto enamorado de ti pensando en lo afortunado que es. Ese soy yo. Tú eres mi Talca y yo soy tu Arauco, para siempre. Te quiero, payasa linda. 💙"}
   ],
   museo: [
     {titulo:'Tu vocación',descripcion:'Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.',mensaje:'Mi geóloga favorita.',foto:''},
-    {titulo:'Tu sonrisa',descripcion:'Me encanta tu sonrisa; puede hacer más amable hasta un día común.',mensaje:'Una de mis cosas favoritas de ti.',foto:''},
+    {titulo:'Tu sonrisa',descripcion:'Tu sonrisa tiene el poder de arreglarme el día, aunque venga malo.',mensaje:'Mi lugar favorito del mundo.',foto:''},
     {titulo:'Tus gustos',descripcion:'Sushi, un helado en Sweet Cream y esos momentos simples que disfrutamos juntos.',mensaje:'Me gusta aprender qué cosas te hacen feliz.',foto:''},
-    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Paicaví siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',foto:''}
+    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Paicaví siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',foto:''},
+    {titulo:"Tu voz",descripcion:"Me encanta escucharte cantar; podría quedarme horas así.",mensaje:"Mi cantante favorita.",foto:''},
+    {titulo:"Tu manera de cuidar",descripcion:"Siempre te preocupas de si llegué bien, de si comí, de cómo amanecí.",mensaje:"Me haces sentir muy querido.",foto:''},
+    {titulo:"Tu carácter",descripcion:"Defiendes lo que piensas con seguridad, y eso me encanta de ti.",mensaje:"Nunca dejes de hacerlo.",foto:''},
+    {titulo:"Tu lado divertido",descripcion:"Pasas de hablar súper en serio a decir una tontera en segundos.",mensaje:"Contigo me río de verdad.",foto:''},
+    {titulo:"Tu estilo",descripcion:"Me encanta tu forma de vestir; tiene algo muy tuyo.",mensaje:"Siempre te ves linda.",foto:''},
+    {titulo:"Tus ojitos hermosos",descripcion:"Podría quedarme mirándolos por horas; dicen todo lo que sientes sin que hables.",mensaje:"Me pierdo en ellos cada vez.",foto:''},
+    {titulo:"La mejor cocinera del mundo",descripcion:"Todo lo que cocinas sabe a cariño, y eso no se aprende en ninguna receta.",mensaje:"Mi chef favorita, sin discusión.",foto:''}
   ],
   autoestima: [
     {texto:'Eres valiente, incluso en los días difíciles.'},
@@ -151,7 +158,24 @@ const RESPALDO = [
   'Te quiero un poquito más con cada recuerdo que sumamos.',
   'Gracias por hacerme feliz de tantas formas pequeñas.',
   'Si pudiera repetir un día, elegiría uno de los que pasé contigo.',
-  'Este es solo el comienzo de muchas cosas bonitas juntos.'
+  'Este es solo el comienzo de muchas cosas bonitas juntos.',
+  // Más mensajes, de más tiernos a más profundos
+  "Si estás leyendo esto, ya te sacaste la lotería: tienes a alguien que te piensa todo el día.",
+  "Mi geóloga favorita, eres la piedra más preciosa que he encontrado.",
+  "Tu comida es buena, pero lo que más me gusta es que la cocines tú.",
+  "Ojalá supieras lo bonita que te ves cuando no sabes que te estoy mirando.",
+  "Tus ojitos son mi paisaje favorito, y eso que he caminado mucho por Paicaví.",
+  "Me gusta cómo me miras, como si yo fuera algo importante.",
+  "No necesito un plan perfecto, solo necesito que estés tú.",
+  "Gracias por preocuparte por mí incluso en los días en que yo no lo hago.",
+  "Me gusta pensar que en algún lugar del futuro nos estamos riendo de esto mismo.",
+  "A veces me sorprende lo mucho que puede cambiar la vida en un mes. Contigo cambió toda.",
+  "No sé qué hice para tenerte, pero lo volvería a hacer mil veces.",
+  "Contigo aprendí que querer bonito sí existe.",
+  "Si alguna vez dudas de lo que siento, vuelve a este mensaje: te elijo, hoy y todos los días.",
+  "No viniste a completar mi vida, viniste a hacerla más bonita. Y lo lograste.",
+  "De todas las personas del mundo, la que más quiero ver feliz eres tú.",
+  "Eres de esas cosas que uno no busca, pero que cuando llegan, uno sabe que se quedan."
 ].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
 
 const PLAYLIST = [
