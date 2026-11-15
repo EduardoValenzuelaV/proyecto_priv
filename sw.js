@@ -1,11 +1,18 @@
-const CACHE_NAME = 'dallana-v3.1';
+const CACHE_NAME = 'dallana-v3.2';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=3.1',
-  './Dallana.js?v=3.1',
+  './Dallana.css?v=3.2',
+  './Dallana.js?v=3.2',
   './manifest.json',
   './assets/fotos/portada-musica.png',
+  './assets/musica/Taylor%20Swift%20-%20Love%20Story.mp3',
+  './assets/musica/The%20Weeknd%2C%20Ariana%20Grande%20-%20Die%20For%20You%20(Remix%20Lyric%20Video).mp3',
+  './assets/musica/The%20Weeknd%20%26%20Ariana%20Grande%20-%20Save%20Your%20Tears%20(Remix)%20(Official%20Video).mp3',
+  './assets/musica/Swedish%20House%20Mafia%20and%20The%20Weeknd%20-%20Moth%20To%20A%20Flame%20(Official%20Video).mp3',
+  './assets/musica/Billie%20Eilish%20-%20CHIHIRO%20(Official%20Music%20Video).mp3',
+  './assets/musica/Nessa%20Barrett%20-%20die%20first%20(official%20music%20video).mp3',
+  './assets/musica/Billie%20Eilish%20-%20BIRDS%20OF%20A%20FEATHER%20(Official%20Music%20Video).mp3',
   './assets/fotos/migeo.jpg',
   './assets/stickers/stikers3.png',
   './assets/icons/icon-192.png',

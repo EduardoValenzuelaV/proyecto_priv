@@ -120,11 +120,14 @@ const RESPALDO = [
   'Este es solo el comienzo de muchas cosas bonitas juntos.'
 ].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
 
-const MELODIAS = [
-  {nombre:'Una melodía para ti',notas:[261.63,329.63,392,329.63,293.66,349.23,440,392]},
-  {nombre:'Paseo al atardecer',notas:[293.66,369.99,440,392,349.23,293.66,261.63,329.63]},
-  {nombre:'Un baile tranquilo',notas:[220,261.63,329.63,293.66,246.94,293.66,349.23,329.63]},
-  {nombre:'Un recuerdo bonito',notas:[392,440,392,329.63,349.23,392,293.66,329.63]}
+const PLAYLIST = [
+  {nombre:'Taylor Swift - Love Story', archivo:'Taylor Swift - Love Story.mp3'},
+  {nombre:'The Weeknd, Ariana Grande - Die For You (Remix Lyric Video)', archivo:'The Weeknd, Ariana Grande - Die For You (Remix Lyric Video).mp3'},
+  {nombre:'The Weeknd & Ariana Grande - Save Your Tears (Remix) (Official Video)', archivo:'The Weeknd & Ariana Grande - Save Your Tears (Remix) (Official Video).mp3'},
+  {nombre:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video)', archivo:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video).mp3'},
+  {nombre:'Billie Eilish - CHIHIRO (Official Music Video)', archivo:'Billie Eilish - CHIHIRO (Official Music Video).mp3'},
+  {nombre:'Nessa Barrett - die first (official music video)', archivo:'Nessa Barrett - die first (official music video).mp3'},
+  {nombre:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video)', archivo:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video).mp3'}
 ];
 
 /* ============================================================
@@ -662,69 +665,42 @@ if (openWhenDlg) openWhenDlg.addEventListener('close', () => {
 });
 
 /* ============================================================
-   MÚSICA (Cajita de música delicada)
+   MÚSICA
    ============================================================ */
-let audioContext, masterGain, melodyTimer, melodyStep = 0, melodyIndex = 0;
+let musicIndex = 0;
+const musicAudio = $('musicAudio');
 
-function tocarNota() {
-  if (!audioContext || !masterGain) return;
-  const notas = MELODIAS[melodyIndex].notas;
-  const freq = notas[melodyStep++ % notas.length];
-  const now = audioContext.currentTime;
-
-  // 1. Tono principal fundamental
-  const osc1 = audioContext.createOscillator();
-  const gain1 = audioContext.createGain();
-  osc1.type = 'sine';
-  osc1.frequency.setValueAtTime(freq, now);
-  gain1.gain.setValueAtTime(0.0001, now);
-  gain1.gain.exponentialRampToValueAtTime(0.048, now + 0.015);
-  gain1.gain.exponentialRampToValueAtTime(0.018, now + 0.22);
-  gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.82);
-  osc1.connect(gain1);
-  gain1.connect(masterGain);
-  osc1.start(now);
-  osc1.stop(now + 0.85);
-
-  // 2. Armónico metálico sutil (brillo de cajita de música)
-  const osc2 = audioContext.createOscillator();
-  const gain2 = audioContext.createGain();
-  osc2.type = 'triangle';
-  osc2.frequency.setValueAtTime(freq * 3, now);
-  gain2.gain.setValueAtTime(0.0001, now);
-  gain2.gain.exponentialRampToValueAtTime(0.011, now + 0.008);
-  gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
-  osc2.connect(gain2);
-  gain2.connect(masterGain);
-  osc2.start(now);
-  osc2.stop(now + 0.26);
-}
-
-function seleccionarMelodia(indice) {
-  melodyIndex = (indice + MELODIAS.length) % MELODIAS.length;
-  melodyStep = 0;
-  const h = document.querySelector('.track-heading h2'); if (h) h.textContent = MELODIAS[melodyIndex].nombre;
-  const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Melodía ${melodyIndex + 1} de ${MELODIAS.length}`;
-  if (melodyTimer) { clearInterval(melodyTimer); tocarNota(); melodyTimer = setInterval(tocarNota, 700); }
+function actualizarPista(indice, reproducir = false) {
+  musicIndex = (indice + PLAYLIST.length) % PLAYLIST.length;
+  const pista = PLAYLIST[musicIndex];
+  const h = document.querySelector('.track-heading h2'); if (h) h.textContent = pista.nombre;
+  const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Canción ${musicIndex + 1} de ${PLAYLIST.length}`;
+  if (!musicAudio) return;
+  musicAudio.src = `assets/musica/${encodeURIComponent(pista.archivo)}`;
+  musicAudio.load();
+  if (reproducir) musicAudio.play().catch(() => {
+    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo reproducir esta canción.';
+  });
 }
 
 const musicPrev = $('musicPrev');
-if (musicPrev) musicPrev.onclick = () => seleccionarMelodia(melodyIndex - 1);
+if (musicPrev) musicPrev.onclick = () => actualizarPista(musicIndex - 1, Boolean(musicAudio && !musicAudio.paused));
 
 const musicNext = $('musicNext');
-if (musicNext) musicNext.onclick = () => seleccionarMelodia(melodyIndex + 1);
+if (musicNext) musicNext.onclick = () => actualizarPista(musicIndex + 1, Boolean(musicAudio && !musicAudio.paused));
 
 const musicVolume = $('musicVolume');
 if (musicVolume) musicVolume.oninput = () => {
   const valor = Number(musicVolume.value);
   const out = $('musicVolumeValue'); if (out) out.value = `${Math.round(valor * 100)}%`;
-  if (masterGain && audioContext) masterGain.gain.setTargetAtTime(valor, audioContext.currentTime, .04);
+  if (musicAudio) musicAudio.volume = valor;
 };
 
 const musicPlay = $('musicPlay');
 if (musicPlay) musicPlay.onclick = async () => {
-  if (melodyTimer) {
-    clearInterval(melodyTimer); melodyTimer = null;
+  if (!musicAudio) return;
+  if (!musicAudio.paused) {
+    musicAudio.pause();
     musicPlay.closest('.music-player')?.classList.remove('is-playing');
     musicPlay.textContent = '▶';
     musicPlay.setAttribute('aria-label', 'Reproducir música');
@@ -732,26 +708,25 @@ if (musicPlay) musicPlay.onclick = async () => {
     const hint = $('musicHint'); if (hint) hint.textContent = 'Melodía en pausa';
     return;
   }
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) {
-    const hint = $('musicHint'); if (hint) hint.textContent = 'Tu navegador no admite estas melodías.';
+  if (!musicAudio.src) actualizarPista(musicIndex);
+  musicAudio.volume = Number(musicVolume ? musicVolume.value : 0.35);
+  try { await musicAudio.play(); } catch {
+    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo iniciar la reproducción.';
     return;
   }
-  audioContext ??= new AudioContextClass();
-  if (!masterGain) {
-    masterGain = audioContext.createGain();
-    masterGain.gain.value = Number(musicVolume ? musicVolume.value : 0.35);
-    masterGain.connect(audioContext.destination);
-  }
-  await audioContext.resume();
-  tocarNota();
-  melodyTimer = setInterval(tocarNota, 700);
   musicPlay.closest('.music-player')?.classList.add('is-playing');
   musicPlay.textContent = 'Ⅱ';
   musicPlay.setAttribute('aria-label', 'Pausar música');
   musicPlay.setAttribute('aria-pressed', 'true');
-  const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${MELODIAS[melodyIndex].nombre}`;
+  const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${PLAYLIST[musicIndex].nombre}`;
 };
+
+if (musicAudio) {
+  musicAudio.onended = () => actualizarPista(musicIndex + 1, true);
+  musicAudio.onerror = () => {
+    const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo cargar esta canción.';
+  };
+}
 
 /* ============================================================
    CORAZÓN SECRETO
