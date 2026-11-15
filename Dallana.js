@@ -5,7 +5,8 @@ const URL_BACKEND = '';
 const FECHA_INICIO = '2026-10-17';
 const MENSAJES_PARA_CARTA = 10;
 
-const CARTA_LOCAL = `Para mi Dallana 💙
+/* Versión anterior de la carta (conservada como referencia local).
+const CARTA_LOCAL_ANTERIOR = `Para mi Dallana 💙
 
 Nuestro primer mes juntos
 
@@ -44,6 +45,41 @@ Te quiero muchísimo, mi niña bonita. 💙
 Con todo mi amor,
 
 Tu amorcito.`;
+*/
+
+const CARTA_LOCAL = `Para mi Dallana 💙
+
+Nuestro primer mes
+
+Un mes. Dicho así parece poco, pero cuando miro hacia atrás siento que han pasado muchas cosas, y quería dejarlas por escrito para que algún día puedas volver a leer esto y acordarte de cómo empezó todo.
+
+Te escribo porque desde que te conozco no paro de encontrar cosas que me gustan de ti, y quería que vieras lo que yo veo cuando te miro.
+
+Tu sonrisa me desarma, eso ya lo sabes. Pero lo que más me tiene así es tu forma de ser: cómo defiendes lo que piensas, lo tierna que puedes ser y, al rato, lo payasa. Me encanta escucharte hablar. Cada vez que conversamos me quedo con ganas de saber más de ti, y creo que eso es lo que más me gusta: que no me canso de conocerte.
+
+Me gustan hasta las cosas más raras. Que te gusten las Nik de chirimoya alegre. Que comas por colores y lo defiendas con tanta lógica que casi me convences (casi). Que cantes tan bonito, sobre todo cuando cantas [canción]. Que puedas estar hablándome con toda la pasión del mundo sobre [tema que le apasiona] y de repente salirme con una tontera que me hace reír. Seguramente para ti son detalles, pero para mí son las cosas que hacen que me encante estar contigo.
+
+El 31 de octubre lo tengo guardado como uno de mis días favoritos. Nos reímos muchísimo, comimos [qué comieron] y terminamos viendo las películas de los Minions y esa parodia de terror jsjsj. No hicimos nada del otro mundo, y aun así fue una de las mejores noches que he tenido. Ahí me di cuenta de que lo que más me gusta de cualquier plan es que estés tú.
+
+Y hay una frase tuya que no se me olvida: «Tú eres mi Arauco y yo soy tu Talca». No la voy a explicar, porque es nuestra y así está bien. Solo te digo que cada vez que me acuerdo, sonrío.
+
+Gracias por preocuparte de cómo amanecí, de si llegué bien o de si comí. Gracias por alegrarte cuando algo me sale bien. Cuando me dijiste que estabas demasiado orgullosa de mí, no te imaginas lo que significó leer eso. Y yo también estoy muy orgulloso de ti, de cómo te esfuerzas y de cómo cuidas a la gente que quieres.
+
+Conmigo siempre vas a tener a alguien que te escuche. En los días buenos, obvio, pero también en los malos, en esos en que ni tú misma sabes bien qué te pasa y lo único que necesitas es un abrazo largo. No tienes que estar siempre bien conmigo ni fingir que lo estás. Yo quiero estar contigo en todas, no solo en las fáciles.
+
+Ojalá pudieras mirarte como yo te miro. No solo por lo bonita que eres o por lo bien que te queda tu forma de vestir, sino por cómo te brillan los ojos cuando algo te emociona. No tienes que ser perfecta ni demostrarme nada. Me gustas tal como eres, y no quiero que cambies eso por nada.
+
+No te voy a prometer que todo va a ser perfecto, pero sí que siempre voy a escucharte, respetarte y estar aquí para ti. Y que voy a seguir haciendo lo posible por sacarte esa risa, porque es de mis cosas favoritas.
+
+Todavía nos queda tanto por vivir juntos, tantas conversaciones, tantas risas y un montón de momentos que ni siquiera imaginamos. Una vez me dijiste que íbamos a tener un futuro muy bonito juntos. Lo dijiste tan segura que me lo creí, y hasta ahora no me has dado ninguna razón para dudarlo.
+
+Gracias por este primer mes, por todo lo que nos hemos reído y por dejarme conocerte. Es solo el comienzo, y ya es de las mejores cosas que me han pasado.
+
+Si tuviera que elegir de nuevo con quién empezar esto, no lo pensaría ni un segundo: te elegiría a ti otra vez.
+
+Feliz primer mes, mi Dallana. Estoy enamorado de ti, y cada día un poquito más.
+
+Te quiero muchísimo, mi niña bonita 💙`;
 const API_DISPONIBLE = (
   (URL_BACKEND.startsWith('https://') && !URL_BACKEND.includes('tu-api-en-render')) ||
   URL_BACKEND.startsWith('http://localhost') ||
