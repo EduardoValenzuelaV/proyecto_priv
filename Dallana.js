@@ -4,45 +4,45 @@
 const URL_BACKEND = 'https://tu-api-en-render.onrender.com';
 const FECHA_INICIO = '2026-10-17';
 const MENSAJES_PARA_CARTA = 10;
-const CARTA_LOCAL = "Para mi Dallana 💙"
+const CARTA_LOCAL = `Para mi Dallana 💙
 
-"Nuestro primer mes juntos"
+Nuestro primer mes juntos
 
-"Un mes. Dicho así parece poco, y sin embargo, cuando miro hacia atrás, siento que en estas semanas he vivido muchas cosas bonitas que quiero guardar para siempre. Quizás por eso quise escribirte esta carta: para dejar en palabras un poquito de todo lo que has significado para mí durante este tiempo y para que algún día puedas volver a leerla y recordar lo bonito que ha sido comenzar esta historia juntos."
+Un mes. Dicho así parece poco, y sin embargo, cuando miro hacia atrás, siento que en estas semanas he vivido muchas cosas bonitas que quiero guardar para siempre. Quizás por eso quise escribirte esta carta: para dejar en palabras un poquito de todo lo que has significado para mí durante este tiempo y para que algún día puedas volver a leerla y recordar lo bonito que ha sido comenzar esta historia juntos.
 
-"No escribo esta carta para convencerte de lo maravillosa que eres. La escribo porque, desde que te conozco, he encontrado cada vez más razones para admirarte, y quería que pudieras ver, aunque fuera un poquito, lo que yo veo cuando te miro."
+No escribo esta carta para convencerte de lo maravillosa que eres. La escribo porque, desde que te conozco, he encontrado cada vez más razones para admirarte, y quería que pudieras ver, aunque fuera un poquito, lo que yo veo cuando te miro.
 
-"Hay muchas cosas de ti que me han ido enamorando, y aunque tu sonrisa tiene una manera especial de desarmarme, no es lo único que me hace mirarte con tanta admiración. Me enamora tu forma de ser, la manera en que te expresas, cómo defiendes lo que piensas y esa combinación tan bonita entre tu ternura, tu carácter y tu lado divertido. Me encanta escucharte hablar y sorprenderme con cada ocurrencia tuya. Contigo siempre hay algo nuevo que despierta mi curiosidad, y creo que eso es lo que más me gusta: que no me canso de conocerte. Cada conversación me deja con ganas de saber un poquito más de ti, de tus gustos, de tus historias y de todas esas pequeñas cosas que te hacen ser la persona de la que me estoy enamorando cada dia más."
+Hay muchas cosas de ti que me han ido enamorando, y aunque tu sonrisa tiene una manera especial de desarmarme, no es lo único que me hace mirarte con tanta admiración. Me enamora tu forma de ser, la manera en que te expresas, cómo defiendes lo que piensas y esa combinación tan bonita entre tu ternura, tu carácter y tu lado divertido. Me encanta escucharte hablar y sorprenderme con cada ocurrencia tuya. Contigo siempre hay algo nuevo que despierta mi curiosidad, y creo que eso es lo que más me gusta: que no me canso de conocerte. Cada conversación me deja con ganas de saber un poquito más de ti, de tus gustos, de tus historias y de todas esas pequeñas cosas que te hacen ser la persona de la que me estoy enamorando cada dia más.
 
-"Y esa curiosidad también aparece en los detalles más pequeños. Me gusta descubrir esas particularidades que te hacen ser tú: como que te gusta las Nik de chirimoya alegre , que comas por colores y lo defiendas con tanta lógica que casi consigues convencerme, que cantes tan bonito y que puedas pasar de hablarme con toda la pasión del mundo sobre algo que te gusta a decirme alguna tontería que termina sacándome una sonrisa. Quizás para ti sean detalles pequeños, pero para mí forman parte de todo aquello que hace que me encante estar contigo. Sé que todavía me queda muchísimo por conocer de ti, de tus historias, tus sueños, tus pensamientos y de todas esas partes de tu vida que poco a poco irás compartiendo conmigo. Y, sinceramente, me hace mucha ilusión descubrirlas."
+Y esa curiosidad también aparece en los detalles más pequeños. Me gusta descubrir esas particularidades que te hacen ser tú: como que te gusta las Nik de chirimoya alegre , que comas por colores y lo defiendas con tanta lógica que casi consigues convencerme, que cantes tan bonito y que puedas pasar de hablarme con toda la pasión del mundo sobre algo que te gusta a decirme alguna tontería que termina sacándome una sonrisa. Quizás para ti sean detalles pequeños, pero para mí forman parte de todo aquello que hace que me encante estar contigo. Sé que todavía me queda muchísimo por conocer de ti, de tus historias, tus sueños, tus pensamientos y de todas esas partes de tu vida que poco a poco irás compartiendo conmigo. Y, sinceramente, me hace mucha ilusión descubrirlas.
 
-"Hay una noche que recuerdo con especial cariño: la del 31 de octubre. Todavía me acuerdo de lo mucho que nos reímos, de las cosas ricas que compartimos, de los Minions y de cómo terminamos viendo aquellas películas de terror y sus parodias. No sé si tú la recuerdas con la misma emoción que yo, pero para mí fue una de esas noches que se quedan guardadas por lo bien que se siente estar con alguien. No hubo necesidad de hacer nada extraordinario; simplemente disfruté de compartir ese tiempo contigo. Y creo que ahí entendí algo que cada vez tengo más claro: mi parte favorita de muchos planes no es lo que hacemos, sino que seas tú quien está a mi lado."
+Hay una noche que recuerdo con especial cariño: la del 31 de octubre. Todavía me acuerdo de lo mucho que nos reímos, de las cosas ricas que compartimos, de los Minions y de cómo terminamos viendo aquellas películas de terror y sus parodias. No sé si tú la recuerdas con la misma emoción que yo, pero para mí fue una de esas noches que se quedan guardadas por lo bien que se siente estar con alguien. No hubo necesidad de hacer nada extraordinario; simplemente disfruté de compartir ese tiempo contigo. Y creo que ahí entendí algo que cada vez tengo más claro: mi parte favorita de muchos planes no es lo que hacemos, sino que seas tú quien está a mi lado.
 
-"También hay una frase tuya que se quedó guardada en un lugar muy especial de mi corazón: «Tú eres mi Arauco y yo soy tu Dalca». No voy a intentar explicar lo que significa, porque siento que perdería un poquito de su magia. Es una de esas cosas que son nuestras, que quizás nadie más entendería de la misma manera. Solo quiero que sepas que la recuerdo con muchísimo cariño y que cada vez que pienso en ella me hace sonreír."
+También hay una frase tuya que se quedó guardada en un lugar muy especial de mi corazón: «Tú eres mi Arauco y yo soy tu Dalca». No voy a intentar explicar lo que significa, porque siento que perdería un poquito de su magia. Es una de esas cosas que son nuestras, que quizás nadie más entendería de la misma manera. Solo quiero que sepas que la recuerdo con muchísimo cariño y que cada vez que pienso en ella me hace sonreír.
 
-"Quiero agradecerte también por todas esas pequeñas cosas que haces y que quizás no siempre notas. Por preocuparte de cómo amanecí, de si llegué bien o de si he comido; por interesarte en mis proyectos y alegrarte sinceramente cuando algo me sale bien. Recuerdo especialmente cuando me dijiste que estabas demasiado orgullosa de mí. Quizás no imaginas lo bonito que fue leer esas palabras y sentir que alguien a quien quiero tanto se alegra de verme avanzar. Son detalles que valoro muchísimo, porque me hacen sentir querido y acompañado. Y quiero que sepas que yo también estoy muy orgulloso de ti: de tus esfuerzos, de tus logros, de tus metas y de esa manera tan tuya de enfrentar las cosas y preocuparte por las personas que quieres."
+Quiero agradecerte también por todas esas pequeñas cosas que haces y que quizás no siempre notas. Por preocuparte de cómo amanecí, de si llegué bien o de si he comido; por interesarte en mis proyectos y alegrarte sinceramente cuando algo me sale bien. Recuerdo especialmente cuando me dijiste que estabas demasiado orgullosa de mí. Quizás no imaginas lo bonito que fue leer esas palabras y sentir que alguien a quien quiero tanto se alegra de verme avanzar. Son detalles que valoro muchísimo, porque me hacen sentir querido y acompañado. Y quiero que sepas que yo también estoy muy orgulloso de ti: de tus esfuerzos, de tus logros, de tus metas y de esa manera tan tuya de enfrentar las cosas y preocuparte por las personas que quieres.
 
-"Hay algo que me gustaría cuidar siempre entre nosotros: esa tranquilidad que hemos ido encontrando al estar juntos. Quiero que conmigo puedas sentirte libre de ser tú misma, de contarme lo que piensas, compartir lo que sientes y hablar incluso de aquellas cosas que no sabes muy bien cómo expresar. No quiero que sientas que tienes que aparentar estar bien todo el tiempo ni que debas guardarte lo que te pasa. Me gustaría que nuestra relación fuera un espacio donde ambos podamos sentirnos escuchados, comprendidos y queridos; donde podamos conversar cuando algo nos preocupe, apoyarnos cuando las cosas se compliquen y disfrutar sin miedo de todos esos momentos bonitos que todavía nos esperan."
+Hay algo que me gustaría cuidar siempre entre nosotros: esa tranquilidad que hemos ido encontrando al estar juntos. Quiero que conmigo puedas sentirte libre de ser tú misma, de contarme lo que piensas, compartir lo que sientes y hablar incluso de aquellas cosas que no sabes muy bien cómo expresar. No quiero que sientas que tienes que aparentar estar bien todo el tiempo ni que debas guardarte lo que te pasa. Me gustaría que nuestra relación fuera un espacio donde ambos podamos sentirnos escuchados, comprendidos y queridos; donde podamos conversar cuando algo nos preocupe, apoyarnos cuando las cosas se compliquen y disfrutar sin miedo de todos esos momentos bonitos que todavía nos esperan.
 
-"Ojalá algún día pudieras mirarte con un poquito de la ternura con la que yo te miro. Y no me refiero solamente a lo bonita que te ves en una fotografía, a tu sonrisa o a lo bien que te queda ese estilo que tienes y que tanto me gusta. Me refiero también a lo que aparece cuando conversas, cuando te emocionas hablando de algo que te apasiona, cuando cantas, cuando defiendes tus ideas o cuando tienes alguno de esos gestos tan tuyos con las personas que quieres. Hay tantas cosas bonitas en ti que van mucho más allá de lo que se puede ver a simple vista. No tienes que ser perfecta ni demostrarme nada para merecer mi cariño. No quiero que cambies tu esencia para encajar en ninguna parte. Me gusta quién eres, con tu personalidad, tus particularidades, tus ideas y esa forma tan especial que tienes de ser."
+Ojalá algún día pudieras mirarte con un poquito de la ternura con la que yo te miro. Y no me refiero solamente a lo bonita que te ves en una fotografía, a tu sonrisa o a lo bien que te queda ese estilo que tienes y que tanto me gusta. Me refiero también a lo que aparece cuando conversas, cuando te emocionas hablando de algo que te apasiona, cuando cantas, cuando defiendes tus ideas o cuando tienes alguno de esos gestos tan tuyos con las personas que quieres. Hay tantas cosas bonitas en ti que van mucho más allá de lo que se puede ver a simple vista. No tienes que ser perfecta ni demostrarme nada para merecer mi cariño. No quiero que cambies tu esencia para encajar en ninguna parte. Me gusta quién eres, con tu personalidad, tus particularidades, tus ideas y esa forma tan especial que tienes de ser.
 
-"No voy a prometerte que todos nuestros días serán perfectos, porque sé que la vida no funciona así. Pero sí quiero prometerte algo que está en mis manos: voy a procurar escucharte, hablarte siempre con sinceridad, respetarte y cuidar lo que estamos construyendo. Quiero que podamos resolver nuestras diferencias conversando, que nunca nos falte la confianza y que sepas que puedes contar conmigo tanto en los días buenos como en aquellos en los que las cosas no salgan como esperabas. Y, por supuesto, voy a seguir intentando hacerte sonreír, porque verte feliz y escuchar esa risa tuya es una de mis cosas favoritas."
+No voy a prometerte que todos nuestros días serán perfectos, porque sé que la vida no funciona así. Pero sí quiero prometerte algo que está en mis manos: voy a procurar escucharte, hablarte siempre con sinceridad, respetarte y cuidar lo que estamos construyendo. Quiero que podamos resolver nuestras diferencias conversando, que nunca nos falte la confianza y que sepas que puedes contar conmigo tanto en los días buenos como en aquellos en los que las cosas no salgan como esperabas. Y, por supuesto, voy a seguir intentando hacerte sonreír, porque verte feliz y escuchar esa risa tuya es una de mis cosas favoritas.
 
-"Nos quedan tantas películas por ver, caminatas tranquilas, comidas por compartir, canciones por descubrir y momentos que todavía ni siquiera imaginamos. Quiero acompañarte en tus proyectos, celebrar tus logros, escuchar tus historias y seguir descubriendo todo aquello que te hace ilusión. Como me dijiste con tanta dulzura, tendremos un hermoso futuro juntos. No sé exactamente qué nos espera en cada capítulo, pero me encanta pensar que todavía tenemos tantas páginas por escribir y que puedo descubrirlas a tu lado, sin prisa y disfrutando de cada etapa."
+Nos quedan tantas películas por ver, caminatas tranquilas, comidas por compartir, canciones por descubrir y momentos que todavía ni siquiera imaginamos. Quiero acompañarte en tus proyectos, celebrar tus logros, escuchar tus historias y seguir descubriendo todo aquello que te hace ilusión. Como me dijiste con tanta dulzura, tendremos un hermoso futuro juntos. No sé exactamente qué nos espera en cada capítulo, pero me encanta pensar que todavía tenemos tantas páginas por escribir y que puedo descubrirlas a tu lado, sin prisa y disfrutando de cada etapa.
 
-"Gracias por este primer mes, por tus risas, tus abrazos, tus conversaciones, tus ocurrencias y por dejarme conocer un poquito más de ti. Gracias por compartirme tus días, tus pensamientos y esos pequeños mundos que forman parte de quien eres. Me hace muy feliz saber que estamos construyendo algo bonito y que, entre tantas personas, tengo la suerte de poder llamarte mi amorcito."
+Gracias por este primer mes, por tus risas, tus abrazos, tus conversaciones, tus ocurrencias y por dejarme conocer un poquito más de ti. Gracias por compartirme tus días, tus pensamientos y esos pequeños mundos que forman parte de quien eres. Me hace muy feliz saber que estamos construyendo algo bonito y que, entre tantas personas, tengo la suerte de poder llamarte mi amorcito.
 
-"Y si este primer mes me ha enseñado algo, es que todavía me queda muchísimo de ti por descubrir. Qué suerte la mía que no tenga que hacerlo todo de una vez, porque tengo la ilusión de seguir conociéndote, de enamorarme de tus pequeñas particularidades y de encontrar nuevas razones para admirarte. No quiero dejar de sorprenderme contigo ni de conquistarte en los pequeños detalles de cada día."
+Y si este primer mes me ha enseñado algo, es que todavía me queda muchísimo de ti por descubrir. Qué suerte la mía que no tenga que hacerlo todo de una vez, porque tengo la ilusión de seguir conociéndote, de enamorarme de tus pequeñas particularidades y de encontrar nuevas razones para admirarte. No quiero dejar de sorprenderme contigo ni de conquistarte en los pequeños detalles de cada día.
 
-"Feliz primer mes, mi Dallana."
+Feliz primer mes, mi Dallana.
 
-"Estoy enamorado de ti, de tu forma de ser y de todo eso que te hace tan especial para mí. Y si pudiera elegir nuevamente a la persona con quien comenzar esta historia, volvería a elegirte a ti."
+Estoy enamorado de ti, de tu forma de ser y de todo eso que te hace tan especial para mí. Y si pudiera elegir nuevamente a la persona con quien comenzar esta historia, volvería a elegirte a ti.
 
-"Te quiero muchísimo, mi niña bonita. 💙"
+Te quiero muchísimo, mi niña bonita. 💙
 
-"Con todo mi amor,"
+Con todo mi amor,
 
-"Tu amorcito.";
+Tu amorcito.`;
 const API_DISPONIBLE = (
   (URL_BACKEND.startsWith('https://') && !URL_BACKEND.includes('tu-api-en-render')) ||
   URL_BACKEND.startsWith('http://localhost') ||
@@ -605,18 +605,11 @@ if (photoUpload) photoUpload.onchange = async () => {
 function animarCarta(texto) {
   const destino = $('letterText'); if (!destino) return;
   if (cartaTimer) clearInterval(cartaTimer);
-  destino.replaceChildren();
+  cartaTimer = null;
   destino.setAttribute('aria-label', texto);
-  const visual = document.createElement('span');
-  visual.setAttribute('aria-hidden', 'true');
-  destino.append(visual);
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { visual.textContent = texto; return; }
-  const letras = Array.from(texto);
-  let indice = 0;
-  cartaTimer = setInterval(() => {
-    visual.textContent += letras[indice++] || '';
-    if (indice >= letras.length) { clearInterval(cartaTimer); cartaTimer = null; }
-  }, 18);
+  // El contenido debe estar disponible completo al abrir la carta; así los
+  // mensajes largos no quedan a medio escribir ni dependen de una animación.
+  destino.textContent = texto;
 }
 
 async function cargarCarta() {
