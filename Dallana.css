@@ -174,11 +174,35 @@ main>section:has(>.sticker--bl,>.sticker--br){padding-bottom:calc(var(--st) - va
 .unlocked.show{display:inline-flex}
 
 /* ============ SOBRE DE BIENVENIDA ============ */
+/* Pantalla de bienvenida: el fondo va pasando por rojo, azul, verde y amarillo */
+@property --w1{syntax:'<color>';inherits:true;initial-value:#fde3d6}
+@property --w2{syntax:'<color>';inherits:true;initial-value:#e3edfb}
+@property --wc{syntax:'<color>';inherits:true;initial-value:#e0303f}
 .envelope{
+  --w1:#fde3d6;--w2:#e3edfb;--wc:#e0303f;
   position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:20px;
-  background:var(--corazones),radial-gradient(ellipse at 50% 30%,#fffaf4 0,#fbe3d8 55%,#e3edfb 100%);
+  background:radial-gradient(ellipse at 50% 30%,#fffaf4 0,var(--w1) 55%,var(--w2) 100%);
   text-align:center;transition:opacity .45s ease,visibility .45s ease;
+  animation:bienvenida-colores 16s ease-in-out infinite;
 }
+/* Corazones de fondo teñidos con el color del momento */
+.envelope::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:var(--wc);opacity:.13;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 38c-6-5-10-8-10-12a4.5 4.5 0 0 1 10-2 4.5 4.5 0 0 1 10 2c0 4-4 7-10 12z'/%3E%3C/svg%3E") 0 0/56px 56px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 38c-6-5-10-8-10-12a4.5 4.5 0 0 1 10-2 4.5 4.5 0 0 1 10 2c0 4-4 7-10 12z'/%3E%3C/svg%3E") 0 0/56px 56px;
+  animation:corazones-deslizan 30s linear infinite;
+}
+.envelope{isolation:isolate}
+@keyframes bienvenida-colores{
+  0%,100%{--w1:#fde1d6;--w2:#fbe6ef;--wc:#e0303f}
+  25%{--w1:#dfeafb;--w2:#eef3fd;--wc:#3d72c4}
+  50%{--w1:#e2f2da;--w2:#f1f8ec;--wc:#4f9a4a}
+  75%{--w1:#fdf0cc;--w2:#fff7e3;--wc:#e3a21a}
+}
+@keyframes corazones-deslizan{to{-webkit-mask-position:56px -112px;mask-position:56px -112px}}
+/* Mientras la bienvenida está abierta, los corazones flotan por encima de ella */
+body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
+.welcome-label,.welcome-copy{transition:color 1s}
 .envelope.closed{visibility:hidden;opacity:0;pointer-events:none}
 .envelope-content{
   display:flex;flex-direction:column;align-items:center;

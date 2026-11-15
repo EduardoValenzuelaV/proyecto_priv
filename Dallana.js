@@ -232,23 +232,29 @@ if (!HTMLDialogElement.prototype.showModal) {
 const heartDrift = $('heartDrift');
 if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const heartColors = ['#e0303f', '#3d72c4', '#4f9a4a', '#ff5a5f', '#6fa0e8', '#7cc46a'];
+  const bienvenidaAbierta = () => { const w = $('welcome'); return !!w && !w.classList.contains('closed'); };
   function lanzarCorazon() {
+    const enBienvenida = bienvenidaAbierta();
     const heart = document.createElement('span');
     heart.className = 'drift-heart';
     heart.textContent = '♥';
-    heart.style.setProperty('--side', Math.random() < .5 ? `${3 + Math.random() * 10}vw` : `${87 + Math.random() * 10}vw`);
+    // En la bienvenida suben por toda la pantalla; en la página, por los costados para no tapar el contenido
+    const lado = enBienvenida ? Math.random() * 96
+      : (Math.random() < .5 ? 1 + Math.random() * 15 : 84 + Math.random() * 14);
+    heart.style.setProperty('--side', `${lado}vw`);
     heart.style.setProperty('--heart-color', heartColors[Math.floor(Math.random() * heartColors.length)]);
-    heart.style.setProperty('--heart-size', `${16 + Math.random() * 18}px`);
+    heart.style.setProperty('--heart-size', `${16 + Math.random() * (enBienvenida ? 26 : 18)}px`);
     heart.style.setProperty('--heart-duration', `${7 + Math.random() * 5}s`);
-    heart.style.setProperty('--heart-opacity', `${.42 + Math.random() * .28}`);
-    heart.style.setProperty('--heart-drift', `${-24 + Math.random() * 48}px`);
-    if (heartDrift.childElementCount >= 8) heartDrift.firstElementChild.remove();
+    heart.style.setProperty('--heart-opacity', `${(enBienvenida ? .55 : .42) + Math.random() * .3}`);
+    heart.style.setProperty('--heart-drift', `${-30 + Math.random() * 60}px`);
+    if (heartDrift.childElementCount >= (enBienvenida ? 24 : 14)) heartDrift.firstElementChild.remove();
     heartDrift.append(heart);
     heart.addEventListener('animationend', () => heart.remove(), { once: true });
     setTimeout(() => heart.remove(), 13000);
   }
-  for (let i = 0; i < 3; i++) setTimeout(lanzarCorazon, i * 900);
-  setInterval(lanzarCorazon, 2600);
+  for (let i = 0; i < 6; i++) setTimeout(lanzarCorazon, i * 350);
+  let pulso = 0;
+  setInterval(() => { pulso++; if (bienvenidaAbierta() || pulso % 2 === 0) lanzarCorazon(); }, 750);
 }
 
 /* ============================================================
