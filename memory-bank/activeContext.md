@@ -5,6 +5,7 @@
 **In progress**:
 
 - [x] Corregido el error de carga del JavaScript y renovada la caché del sitio.
+- [x] Revisión de errores: caché del SW, manifiesto, avisos de consola y rendimiento (JS v2.5).
 
 **Decisions (recent)**:
 

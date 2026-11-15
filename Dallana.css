@@ -614,7 +614,6 @@ dialog#letterDialog[open]::backdrop{animation:letter-backdrop-in .45s ease both}
 }
 
 /* ============ CANVAS PÉTALOS ============ */
-.petal-canvas{position:fixed;inset:0;pointer-events:none;z-index:60}
 
 /* ============ FAVORITOS MODAL & BOTÓN ============ */
 .text-btn {

@@ -452,6 +452,8 @@ function renderAutoestima() {
 
 function initTilt(selector) {
   document.querySelectorAll(selector).forEach(card => {
+    if (card.dataset.tilt) return;
+    card.dataset.tilt = '1';
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -490,9 +492,6 @@ async function cargarContenido() {
       suenos: Array.isArray(c.suenos) ? c.suenos : local.suenos
     };
     renderContenido();
-    renderFrasco();
-    renderSuenos();
-    renderAutoestima();
   } catch {}
 }
 
@@ -790,6 +789,16 @@ async function adminFetch(path, options = {}) {
   return fetch(`${URL_BACKEND}${path}`, { ...options, headers });
 }
 
+// FastAPI devuelve `detail` como texto o como lista de errores de validación.
+async function errorDeApi(r, fallback) {
+  try {
+    const { detail } = await r.json();
+    if (typeof detail === 'string') return new Error(detail);
+    if (Array.isArray(detail) && detail.length) return new Error(detail.map(d => d.msg || String(d)).join(' · '));
+  } catch {}
+  return new Error(`${fallback} (error ${r.status}).`);
+}
+
 function seleccionarMensaje() {
   const id = $('editSelect')?.value;
   const item = mensajes.find(m => String(m.id) === id);
@@ -841,13 +850,13 @@ async function entradaAdmin() {
   token = $('adminToken').value;
   try {
     const r = await adminFetch('/api/administracion');
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude validar la clave');
+    if (!r.ok) throw await errorDeApi(r, 'No pude validar la clave');
     const d = await r.json();
-    mensajes = d.cumplidos;
+    mensajes = Array.isArray(d.cumplidos) ? d.cumplidos : [];
     // Si aún no se ha escrito una carta en el servidor, se parte de la carta local completa.
     $('adminLetter').value = d.carta || CARTA_LOCAL;
-    $('greetingMorning').value = d.saludos.manana;
-    $('greetingNight').value = d.saludos.noche;
+    $('greetingMorning').value = d.saludos?.manana || '';
+    $('greetingNight').value = d.saludos?.noche || '';
     contenidoServidor = d.contenido || null;
     const c = contenidoServidor || contenido;
     const setVal = (id, v) => { const el = $(id); if (el) el.value = v; };
@@ -870,15 +879,15 @@ async function subirFoto(fileInput, destination) {
     const body = new FormData();
     body.append('foto', file);
     const r = await adminFetch('/api/administracion/fotos', { method: 'POST', body });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude subir la imagen');
+    if (!r.ok) throw await errorDeApi(r, 'No pude subir la imagen');
     const d = await r.json();
     $(destination).value = `${URL_BACKEND}${d.foto}`;
     estadoAdmin('Foto subida. Guarda el recuerdo para aplicar el cambio.');
   } catch (e) { estadoAdmin(e.message, true); }
 }
 
-const loadAdmin = $('loadAdmin');
-if (loadAdmin) loadAdmin.onclick = entradaAdmin;
+const adminLoginForm = $('adminLoginForm');
+if (adminLoginForm) adminLoginForm.onsubmit = e => { e.preventDefault(); entradaAdmin(); };
 
 const editSelect = $('editSelect');
 if (editSelect) editSelect.onchange = seleccionarMensaje;
@@ -908,7 +917,7 @@ if (saveEdit) saveEdit.onclick = async () => {
     const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, {
       method: 'PUT', body: JSON.stringify({ mensaje: $('editMessage').value.trim(), foto: $('editPhoto').value.trim() })
     });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el recuerdo');
+    if (!r.ok) throw await errorDeApi(r, 'No pude guardar el recuerdo');
     const actualizado = await r.json();
     mensajes = mensajes.map(m => String(m.id) === String(actualizado.id) ? actualizado : m);
     renderMensajes(); estadoAdmin('Recuerdo actualizado.');
@@ -921,7 +930,7 @@ if (deleteMessage) deleteMessage.onclick = async () => {
   if (!id) return;
   try {
     const r = await adminFetch(`/api/administracion/cumplidos/${encodeURIComponent(id)}`, { method: 'DELETE' });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude eliminar el recuerdo');
+    if (!r.ok) throw await errorDeApi(r, 'No pude eliminar el recuerdo');
     mensajes = mensajes.filter(m => String(m.id) !== String(id));
     renderMensajes(); estadoAdmin('Recuerdo eliminado.');
   } catch (e) { estadoAdmin(e.message, true); }
@@ -935,7 +944,7 @@ if (addMessage) addMessage.onclick = async () => {
     const r = await adminFetch('/api/administracion/cumplidos', {
       method: 'POST', body: JSON.stringify({ mensaje, foto: $('newPhoto').value.trim() })
     });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude añadir el recuerdo');
+    if (!r.ok) throw await errorDeApi(r, 'No pude añadir el recuerdo');
     $('newMessage').value = ''; $('newPhoto').value = ''; $('newPhotoFile').value = '';
     await entradaAdmin(); estadoAdmin('Nuevo recuerdo añadido.');
   } catch (e) { estadoAdmin(e.message, true); }
@@ -945,7 +954,7 @@ const saveLetter = $('saveLetter');
 if (saveLetter) saveLetter.onclick = async () => {
   try {
     const r = await adminFetch('/api/administracion/carta', { method: 'PUT', body: JSON.stringify({ carta: $('adminLetter').value }) });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar la carta');
+    if (!r.ok) throw await errorDeApi(r, 'No pude guardar la carta');
     estadoAdmin('Carta guardada.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
@@ -956,7 +965,7 @@ if (saveGreetings) saveGreetings.onclick = async () => {
     const r = await adminFetch('/api/administracion/saludos', {
       method: 'PUT', body: JSON.stringify({ manana: $('greetingMorning').value, noche: $('greetingNight').value })
     });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar los saludos');
+    if (!r.ok) throw await errorDeApi(r, 'No pude guardar los saludos');
     estadoAdmin('Saludos guardados.');
   } catch (e) { estadoAdmin(e.message, true); }
 };
@@ -970,7 +979,7 @@ if (saveContent) saveContent.onclick = async () => {
     // El backend exige todas las colecciones: se reenvían las que esta página no edita.
     const body = { ...contenidoServidor, ...data };
     const r = await adminFetch('/api/administracion/contenido', { method: 'PUT', body: JSON.stringify(body) });
-    if (!r.ok) throw new Error((await r.json()).detail || 'No pude guardar el contenido');
+    if (!r.ok) throw await errorDeApi(r, 'No pude guardar el contenido');
     contenidoServidor = body;
     contenido = data;
     renderContenido();
@@ -995,60 +1004,6 @@ window.addEventListener('mousemove', e => {
   document.body.style.setProperty('--mouse-x', `${x}%`);
   document.body.style.setProperty('--mouse-y', `${y}%`);
 });
-
-// Canvas de pétalos para la celebración
-const petalCanvas = document.createElement('canvas');
-petalCanvas.className = 'petal-canvas';
-document.body.appendChild(petalCanvas);
-const pctx = petalCanvas.getContext('2d');
-let petals = [];
-function resizePetalCanvas() {
-  petalCanvas.width = window.innerWidth;
-  petalCanvas.height = window.innerHeight;
-}
-function createPetal() {
-  return {
-    x: Math.random() * petalCanvas.width,
-    y: -30,
-    vx: (Math.random() - 0.5) * 2,
-    vy: Math.random() * 2 + 1,
-    rot: Math.random() * 360,
-    vrot: (Math.random() - 0.5) * 4,
-    size: Math.random() * 8 + 6,
-    color: Math.random() > 0.5 ? '#c27ba0' : '#d8a3b5',
-    opacity: Math.random() * 0.6 + 0.3
-  };
-}
-function spawnPetals(n) {
-  for (let i = 0; i < n; i++) petals.push(createPetal());
-}
-function drawPetals() {
-  pctx.clearRect(0, 0, petalCanvas.width, petalCanvas.height);
-  for (const p of petals) {
-    p.x += p.vx;
-    p.y += p.vy;
-    p.rot += p.vrot;
-    pctx.save();
-    pctx.translate(p.x, p.y);
-    pctx.rotate(p.rot * Math.PI / 180);
-    pctx.globalAlpha = p.opacity;
-    pctx.fillStyle = p.color;
-    pctx.beginPath();
-    pctx.moveTo(0, -p.size / 2);
-    pctx.quadraticCurveTo(p.size / 4, 0, 0, p.size / 2);
-    pctx.quadraticCurveTo(-p.size / 4, 0, 0, -p.size / 2);
-    pctx.fill();
-    pctx.restore();
-    if (p.y > petalCanvas.height + 50) {
-      Object.assign(p, createPetal());
-      p.y = -30;
-    }
-  }
-  requestAnimationFrame(drawPetals);
-}
-resizePetalCanvas();
-window.addEventListener('resize', resizePetalCanvas);
-drawPetals();
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', () => {

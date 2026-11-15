@@ -1,13 +1,15 @@
-const CACHE_NAME = 'dallana-v2.3';
+const CACHE_NAME = 'dallana-v2.5';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css',
-  './Dallana.js',
+  './Dallana.css?v=2.4',
+  './Dallana.js?v=2.5',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/fotos/migeo.jpg',
-  './assets/stickers/stikers3.png'
+  './assets/stickers/stikers3.png',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -21,31 +23,25 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// Red primero: así cada publicación se ve al instante; la caché solo cubre el modo sin conexión.
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  // If request is to backend API, network-first
-  if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
-  // Otherwise stale-while-revalidate for static files
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  const mismoOrigen = url.origin === self.location.origin;
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      const fetchPromise = fetch(event.request).then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-        }
-        return networkResponse;
-      }).catch(() => cachedResponse);
-      return cachedResponse || fetchPromise;
-    })
+    fetch(request).then(response => {
+      if (mismoOrigen && response.ok && !url.pathname.includes('/api/')) {
+        const copia = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(request, copia));
+      }
+      return response;
+    }).catch(() =>
+      caches.match(request).then(cached => cached || (request.mode === 'navigate' ? caches.match('./Dallana.html') : Response.error()))
+    )
   );
 });
