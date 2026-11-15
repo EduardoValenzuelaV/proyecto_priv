@@ -209,7 +209,7 @@ if (!HTMLDialogElement.prototype.showModal) {
    ============================================================ */
 const heartDrift = $('heartDrift');
 if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const heartColors = ['#c0386a', '#ff8fa3', '#f7b3c7'];
+  const heartColors = ['#e0303f', '#3d72c4', '#4f9a4a', '#ff5a5f', '#6fa0e8', '#7cc46a'];
   function lanzarCorazon() {
     const heart = document.createElement('span');
     heart.className = 'drift-heart';
@@ -252,7 +252,7 @@ function lanzarCelebracion() {
   const container = $('celebrationContainer');
   if (!container) return;
   const simbolos = ['♥', '❀', '✿', '✧', '♡'];
-  const colores = ['#d82148', '#e94560', '#f2789f', '#ff9494', '#f6b8b8'];
+  const colores = ['#e0303f', '#ff5a5f', '#3d72c4', '#6fa0e8', '#4f9a4a', '#f2c14e'];
   for (let i = 0; i < 40; i++) {
     const el = document.createElement('span');
     el.className = 'celebration-petal';
@@ -361,13 +361,28 @@ async function pedir(url, label = 'Un mensaje para ti') {
 /* ============================================================
    CARTAS "ÁBREME CUANDO..."
    ============================================================ */
+// Como una carta escrita a mano: las primeras palabras de cada frase van resaltadas con marcador
+function escribirConResaltes(el, texto) {
+  const tonos = ['r', 'a', 'v', 'm'];
+  const frases = String(texto).match(/[^.!?]+[.!?]*\s*/g) || [String(texto)];
+  el.replaceChildren();
+  frases.forEach((f, i) => {
+    const m = f.match(/^(\s*)(\S+\s+\S+)([\s\S]*)$/);
+    if (!m) { el.append(f); return; }
+    const mk = document.createElement('mark');
+    mk.className = `resalte resalte--${tonos[i % tonos.length]}`;
+    mk.textContent = m[2];
+    el.append(m[1], mk, m[3]);
+  });
+}
+
 function abrirCartaDeAnimo(carta) {
   const scene = $('letterScene');
   const dlg = $('openWhenDialog');
   if (!scene || !dlg) return;
   scene.classList.remove('is-opening', 'is-open');
   const t1 = $('openWhenNoteTitle'); if (t1) t1.textContent = carta.titulo || 'Una carta para ti';
-  const m = $('openWhenMessage'); if (m) m.textContent = carta.mensaje || 'Aquí tienes unas palabras para este momento.';
+  const m = $('openWhenMessage'); if (m) escribirConResaltes(m, carta.mensaje || 'Aquí tienes unas palabras para este momento.');
   const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
   dlg.showModal();
   requestAnimationFrame(() => scene.classList.add('is-opening'));
@@ -388,7 +403,15 @@ function renderCartas() {
   (contenido.cartas || []).forEach((c, i) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'open-card';
-    b.textContent = c.titulo || `Carta ${i + 1}`;
+    const titulo = c.titulo || `Carta ${i + 1}`;
+    // Sobre: solapa, carta asomando y sello; "Ábreme cuando" va como etiqueta y el resto a mano
+    const m = titulo.match(/^(ábreme cuando)\s+(.+)$/i);
+    const deco = cls => { const s = document.createElement('span'); s.className = cls; s.setAttribute('aria-hidden', 'true'); return s; };
+    const sello = deco('oc-seal'); sello.textContent = '♥';
+    const etiqueta = deco('oc-label'); etiqueta.textContent = m ? m[1] : `Carta Nº ${i + 1}`;
+    const texto = document.createElement('span'); texto.className = 'oc-title'; texto.textContent = m ? m[2] : titulo;
+    b.append(deco('oc-letter'), deco('oc-flap'), sello, deco('oc-deco oc-deco--i'), deco('oc-deco oc-deco--d'), etiqueta, texto);
+    b.setAttribute('aria-label', titulo);
     b.setAttribute('aria-haspopup', 'dialog');
     b.onclick = () => abrirCartaDeAnimo(c);
     host.append(b);
