@@ -1,9 +1,9 @@
-const CACHE_NAME = 'dallana-v3.2';
+const CACHE_NAME = 'dallana-v3.5';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
   './Dallana.css?v=3.2',
-  './Dallana.js?v=3.2',
+  './Dallana.js?v=3.5',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/musica/Taylor%20Swift%20-%20Love%20Story.mp3',
@@ -13,6 +13,7 @@ const ASSETS_TO_CACHE = [
   './assets/musica/Billie%20Eilish%20-%20CHIHIRO%20(Official%20Music%20Video).mp3',
   './assets/musica/Nessa%20Barrett%20-%20die%20first%20(official%20music%20video).mp3',
   './assets/musica/Billie%20Eilish%20-%20BIRDS%20OF%20A%20FEATHER%20(Official%20Music%20Video).mp3',
+  './assets/musica/The%20Verve%20-%20Bitter%20Sweet%20Symphony.mp3',
   './assets/fotos/migeo.jpg',
   './assets/stickers/stikers3.png',
   './assets/icons/icon-192.png',

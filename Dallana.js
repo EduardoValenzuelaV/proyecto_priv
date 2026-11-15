@@ -127,7 +127,8 @@ const PLAYLIST = [
   {nombre:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video)', archivo:'Swedish House Mafia and The Weeknd - Moth To A Flame (Official Video).mp3'},
   {nombre:'Billie Eilish - CHIHIRO (Official Music Video)', archivo:'Billie Eilish - CHIHIRO (Official Music Video).mp3'},
   {nombre:'Nessa Barrett - die first (official music video)', archivo:'Nessa Barrett - die first (official music video).mp3'},
-  {nombre:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video)', archivo:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video).mp3'}
+  {nombre:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video)', archivo:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video).mp3'},
+  {nombre:'The Verve - Bitter Sweet Symphony', archivo:'The Verve - Bitter Sweet Symphony.mp3'}
 ];
 
 /* ============================================================
@@ -677,11 +678,16 @@ function actualizarPista(indice, reproducir = false) {
   const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Canción ${musicIndex + 1} de ${PLAYLIST.length}`;
   if (!musicAudio) return;
   musicAudio.src = `assets/musica/${encodeURIComponent(pista.archivo)}`;
-  musicAudio.load();
-  if (reproducir) musicAudio.play().catch(() => {
+  if (reproducir) musicAudio.play().then(() => {
+    const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${pista.nombre}`;
+  }).catch(() => {
     const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo reproducir esta canción.';
   });
 }
+
+// Deja la primera pista lista antes de que se pulse reproducir. Así el gesto del
+// usuario no compite con un cambio de fuente que algunos navegadores cancelan.
+actualizarPista(musicIndex);
 
 const musicPrev = $('musicPrev');
 if (musicPrev) musicPrev.onclick = () => actualizarPista(musicIndex - 1, Boolean(musicAudio && !musicAudio.paused));
