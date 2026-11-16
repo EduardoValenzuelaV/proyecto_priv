@@ -252,12 +252,36 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .sticker-flower{width:clamp(92px,24vw,250px);height:auto;transform:rotate(4deg);filter:drop-shadow(0 10px 12px rgba(60,45,40,.2));pointer-events:none}
 @media (max-width:599px){.cover .eyebrow::after{display:none}}
 
-/* ============ 01 · NUESTRA CANCIÓN ============ */
+/* ============ 01 · NUESTRA CANCIÓN ============
+   Polaroid con cinta washi + vinilo que asoma por detrás y gira al sonar. */
 .music-player{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.album-stage{position:relative;isolation:isolate;width:min(100%,280px);margin-bottom:6px}
+.album-stage::before{
+  content:"";position:absolute;z-index:3;top:-13px;left:50%;width:104px;height:28px;
+  transform:translateX(-50%) rotate(-4deg);
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px),rgba(240,150,140,.78);
+  box-shadow:0 1px 3px rgba(47,42,58,.12);
+}
+.vinyl{
+  position:absolute;z-index:0;right:-16%;bottom:-5%;width:80%;height:auto;
+  filter:drop-shadow(0 8px 10px rgba(47,42,58,.28));animation:girar 6s linear infinite paused;
+}
+.vinyl-disc{fill:var(--tinta)}
+.vinyl-groove{fill:none;stroke:#fff;stroke-opacity:.12;stroke-width:1}
+.vinyl-label{fill:var(--vino)}
+.vinyl-heart{fill:#fff}
+.vinyl-hole{fill:var(--tarjeta)}
+.music-player.is-playing .vinyl{animation-play-state:running}
+@keyframes girar{to{transform:rotate(360deg)}}
 .album-art{
-  position:relative;width:min(100%,280px);aspect-ratio:1;overflow:hidden;
+  position:relative;z-index:1;width:100%;aspect-ratio:1;overflow:hidden;
   border:10px solid #fff;border-bottom-width:34px;border-radius:6px;
-  background:var(--rosado);box-shadow:var(--sombra-alta);transform:rotate(-2deg);
+  background:var(--rosado);box-shadow:var(--sombra-alta);transform:rotate(-2deg);transition:transform .5s ease;
+}
+.music-player.is-playing .album-art{transform:rotate(-.5deg)}
+.album-art::after{
+  content:"♡ tú y yo";position:absolute;right:0;bottom:-30px;left:0;
+  color:var(--vino);font:600 20px/26px var(--firma);text-align:center;pointer-events:none;
 }
 .album-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .album-heart{
@@ -270,29 +294,40 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .secret-message{position:absolute;z-index:3;right:8px;bottom:8px;left:8px;padding:8px 10px;border-radius:10px;background:rgba(255,253,249,.95);color:var(--vino);font:600 18px var(--firma);text-align:center}
 .secret-message[hidden]{display:none}
 .player-main{width:100%}
-.track-heading h2{font-size:clamp(28px,5vw,38px)}
-.track-heading p{margin-top:6px;color:var(--tinta-suave);font:italic 16px var(--serif)}
-.waveform{display:flex;align-items:center;justify-content:center;gap:4px;width:min(100%,320px);height:40px}
-.wave-bar{display:block;flex:1;max-width:4px;height:var(--height);border-radius:4px;background:#b9cdee;transform-origin:center;transition:background .3s}
-.music-player.is-playing .wave-bar{background:var(--azul);animation:wave 1.1s ease-in-out infinite}
+.track-heading h2{font-size:clamp(26px,4.6vw,36px);font-weight:500;line-height:1.12}
+.track-heading p{margin-top:6px;color:var(--vino);font:600 22px/1.2 var(--firma)}
+.track-heading p::before{content:"♡ "}
+.music-progress{width:min(100%,360px)}
+.waveform{display:flex;align-items:center;gap:3px;width:100%;height:42px;cursor:pointer;border-radius:6px}
+.wave-bar{display:block;flex:1;max-width:5px;height:var(--height);border-radius:4px;background:#b9cdee;transform-origin:center;transition:background .25s}
+.wave-bar.on{background:var(--vino)}
+.music-player.is-playing .wave-bar{animation:wave 1.1s ease-in-out infinite}
 .music-player.is-playing .wave-bar:nth-child(2n){animation-delay:-.4s}
 .music-player.is-playing .wave-bar:nth-child(3n){animation-delay:-.75s}
-@keyframes wave{50%{transform:scaleY(.45)}}
+@keyframes wave{50%{transform:scaleY(.55)}}
+.music-time{display:flex;justify-content:space-between;margin-top:2px;color:var(--tinta-suave);font:500 12px var(--sans);font-variant-numeric:tabular-nums}
 .music-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;width:100%}
+.music-controls svg,.music-volume svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .music-control,.music-play{display:grid;place-items:center;border:0;cursor:pointer}
-.music-control{width:44px;height:44px;border-radius:50%;background:transparent;color:var(--tinta);font-size:16px}
+.music-control{width:44px;height:44px;border-radius:50%;background:transparent;color:var(--vino)}
+.music-control svg{width:22px;height:22px;fill:currentColor}
 .music-control:hover{background:var(--rosado)}
-.music-play{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--vino),var(--coral));color:#fff;font-size:20px;box-shadow:0 8px 18px -8px rgba(120,60,50,.6)}
+.music-play{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--vino),var(--coral));color:#fff;box-shadow:0 8px 18px -8px rgba(120,60,50,.6);transition:transform .2s}
+.music-play svg{width:26px;height:26px;fill:#fff;stroke:#fff}
 .music-play:hover{background:var(--vino-oscuro)}
-.music-volume{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--tinta-suave);font-size:14px}
-.music-volume input{width:110px;accent-color:var(--vino);cursor:pointer}
-.music-volume output{min-width:40px;font-variant-numeric:tabular-nums;text-align:right}
-.music-hint{color:var(--tinta-suave);font-size:14px}
-@media (max-width:599px){.music-volume{flex-basis:100%;justify-content:center}}
+.music-player.is-playing .music-play{animation:latir 1.3s ease-in-out infinite}
+@keyframes latir{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.07)}}
+.music-volume{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--tinta-suave);font-size:13px}
+.music-volume svg{width:20px;height:20px}
+.music-volume input{width:96px;accent-color:var(--vino);cursor:pointer}
+.music-volume output{min-width:36px;font-variant-numeric:tabular-nums;text-align:right}
+.music-hint{color:var(--tinta-suave);font:600 19px/1.3 var(--firma)}
+@media (max-width:599px){.music-volume{flex-basis:100%;justify-content:center}.album-stage{margin-bottom:12px}}
+@media (prefers-reduced-motion:reduce){.vinyl,.music-player.is-playing .music-play,.music-player.is-playing .wave-bar{animation:none}}
 @media (min-width:900px){
-  .music-player{display:grid;grid-template-columns:300px minmax(0,1fr);grid-template-areas:"art head" "art wave" "art ctrl" "art hint";align-content:center;gap:12px 48px;text-align:left}
-  .album-art{grid-area:art;width:100%}
-  .player-main{grid-area:head}.waveform{grid-area:wave;justify-content:flex-start;width:100%}
+  .music-player{display:grid;grid-template-columns:300px minmax(0,1fr);grid-template-areas:"art head" "art prog" "art ctrl" "art hint";align-content:center;gap:10px 64px;text-align:left}
+  .album-stage{grid-area:art;width:100%}
+  .player-main{grid-area:head}.music-progress{grid-area:prog;width:100%;max-width:420px}
   .music-controls{grid-area:ctrl;justify-content:flex-start}.music-hint{grid-area:hint}
 }
 

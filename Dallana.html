@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=4.4">
+<link rel="stylesheet" href="Dallana.css?v=4.5">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -85,30 +85,37 @@
   <section class="music-player" aria-label="Reproductor de música">
     <img class="sticker sticker--tl" src="assets/stickers/stikers10.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     <img class="sticker sticker--tr" src="assets/stickers/stikers9.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
-    <div class="album-art" id="albumArt" aria-label="Ilustración de nuestra canción">
-      <img src="assets/fotos/portada-musica.png" alt="Retrato romántico de la pareja" class="album-photo" loading="lazy" decoding="async">
-      <button class="album-heart" id="secretHeart" type="button" aria-label="Corazón secreto">♥</button>
-      <span class="secret-message" id="secretMessage" hidden>Encontraste un detalle escondido ♥</span>
+    <div class="album-stage">
+      <svg class="vinyl" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="vinyl-disc" cx="100" cy="100" r="98"/>
+        <circle class="vinyl-groove" cx="100" cy="100" r="84"/>
+        <circle class="vinyl-groove" cx="100" cy="100" r="72"/>
+        <circle class="vinyl-groove" cx="100" cy="100" r="60"/>
+        <circle class="vinyl-label" cx="100" cy="100" r="34"/>
+        <path class="vinyl-heart" d="M100 114c-9-7-15-11-15-17a6.5 6.5 0 0 1 15-3 6.5 6.5 0 0 1 15 3c0 6-6 10-15 17z"/>
+        <circle class="vinyl-hole" cx="100" cy="100" r="3.5"/>
+      </svg>
+      <div class="album-art" id="albumArt" aria-label="Ilustración de nuestra canción">
+        <img src="assets/fotos/portada-musica.png" alt="Retrato romántico de la pareja" class="album-photo" loading="lazy" decoding="async">
+        <button class="album-heart" id="secretHeart" type="button" aria-label="Corazón secreto">♥</button>
+        <span class="secret-message" id="secretMessage" hidden>Encontraste un detalle escondido ♥</span>
+      </div>
     </div>
     <div class="player-main">
       <div class="track-heading">
         <div><span class="chapter-kicker">01 · Nuestra canción</span><h2>Nuestra canción</h2><p>Una melodía para escuchar juntos</p></div>
       </div>
     </div>
-    <div class="waveform" aria-hidden="true">
-      <i class="wave-bar" style="--height:35%"></i><i class="wave-bar" style="--height:75%"></i>
-      <i class="wave-bar" style="--height:48%"></i><i class="wave-bar" style="--height:90%"></i>
-      <i class="wave-bar" style="--height:56%"></i><i class="wave-bar" style="--height:72%"></i>
-      <i class="wave-bar" style="--height:40%"></i><i class="wave-bar" style="--height:82%"></i>
-      <i class="wave-bar" style="--height:52%"></i><i class="wave-bar" style="--height:68%"></i>
-      <i class="wave-bar" style="--height:38%"></i><i class="wave-bar" style="--height:88%"></i>
+    <div class="music-progress">
+      <div class="waveform" id="musicWave" role="slider" tabindex="0" aria-label="Avance de la canción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+      <div class="music-time" aria-hidden="true"><span id="musicCur">0:00</span><span id="musicDur">0:00</span></div>
     </div>
     <div class="music-controls" aria-label="Controles de música">
-      <button class="music-control" id="musicPrev" type="button" aria-label="Canción anterior">◀|</button>
-      <button class="music-play" id="musicPlay" type="button" aria-label="Reproducir música" aria-pressed="false">▶</button>
-      <button class="music-control" id="musicNext" type="button" aria-label="Canción siguiente">|▶</button>
+      <button class="music-control" id="musicPrev" type="button" aria-label="Canción anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5v13L9 12z"/></svg></button>
+      <button class="music-play" id="musicPlay" type="button" aria-label="Reproducir música" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13L19 12z"/></svg></button>
+      <button class="music-control" id="musicNext" type="button" aria-label="Canción siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M5 5.5v13L15 12z"/></svg></button>
       <label class="music-volume" for="musicVolume">
-        <span aria-hidden="true">🔊</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h4l5 4v-13l-5 4zM16.5 9a4 4 0 0 1 0 6"/></svg>
         <input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Volumen">
         <output id="musicVolumeValue" for="musicVolume">35%</output>
       </label>
@@ -341,6 +348,6 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<script src="Dallana.js?v=3.17" defer></script>
+<script src="Dallana.js?v=3.18" defer></script>
 </body>
 </html>

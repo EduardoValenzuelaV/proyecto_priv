@@ -798,6 +798,43 @@ if (openWhenDlg) openWhenDlg.addEventListener('close', () => {
    ============================================================ */
 let musicIndex = 0;
 const musicAudio = $('musicAudio');
+const ICONO_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13L19 12z"/></svg>';
+const ICONO_PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';
+const musicWave = $('musicWave');
+const WAVE_BARRAS = 40;
+
+if (musicWave) {
+  for (let i = 0; i < WAVE_BARRAS; i++) {
+    const alto = 30 + Math.round(55 * Math.abs(Math.sin(i * 0.55) * Math.cos(i * 0.21)) + (i * 37 % 15));
+    const barra = document.createElement('i');
+    barra.className = 'wave-bar';
+    barra.style.setProperty('--height', `${alto}%`);
+    musicWave.appendChild(barra);
+  }
+}
+
+function formatoTiempo(seg) {
+  if (!Number.isFinite(seg) || seg < 0) return '0:00';
+  const total = Math.floor(seg);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
+function pintarProgreso() {
+  if (!musicWave || !musicAudio) return;
+  const dur = musicAudio.duration;
+  const frac = Number.isFinite(dur) && dur > 0 ? Math.min(1, musicAudio.currentTime / dur) : 0;
+  const encendidas = Math.round(frac * WAVE_BARRAS);
+  musicWave.querySelectorAll('.wave-bar').forEach((barra, i) => barra.classList.toggle('on', i < encendidas));
+  musicWave.setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+  const cur = $('musicCur'); if (cur) cur.textContent = formatoTiempo(musicAudio.currentTime);
+  const total = $('musicDur'); if (total) total.textContent = formatoTiempo(dur);
+}
+
+function buscarEnPista(frac) {
+  if (!musicAudio || !Number.isFinite(musicAudio.duration)) return;
+  musicAudio.currentTime = Math.max(0, Math.min(1, frac)) * musicAudio.duration;
+  pintarProgreso();
+}
 
 function actualizarPista(indice, reproducir = false) {
   musicIndex = (indice + PLAYLIST.length) % PLAYLIST.length;
@@ -806,6 +843,7 @@ function actualizarPista(indice, reproducir = false) {
   const p = document.querySelector('.track-heading p'); if (p) p.textContent = `Canción ${musicIndex + 1} de ${PLAYLIST.length}`;
   if (!musicAudio) return;
   musicAudio.src = `assets/musica/${encodeURIComponent(pista.archivo)}`;
+  pintarProgreso();
   if (reproducir) musicAudio.play().then(() => {
     const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${pista.nombre}`;
   }).catch(() => {
@@ -836,7 +874,7 @@ if (musicPlay) musicPlay.onclick = async () => {
   if (!musicAudio.paused) {
     musicAudio.pause();
     musicPlay.closest('.music-player')?.classList.remove('is-playing');
-    musicPlay.textContent = '▶';
+    musicPlay.innerHTML = ICONO_PLAY;
     musicPlay.setAttribute('aria-label', 'Reproducir música');
     musicPlay.setAttribute('aria-pressed', 'false');
     const hint = $('musicHint'); if (hint) hint.textContent = 'Melodía en pausa';
@@ -849,7 +887,7 @@ if (musicPlay) musicPlay.onclick = async () => {
     return;
   }
   musicPlay.closest('.music-player')?.classList.add('is-playing');
-  musicPlay.textContent = 'Ⅱ';
+  musicPlay.innerHTML = ICONO_PAUSA;
   musicPlay.setAttribute('aria-label', 'Pausar música');
   musicPlay.setAttribute('aria-pressed', 'true');
   const hint = $('musicHint'); if (hint) hint.textContent = `Reproduciendo: ${PLAYLIST[musicIndex].nombre}`;
@@ -859,6 +897,21 @@ if (musicAudio) {
   musicAudio.onended = () => actualizarPista(musicIndex + 1, true);
   musicAudio.onerror = () => {
     const hint = $('musicHint'); if (hint) hint.textContent = 'No se pudo cargar esta canción.';
+  };
+  musicAudio.ontimeupdate = pintarProgreso;
+  musicAudio.onloadedmetadata = pintarProgreso;
+}
+
+if (musicWave) {
+  musicWave.onclick = (e) => {
+    const r = musicWave.getBoundingClientRect();
+    buscarEnPista((e.clientX - r.left) / r.width);
+  };
+  musicWave.onkeydown = (e) => {
+    if (!musicAudio || !Number.isFinite(musicAudio.duration)) return;
+    if (e.key === 'ArrowRight') { musicAudio.currentTime = Math.min(musicAudio.duration, musicAudio.currentTime + 5); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { musicAudio.currentTime = Math.max(0, musicAudio.currentTime - 5); e.preventDefault(); }
+    pintarProgreso();
   };
 }
 
