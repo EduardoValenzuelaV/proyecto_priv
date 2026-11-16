@@ -3,6 +3,8 @@
    ============================================================ */
 const URL_BACKEND = '';
 const FECHA_INICIO = '2026-10-17';
+// Aviso de visitas por ntfy.sh: suscríbete a este tema en la app ntfy. Vacío = sin aviso.
+const NTFY_TEMA = 'dallana-aviso-0232a591a0';
 const MENSAJES_PARA_CARTA = 10;
 
 /* Versión corta anterior de la carta (conservada como referencia local).
@@ -136,14 +138,11 @@ const RESPALDO = [
   'Estado actual: pensando en ti. Estado anterior: pensando en ti. Próximo estado: adivina.',
   'Tus ojitos deberían venir con advertencia: puede causar enamoramiento severo.',
   'Tengo una teoría: tu sonrisa debería estar prohibida. Es un peligro para mi concentración.',
-  'Tú estudias piedras, yo estudio tus sonrisas. Los dos somos muy dedicados.',
+  'Tú estudias rocas, yo estudio tus sonrisas. Los dos somos muy dedicados.',
   'Me encanta cuando defiendes tus ideas. Aunque a veces pierda yo. Bueno, casi siempre.',
   'Cuando cocinas no sé si me enamoro de la comida o de la cocinera. Bueno, sí sé.',
-  'Las Nik de chirimoya alegre tienen competencia: tú eres más alegre.',
-  'Si el día está gris, tranquila: yo te sigo viendo a todo color. Lo de comer por colores se pega.',
   'Mapa actualizado: Arauco sigue extrañando a Talca.',
   'Nivel de enamoramiento hoy: más que ayer, menos que mañana.',
-  'Me gustas incluso cuando tienes hambre y andas enojadita. Bueno, más después de que comes.',
   'Desde que te conozco sonrío mirando el celular. La gente ya me mira raro, y es tu culpa.',
   'Te prohíbo dudar de ti hoy. Firmado: tu amorcito, con toda la autoridad del mundo.',
   'Gracias por existir. En serio. Dale las gracias a tu mamá de mi parte.',
@@ -159,11 +158,9 @@ const RESPALDO = [
   'Hoy te quiero así, tal cual: con tus ocurrencias, tus tonteras y esa sonrisa.',
   'Si fueras una canción, te tendría en repetición todo el día. Ah, espera, ya lo hago contigo.',
   'Mensaje del futuro: seguimos juntos y te sigues riendo igual de bonito.',
-  'Eres lo mejor que me ha pasado este año, y eso que el año ha estado bien movido.',
   'De todas mis notificaciones, las tuyas son las únicas que abro corriendo.',
   'Si alguna vez te sientes poca cosa, acuérdate de que hay alguien que se emociona porque le respondiste un mensaje.',
-  'Me encanta tu risa. Sobre todo cuando no puedes parar y terminas riéndote de que te estás riendo.',
-  'Te quiero, payasa linda. Eso era todo. 💙',
+  'Te quiero linda, eso era todo. 💙',
   'Noticia de último minuto: Dallana sigue siendo la más linda. Seguiremos informando.',
   'Si me preguntan qué hago en mi tiempo libre, la respuesta honesta es: pensar en ti.',
   'Estoy haciendo una lista de tus defectos. Por ahora va en blanco. Seguiré buscando.',
@@ -183,12 +180,10 @@ const RESPALDO = [
   'Dato: la probabilidad de que esté pensando en ti ahora mismo es de un 99%. El 1% es cuando duermo. Y ahí sueño contigo.',
   'Tu risa debería venderse en farmacias. Cura cualquier cosa.',
   'Ya revisé y sí: sigues siendo mi persona favorita. Revisión diaria, resultado siempre igual.',
-  'No sé cocinar como tú, pero sé comer como si no hubiera mañana. Somos el equipo perfecto.',
   'Hoy te mereces un premio. ¿Por qué? Por ser tú. Premio: este mensaje. Y un beso cuando nos veamos.',
-  'Si te sientes cansada, imagina que te estoy haciendo cariño en el pelo. Ya, eso.',
+  'Si te sientes cansada, imagina que te estoy haciendo cariño en el pelo.',
   'Mi superpoder secreto: reconocer tu risa en cualquier parte.',
   'Te aviso que hoy estás especialmente linda. No sé cómo lo sé, pero lo sé.',
-  'Cuando me pongo serio y tú me haces reír igual, te odio un poquito. Mentira, te amo más.',
 
 ].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
 
@@ -1158,8 +1153,35 @@ if (saveContent) saveContent.onclick = async () => {
 };
 
 /* ============================================================
+   AVISO DE VISITA
+   Enlace para Dallana: Dallana.html?de=dallana
+   Para no avisarte a ti mismo, abre una vez Dallana.html?yo=1 en tu navegador.
+   ============================================================ */
+function avisarVisita() {
+  try {
+    if (!NTFY_TEMA) return;
+    if (['localhost', '127.0.0.1', ''].includes(location.hostname)) return;
+    const params = new URLSearchParams(location.search);
+    if (params.get('yo') === '1') { localStorage.setItem('dallanaYo', '1'); return; }
+    if (localStorage.getItem('dallanaYo') === '1') return;
+    if (sessionStorage.getItem('dallanaAvisado')) return;
+    sessionStorage.setItem('dallanaAvisado', '1');
+    const de = (params.get('de') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
+    const quien = de ? de.charAt(0).toUpperCase() + de.slice(1) : 'Alguien (visita anónima)';
+    const hora = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
+    fetch(`https://ntfy.sh/${NTFY_TEMA}`, {
+      method: 'POST',
+      body: `${quien} abrió la página · ${hora}`,
+      headers: { Title: 'Visita en tu pagina', Tags: de ? 'heart' : 'eyes' },
+      keepalive: true
+    }).catch(() => {});
+  } catch {}
+}
+
+/* ============================================================
    INICIALIZACIÓN
    ============================================================ */
+avisarVisita();
 actualizarContador();
 actualizarProgreso(false);
 actualizarBotonFavoritos();
