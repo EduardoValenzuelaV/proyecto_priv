@@ -429,7 +429,7 @@ async function pedir(url, label = 'Un mensaje para ti') {
       if (!r.ok) throw new Error();
       const data = await r.json();
       mostrar(data, data.tipo || label);
-      if (foot) foot.textContent = `${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`;
+      if (foot) foot.textContent = `${seen.size} ${seen.size === 1 ? 'recuerdo descubierto' : 'recuerdos descubiertos'} · ${favorites.size} favoritos ♥`;
       return;
     } catch {
       clearTimeout(wakeTimer);
@@ -438,7 +438,7 @@ async function pedir(url, label = 'Un mensaje para ti') {
   const opciones = RESPALDO.filter(item => item.id !== currentId);
   const item = opciones[Math.floor(Math.random() * opciones.length)] || RESPALDO[0];
   mostrar(item, label);
-  if (foot) foot.textContent = `${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`;
+  if (foot) foot.textContent = `${seen.size} ${seen.size === 1 ? 'recuerdo descubierto' : 'recuerdos descubiertos'} · ${favorites.size} favoritos ♥`;
 }
 
 /* ============================================================
@@ -686,7 +686,7 @@ if (dailyBtn) dailyBtn.onclick = () => {
   const item = RESPALDO[((n % RESPALDO.length) + RESPALDO.length) % RESPALDO.length];
   mostrar(item, 'Tu mensaje de hoy');
   const foot = $('foot');
-  if (foot) foot.textContent = `${seen.size} recuerdos descubiertos · ${favorites.size} favoritos ♥`;
+  if (foot) foot.textContent = `${seen.size} ${seen.size === 1 ? 'recuerdo descubierto' : 'recuerdos descubiertos'} · ${favorites.size} favoritos ♥`;
 };
 
 const favBtn = $('favorite');

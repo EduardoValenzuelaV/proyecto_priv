@@ -508,7 +508,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 
 /* Fotos tipo Polaroid pegadas con cinta washi */
 .photo-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin-top:40px;padding:0 6px}
-@media (min-width:600px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 32px}}
+@media (min-width:600px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 32px;align-items:start}}
 .photo-card{
   --cinta:rgba(240,150,140,.78);--giro:-1.8deg;
   position:relative;margin:0;padding:12px 12px 0;background:#fff;
