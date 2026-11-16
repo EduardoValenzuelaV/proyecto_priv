@@ -352,12 +352,28 @@ function urlFoto(foto) {
   try { return new URL(foto, `${URL_BACKEND}/`).href; } catch { return foto; }
 }
 
+// Corazoncitos que salen del sello cada vez que llega un mensaje nuevo
+function soltarCorazoncitos(paper) {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colores = ['#e0303f', '#3d72c4', '#4f9a4a', '#ff5a5f'];
+  for (let i = 0; i < 6; i++) {
+    const c = document.createElement('span');
+    c.className = 'paper-chispa'; c.textContent = '♥'; c.setAttribute('aria-hidden', 'true');
+    c.style.color = colores[i % colores.length];
+    c.style.setProperty('--dx', `${Math.round(Math.random() * 70 - 45)}px`);
+    c.style.setProperty('--dy', `${Math.round(-40 - Math.random() * 50)}px`);
+    c.style.animationDelay = `${i * 70}ms`;
+    paper.append(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+}
+
 function mostrar(d, label = 'Un mensaje para ti') {
   if (!d) return;
   currentId = String(d.id);
   currentMensaje = d.mensaje || '';
   const tag = $('tag'); if (tag) tag.textContent = label;
-  const msg = $('message'); if (msg) msg.textContent = d.mensaje || '';
+  const msg = $('message'); if (msg) escribirConResaltes(msg, d.mensaje || '');
   const image = $('memory');
   const url = urlFoto(d.foto);
   if (image) {
@@ -378,8 +394,10 @@ function mostrar(d, label = 'Un mensaje para ti') {
   }
   const paper = $('paper');
   if (paper) {
+    paper.classList.remove('new'); void paper.offsetWidth;
     paper.classList.add('new');
-    setTimeout(() => paper.classList.remove('new'), 500);
+    setTimeout(() => paper.classList.remove('new'), 900);
+    soltarCorazoncitos(paper);
   }
   actualizarProgreso(true);
 }
