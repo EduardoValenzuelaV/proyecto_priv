@@ -479,7 +479,7 @@ function renderCartas() {
     const sello = deco('oc-seal'); sello.textContent = '♥';
     const etiqueta = deco('oc-label'); etiqueta.textContent = m ? m[1] : `Carta Nº ${i + 1}`;
     const texto = document.createElement('span'); texto.className = 'oc-title'; texto.textContent = m ? m[2] : titulo;
-    b.append(deco('oc-letter'), deco('oc-flap'), sello, deco('oc-deco oc-deco--i'), deco('oc-deco oc-deco--d'), etiqueta, texto);
+    b.append(deco('oc-letter'), deco('oc-flap'), deco('oc-cordel'), deco('oc-ramito'), sello, deco('oc-deco oc-deco--i'), deco('oc-deco oc-deco--d'), etiqueta, texto);
     b.setAttribute('aria-label', titulo);
     b.setAttribute('aria-haspopup', 'dialog');
     b.onclick = () => abrirCartaDeAnimo(c);
