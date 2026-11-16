@@ -298,11 +298,34 @@ function lanzarCelebracion() {
   }
 }
 
+const SVG_CORAZON = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5.5 15.6 2 12.2 2 7.9 2 4.8 4.4 2.5 7.3 2.5c1.9 0 3.6 1 4.7 2.6 1.1-1.6 2.8-2.6 4.7-2.6 2.9 0 5.3 2.3 5.3 5.4 0 4.3-3.5 7.7-10 12.6z"/></svg>';
+function pintarCorazones(cantidad) {
+  const caja = $('progressHearts'); if (!caja) return;
+  if (caja.children.length !== MENSAJES_PARA_CARTA) {
+    caja.innerHTML = '';
+    for (let i = 0; i < MENSAJES_PARA_CARTA; i++) {
+      const c = document.createElement('span');
+      c.className = 'ph-corazon'; c.style.setProperty('--i', i);
+      c.innerHTML = SVG_CORAZON;
+      caja.append(c);
+    }
+  }
+  [...caja.children].forEach((c, i) => {
+    const lleno = i < cantidad;
+    if (lleno && !c.classList.contains('lleno') && caja.dataset.listo) {
+      c.classList.add('late'); setTimeout(() => c.classList.remove('late'), 700);
+    }
+    c.classList.toggle('lleno', lleno);
+  });
+  caja.dataset.listo = '1';
+  caja.classList.toggle('completo', cantidad >= MENSAJES_PARA_CARTA);
+  caja.setAttribute('aria-label', `${cantidad} de ${MENSAJES_PARA_CARTA} corazones`);
+}
+
 function actualizarProgreso(abrirSiNuevo = false) {
   const cantidad = Math.min(seen.size, MENSAJES_PARA_CARTA);
-  const porcentaje = cantidad / MENSAJES_PARA_CARTA * 100;
   const count = $('progressCount'); if (count) count.textContent = `${cantidad} / ${MENSAJES_PARA_CARTA}`;
-  const fill = $('progressFill'); if (fill) fill.style.width = `${porcentaje}%`;
+  pintarCorazones(cantidad);
   const boton = $('openLetter');
   if (cantidad >= MENSAJES_PARA_CARTA) {
     const label = $('progressLabel'); if (label) label.textContent = 'Tu carta ya está lista, Dallana';
