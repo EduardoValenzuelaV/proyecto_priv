@@ -455,6 +455,23 @@ function escribirConResaltes(el, texto) {
   });
 }
 
+/* En teléfono, achica la letra de la nota hasta que quepa entera (sin scroll), para ver texto y decoraciones juntos */
+function ajustarNotaAPantalla() {
+  const nota = document.querySelector('.animated-note');
+  const p = $('openWhenMessage'), h = $('openWhenNoteTitle');
+  if (!nota || !p || !h) return;
+  p.style.fontSize = ''; h.style.fontSize = '';
+  if (innerWidth >= 600) return;
+  let size = parseFloat(getComputedStyle(p).fontSize);
+  const ratioTitulo = parseFloat(getComputedStyle(h).fontSize) / size;
+  while (nota.scrollHeight > nota.clientHeight + 1 && size > 12) {
+    size -= 0.5;
+    p.style.fontSize = `${size}px`;
+    h.style.fontSize = `${size * ratioTitulo}px`;
+  }
+}
+addEventListener('resize', () => { if ($('openWhenDialog')?.open) ajustarNotaAPantalla(); });
+
 function abrirCartaDeAnimo(carta) {
   const scene = $('letterScene');
   const dlg = $('openWhenDialog');
@@ -464,6 +481,8 @@ function abrirCartaDeAnimo(carta) {
   const m = $('openWhenMessage'); if (m) escribirConResaltes(m, carta.mensaje || 'Aquí tienes unas palabras para este momento.');
   const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
   dlg.showModal();
+  ajustarNotaAPantalla();
+  if (document.fonts) document.fonts.ready.then(ajustarNotaAPantalla);
   requestAnimationFrame(() => scene.classList.add('is-opening'));
   const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620;
   setTimeout(() => { if (dlg.open) scene.classList.add('is-open'); }, delay);

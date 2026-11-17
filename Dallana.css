@@ -662,15 +662,15 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 @media (max-width:599px){
   .open-when-dialog{width:calc(100% - 12px);max-height:92dvh;padding:10px 4px;border-radius:16px;overflow:hidden}
   .open-when-dialog .close{top:8px;right:8px;width:36px;height:36px}
-  .letter-scene{min-height:0;height:min(640px,calc(92dvh - 20px))}
+  .letter-scene{min-height:0;height:calc(92dvh - 20px)}
   .animated-note{width:calc(100% - 4px);max-height:100%;padding:40px 22px 56px}
-  .nota-guirnalda{top:12px;left:10px;right:62px;height:16px;background-size:auto 16px}
+  .nota-guirnalda{top:12px;left:10px;right:96px;height:16px;background-size:auto 16px}
   .nota-tulipan{left:3px;top:96px;width:20px;height:58px}
   .nota-estrella{right:3px;width:26px;height:26px}
   .nota-flor{right:4px;bottom:52px;width:26px;height:26px}
   .nota-rama{bottom:6px;width:96px;height:32px;margin-left:-30px}
   .nota-esquina{left:4px;bottom:4px;width:34px;height:34px}
-  .nota-sticker{top:8px;width:54px}
+  .nota-sticker{top:6px;right:42px;width:50px}
   .animated-note>.chapter-kicker{margin-right:44px;font-size:11px}
   .animated-note h3{margin:0 20px 8px;font-size:clamp(21px,6vw,24px)}
   .animated-note p{font-size:clamp(17px,4.9vw,19px);line-height:1.38}
@@ -695,7 +695,7 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 @keyframes open-when-flap{to{transform:rotateX(180deg)}}
 @keyframes seal-away{to{opacity:0;transform:scale(.5)}}
 @keyframes note-unfold{0%{opacity:0;transform:translateY(35px) scale(.92);clip-path:inset(0 0 85% 0)}55%{opacity:1;clip-path:inset(0)}100%{opacity:1;transform:translateY(-4px) scale(1) rotate(-.8deg);clip-path:inset(0)}}
-@media (max-width:599px){.letter-scene{min-height:min(500px,74dvh)}.animated-envelope{height:180px}.envelope-seal{top:72px}}
+@media (max-width:599px){.letter-scene{min-height:0}.animated-envelope{height:180px}.envelope-seal{top:72px}}
 
 /* Favoritos */
 .favorites-list{display:flex;flex-direction:column;gap:10px}
