@@ -195,7 +195,8 @@ const PLAYLIST = [
   {nombre:'Billie Eilish - CHIHIRO (Official Music Video)', archivo:'Billie Eilish - CHIHIRO (Official Music Video).mp3'},
   {nombre:'Nessa Barrett - die first (official music video)', archivo:'Nessa Barrett - die first (official music video).mp3'},
   {nombre:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video)', archivo:'Billie Eilish - BIRDS OF A FEATHER (Official Music Video).mp3'},
-  {nombre:'The Verve - Bitter Sweet Symphony', archivo:'The Verve - Bitter Sweet Symphony.mp3'}
+  {nombre:'The Verve - Bitter Sweet Symphony', archivo:'The Verve - Bitter Sweet Symphony.mp3'},
+  {nombre:'New West - Those Eyes (Chapter 1)', archivo:'New West - Those Eyes (Chapter 1).mp3'}
 ];
 
 /* ============================================================

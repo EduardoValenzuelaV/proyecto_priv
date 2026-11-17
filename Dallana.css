@@ -616,11 +616,11 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 @keyframes letter-unfold{from{opacity:0;clip-path:inset(0 0 85% 0)}60%{clip-path:inset(0)}to{opacity:1;clip-path:inset(0)}}
 
 /* Ábreme cuando: sobre animado */
-.open-when-dialog{width:min(620px,calc(100% - 20px));text-align:center}
+.open-when-dialog{width:min(780px,calc(100% - 20px));text-align:center}
 .open-when-dialog{background:radial-gradient(circle at 30% 20%,#fbf6ee,#efe6d8)}
 /* El título ya va escrito en la carta: el del diálogo queda solo para lectores de pantalla */
 .open-when-dialog h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.letter-scene{position:relative;display:grid;min-height:min(520px,74dvh);place-items:center;perspective:1000px;overflow:hidden}
+.letter-scene{position:relative;display:grid;min-height:min(700px,80dvh);place-items:center;perspective:1000px;overflow:hidden}
 .animated-envelope{position:absolute;z-index:2;width:min(340px,80vw);height:210px;transform-style:preserve-3d;transition:transform .7s ease,opacity .5s ease}
 .envelope-back,.envelope-front,.envelope-flap{position:absolute;inset:0;border:1px solid #e2cdb8;border-radius:8px;background:#fff8f2}
 .envelope-back{box-shadow:var(--sombra-alta)}
@@ -628,8 +628,8 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .envelope-flap{z-index:3;clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:top;backface-visibility:hidden;background:var(--rosa)}
 .envelope-seal{position:absolute;z-index:4;top:88px;left:calc(50% - 20px);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--vino);color:#fff;font-size:18px;box-shadow:0 3px 8px rgba(60,45,40,.3)}
 .animated-note{
-  position:absolute;z-index:1;width:min(500px,94%);max-height:min(500px,72dvh);overflow:auto;
-  padding:52px 52px 78px;text-align:center;
+  position:absolute;z-index:1;width:min(680px,96%);max-height:min(680px,78dvh);overflow-x:hidden;overflow-y:auto;
+  padding:58px 60px 84px;text-align:center;
   border:1px solid #e9e4dc;border-radius:3px;
   background:#fffefc;color:#2b2a33;
   box-shadow:0 1px 2px rgba(0,0,0,.06),0 18px 36px -14px rgba(60,45,40,.35);
@@ -647,8 +647,8 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .nota-sticker{position:absolute;z-index:2;top:-4px;right:-2px;width:84px;height:auto;transform:rotate(9deg);filter:drop-shadow(0 4px 6px rgba(60,45,40,.25));pointer-events:none}
 .animated-note>.chapter-kicker,.animated-note h3,.animated-note p{position:relative;z-index:1}
 .animated-note>.chapter-kicker{margin:0 70px 4px 0;color:#8a8494;text-align:center}
-.animated-note h3{margin:0 56px 14px;color:#2b2a33;font:600 30px/1.1 var(--firma);letter-spacing:0}
-.animated-note p{color:#2b2a33;white-space:pre-wrap;font:600 25px/1.45 var(--firma);text-align:center;text-wrap:pretty}
+.animated-note h3{margin:0 56px 14px;color:#2b2a33;font:600 36px/1.1 var(--firma);letter-spacing:0}
+.animated-note p{color:#2b2a33;white-space:pre-wrap;font:600 30px/1.45 var(--firma);text-align:center;text-wrap:pretty}
 /* Resaltador: trazo irregular de marcador */
 .resalte{
   padding:0 .14em;margin:0 -.04em;border-radius:.4em .25em .45em .2em;color:inherit;
@@ -660,7 +660,7 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .resalte--v{--marcador:rgba(150,215,130,.45)}
 .resalte--m{--marcador:rgba(250,215,90,.55)}
 @media (max-width:599px){
-  .animated-note{width:96%;padding:46px 34px 70px}
+  .animated-note{width:97%;max-height:80dvh;padding:46px 30px 70px}
   .nota-guirnalda{left:12px;right:74px;height:16px;background-size:auto 16px}
   .nota-tulipan{left:4px;width:22px;height:64px}
   .nota-estrella{right:3px;width:30px;height:30px}
@@ -669,8 +669,8 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
   .nota-esquina{left:5px;bottom:5px;width:38px;height:38px}
   .nota-sticker{top:14px;width:62px}
   .animated-note>.chapter-kicker{margin-right:52px}
-  .animated-note h3{margin:0 30px 12px;font-size:26px}
-  .animated-note p{font-size:22px}
+  .animated-note h3{margin:0 30px 12px;font-size:29px}
+  .animated-note p{font-size:25px}
 }
 
 /* Viñetas (sobres): marco cosido y ramitas de flores en las esquinas */
