@@ -1409,6 +1409,15 @@ $('alejandroSprite')?.addEventListener('click', () => {
   else abrirAlejandro(0);
 });
 $('alejandroCerrar')?.addEventListener('click', () => cerrarAlejandro(false));
+/* En el teléfono, Alejandro se agacha mientras haces scroll para no tapar nada */
+let alejandroTimer = 0;
+addEventListener('scroll', () => {
+  const a = $('alejandro'), globo = $('alejandroGlobo');
+  if (!a || innerWidth >= 600 || (globo && !globo.hidden)) return;
+  a.classList.add('escondido');
+  clearTimeout(alejandroTimer);
+  alejandroTimer = setTimeout(() => a.classList.remove('escondido'), 1400);
+}, { passive: true });
 $('alejandroSiguiente')?.addEventListener('click', () => {
   if (alejandroPaso >= NOVEDADES.mensajes.length - 1) { cerrarAlejandro(true); return; }
   alejandroPaso++;

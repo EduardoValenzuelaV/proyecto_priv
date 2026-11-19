@@ -760,5 +760,14 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .alejandro-siguiente{min-height:32px;padding:4px 12px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
 .alejandro-cerrar{position:absolute;top:4px;right:6px;width:28px;height:28px;border:0;background:transparent;color:var(--vino);font-size:20px;line-height:1;cursor:pointer}
 @keyframes alejandro-globo-in{from{opacity:0;transform:translateY(8px) scale(.9)}}
-@media (max-width:599px){.alejandro-sprite{width:66px;height:81px;background-size:792px 81px}@keyframes alejandro-salto{to{background-position:-792px 0}}.alejandro-globo{margin-bottom:44px}}
+@media (max-width:599px){
+  .alejandro{left:2px;bottom:calc(2px + var(--safe-bottom));transition:transform .35s ease,opacity .35s ease}
+  .alejandro.escondido{transform:translateY(62%);opacity:.55}
+  .alejandro-sprite{width:52px;height:64px;background-size:624px 64px}
+  @keyframes alejandro-salto{to{background-position:-624px 0}}
+  .alejandro-globo{position:fixed;left:10px;right:10px;bottom:calc(70px + var(--safe-bottom));width:auto;max-width:420px;margin:0;padding:10px 12px}
+  .alejandro-globo::before{left:20px;bottom:-12px;border:8px solid transparent;border-top:12px solid var(--vino);border-bottom:0}
+  .alejandro-globo::after{left:22px;bottom:-7px;border:6px solid transparent;border-top:9px solid #fffefb;border-bottom:0}
+  .alejandro-globo p{font-size:14px;margin:2px 0 6px}
+}
 @media (prefers-reduced-motion:reduce){.alejandro-sprite,.alejandro-globo{animation:none}}
