@@ -347,6 +347,7 @@ function actualizarProgreso(abrirSiNuevo = false) {
       lanzarCelebracion();
       cargarCarta();
       const dlg = $('letterDialog'); if (dlg) dlg.showModal();
+      notificar('desbloqueó y abrió tu carta principal 💌', 'love_letter');
     }
   } else {
     const label = $('progressLabel'); if (label) label.textContent = 'Descubre recuerdos para abrir tu carta';
@@ -481,6 +482,7 @@ function abrirCartaDeAnimo(carta) {
   const m = $('openWhenMessage'); if (m) escribirConResaltes(m, carta.mensaje || 'Aquí tienes unas palabras para este momento.');
   const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
   dlg.showModal();
+  notificar(`abrió la carta «${carta.titulo || 'Ábreme cuando'}»`, 'envelope');
   ajustarNotaAPantalla();
   if (document.fonts) document.fonts.ready.then(ajustarNotaAPantalla);
   requestAnimationFrame(() => scene.classList.add('is-opening'));
@@ -677,6 +679,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   const env = $('env');
   if (cover && cover.classList.contains('opening')) return;
   if (cover) cover.classList.add('opening');
+  notificar('abrió el sobre de la portada', 'envelope_with_arrow');
   if (env) env.classList.add('open');
   const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 780;
   setTimeout(() => {
@@ -688,6 +691,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
 const randomBtn = $('random');
 if (randomBtn) randomBtn.onclick = () => {
   vibrar();
+  actividad.recuerdos++;
   const q = currentId ? `?ultimo=${encodeURIComponent(currentId)}` : '';
   pedir(`${URL_BACKEND}/api/cumplido${q}`);
 };
@@ -695,6 +699,7 @@ if (randomBtn) randomBtn.onclick = () => {
 const dailyBtn = $('daily');
 if (dailyBtn) dailyBtn.onclick = () => {
   vibrar();
+  notificar('vio el mensaje del día', 'sunny');
   if (API_DISPONIBLE) { pedir(`${URL_BACKEND}/api/del-dia`, 'Tu mensaje de hoy'); return; }
   const ahora = new Date();
   const n = Math.floor(Date.UTC(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()) / 864e5);
@@ -713,6 +718,7 @@ if (favBtn) favBtn.onclick = () => {
   } else {
     favorites.add(currentId);
     favoriteTexts[currentId] = currentMensaje;
+    notificar(`guardó un favorito: «${String(currentMensaje || '').slice(0, 120)}»`, 'star');
   }
   guardarSet('dallanaFavorites', favorites);
   guardarJSON('dallanaFavoriteTexts', favoriteTexts);
@@ -800,6 +806,7 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
   lanzarCelebracion();
   cargarCarta();
   const dlg = $('letterDialog'); if (dlg) dlg.showModal();
+  notificar('volvió a leer tu carta principal', 'love_letter');
 };
 
 
@@ -1177,6 +1184,22 @@ if (saveContent) saveContent.onclick = async () => {
    Enlace para Dallana: Dallana.html?de=dallana
    Para no avisarte a ti mismo, abre una vez Dallana.html?yo=1 en tu navegador.
    ============================================================ */
+let avisosActivos = false;
+let quienVisita = '';
+const actividad = { recuerdos: 0, ultimaCancion: '' };
+
+function notificar(texto, tags = 'heart', titulo = 'Actividad en tu pagina') {
+  try {
+    if (!avisosActivos) return;
+    fetch(`https://ntfy.sh/${NTFY_TEMA}`, {
+      method: 'POST',
+      body: `${quienVisita} ${texto}`,
+      headers: { Title: titulo, Tags: tags },
+      keepalive: true
+    }).catch(() => {});
+  } catch {}
+}
+
 function avisarVisita() {
   try {
     if (!NTFY_TEMA) return;
@@ -1184,19 +1207,53 @@ function avisarVisita() {
     const params = new URLSearchParams(location.search);
     if (params.get('yo') === '1') { localStorage.setItem('dallanaYo', '1'); return; }
     if (localStorage.getItem('dallanaYo') === '1') return;
+    const de = (params.get('de') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
+    quienVisita = de ? de.charAt(0).toUpperCase() + de.slice(1) : 'Alguien (visita anónima)';
+    avisosActivos = true;
     if (sessionStorage.getItem('dallanaAvisado')) return;
     sessionStorage.setItem('dallanaAvisado', '1');
-    const de = (params.get('de') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
-    const quien = de ? de.charAt(0).toUpperCase() + de.slice(1) : 'Alguien (visita anónima)';
     const hora = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
-    fetch(`https://ntfy.sh/${NTFY_TEMA}`, {
-      method: 'POST',
-      body: `${quien} abrió la página · ${hora}`,
-      headers: { Title: 'Visita en tu pagina', Tags: de ? 'heart' : 'eyes' },
-      keepalive: true
-    }).catch(() => {});
+    notificar(`abrió la página · ${hora}`, de ? 'heart' : 'eyes', 'Visita en tu pagina');
   } catch {}
 }
+
+/* Canciones: avisa una vez por canción distinta (no al pausar y reanudar) */
+if (musicAudio) musicAudio.addEventListener('play', () => {
+  const nombre = PLAYLIST[musicIndex]?.nombre || 'una canción';
+  if (nombre === actividad.ultimaCancion) return;
+  actividad.ultimaCancion = nombre;
+  notificar(`puso «${nombre}»`, 'notes');
+});
+
+/* Tiempo en la página: cuenta solo el tiempo con la página a la vista (no el que pasa en otra app)
+   y avisa al salir o cambiar de app con lo que duró ese rato y el total de la visita. */
+let visibleDesde = document.visibilityState === 'visible' ? Date.now() : 0;
+let tiempoTotal = 0;
+const formatoDuracion = ms => {
+  const seg = Math.round(ms / 1000);
+  if (seg < 60) return `${seg} s`;
+  const min = Math.floor(seg / 60), resto = seg % 60;
+  if (min < 60) return resto ? `${min} min ${resto} s` : `${min} min`;
+  return `${Math.floor(min / 60)} h ${min % 60} min`;
+};
+function cerrarTramo() {
+  if (!visibleDesde) return;
+  const tramo = Date.now() - visibleDesde;
+  visibleDesde = 0;
+  tiempoTotal += tramo;
+  if (tramo < 10000) return;
+  const rec = actividad.recuerdos ? ` · vio ${actividad.recuerdos} ${actividad.recuerdos === 1 ? 'recuerdo' : 'recuerdos'}` : '';
+  const total = tiempoTotal > tramo ? ` (total de la visita: ${formatoDuracion(tiempoTotal)})` : '';
+  notificar(`estuvo ${formatoDuracion(tramo)} en la página${total}${rec}`, 'hourglass', 'Salio de tu pagina');
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') cerrarTramo();
+  else if (!visibleDesde) {
+    visibleDesde = Date.now();
+    if (tiempoTotal >= 10000) notificar('volvió a la página', 'eyes');
+  }
+});
+addEventListener('pagehide', cerrarTramo);
 
 /* ============================================================
    INICIALIZACIÓN
