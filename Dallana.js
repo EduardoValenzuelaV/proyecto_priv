@@ -309,29 +309,66 @@ function lanzarCelebracion() {
 
 const SVG_CORAZON = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5.5 15.6 2 12.2 2 7.9 2 4.8 4.4 2.5 7.3 2.5c1.9 0 3.6 1 4.7 2.6 1.1-1.6 2.8-2.6 4.7-2.6 2.9 0 5.3 2.3 5.3 5.4 0 4.3-3.5 7.7-10 12.6z"/></svg>';
 /* ============================================================
-   DÍAS ACUMULADOS Y RECUERDOS PIXEL
-   Cada día distinto que entra suma un corazón (no tienen que ser seguidos).
-   Al llegar a cada hito se desbloquea un recuerdo pixel. Si `imagen` está vacía, sale como "lo estoy dibujando".
+   CORAZONES DEL DÍA Y RECUERDOS PIXEL
+   - Corazones: 10 por día. Se llenan con "Regálame una sonrisa" o abriendo una carta "Ábreme cuando".
+     Cada día empiezan de nuevo.
+   - Recuerdos pixel: cada 5 veces que toca "Regálame una sonrisa" (en total) se desbloquea uno.
+     Si `imagen` está vacía, sale como "lo estoy dibujando".
    ============================================================ */
+const CORAZONES_POR_DIA = 10;
+const SONRISAS_POR_RECUERDO = 5;
 const HITOS_PIXEL = [
-  { dias: 1, titulo: 'Nuestro primer cumplemes', imagen: 'assets/pixel/lluvia.gif', frase: '' },
-  { dias: 3, titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
-  { dias: 7, titulo: 'Recuerdo del día 7', imagen: '', frase: '' },
-  { dias: 14, titulo: 'Recuerdo del día 14', imagen: '', frase: '' },
-  { dias: 30, titulo: 'Recuerdo del día 30', imagen: '', frase: '' }
-];
+  { titulo: 'Nuestro primer cumplemes', imagen: 'assets/pixel/lluvia.gif', frase: '' },
+  { titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
+  { titulo: 'Recuerdo 3', imagen: '', frase: '' },
+  { titulo: 'Recuerdo 4', imagen: '', frase: '' },
+  { titulo: 'Recuerdo 5', imagen: '', frase: '' }
+].map((h, i) => ({ ...h, sonrisas: (i + 1) * SONRISAS_POR_RECUERDO }));
+const txtSonrisas = n => n === 1 ? '1 sonrisa' : `${n} sonrisas`;
 const hoyLocal = () => new Date().toLocaleDateString('en-CA');
-let diasVisitados = leerSet('dallanaDias');
-let hitoPendiente = null;
 
+let sonrisas = 0;
+try { sonrisas = Math.max(0, parseInt(localStorage.getItem('dallanaSonrisas') || '0', 10) || 0); } catch {}
+
+function leerCorazonesHoy() {
+  const d = leerJSON('dallanaCorazonesHoy', {});
+  return d.fecha === hoyLocal() ? Math.min(CORAZONES_POR_DIA, d.n || 0) : 0;
+}
+
+/* Días que entra: solo para avisarte por ntfy */
+let diasVisitados = leerSet('dallanaDias');
 function registrarDia() {
   const hoy = hoyLocal();
   if (diasVisitados.has(hoy)) return;
   diasVisitados.add(hoy);
   guardarSet('dallanaDias', diasVisitados);
   const n = diasVisitados.size;
-  notificar(`entró a la página: lleva ${n} ${n === 1 ? 'día' : 'días'} acumulados 💗`, 'calendar');
-  hitoPendiente = HITOS_PIXEL.find(h => h.dias === n) || null;
+  notificar(`entró a la página: lleva ${n} ${n === 1 ? 'día' : 'días'} distintos visitándola 💗`, 'calendar');
+}
+
+/* Una interacción del día (sonrisa o carta "Ábreme cuando") llena un corazón */
+function sumarCorazon() {
+  const antes = leerCorazonesHoy();
+  if (antes >= CORAZONES_POR_DIA) return;
+  const n = antes + 1;
+  guardarJSON('dallanaCorazonesHoy', { fecha: hoyLocal(), n });
+  actualizarProgreso();
+  if (n === CORAZONES_POR_DIA) {
+    lanzarCelebracion();
+    notificar(`llenó sus ${CORAZONES_POR_DIA} corazones de hoy 💗`, 'sparkling_heart');
+  }
+}
+
+function sumarSonrisa() {
+  sonrisas++;
+  try { localStorage.setItem('dallanaSonrisas', String(sonrisas)); } catch {}
+  sumarCorazon();
+  actualizarProgreso();
+  const hito = HITOS_PIXEL.find(h => h.sonrisas === sonrisas);
+  if (hito) {
+    notificar(`desbloqueó un recuerdo pixel con ${txtSonrisas(sonrisas)}: «${hito.titulo}»`, 'tada');
+    setTimeout(() => abrirHitoPixel(hito, true), 1300);
+  }
 }
 
 function pintarCorazones(llenos, total) {
@@ -357,42 +394,43 @@ function pintarCorazones(llenos, total) {
 }
 
 function actualizarProgreso() {
-  const dias = diasVisitados.size;
-  const siguiente = HITOS_PIXEL.find(h => h.dias >= dias);
-  const anterior = [...HITOS_PIXEL].reverse().find(h => h.dias < dias);
-  const desde = anterior ? anterior.dias : 0;
-  const total = siguiente ? siguiente.dias - desde : 7;
-  const llenos = siguiente ? dias - desde : 7;
-  const count = $('progressCount'); if (count) count.textContent = `Día ${dias}`;
-  pintarCorazones(llenos, total);
-  const caja = $('progressHearts'); if (caja) caja.setAttribute('aria-label', `${dias} ${dias === 1 ? 'día' : 'días'} acumulados`);
+  const hoy = leerCorazonesHoy();
+  const count = $('progressCount'); if (count) count.textContent = `${hoy} / ${CORAZONES_POR_DIA}`;
+  pintarCorazones(hoy, CORAZONES_POR_DIA);
+  const caja = $('progressHearts'); if (caja) caja.setAttribute('aria-label', `${hoy} de ${CORAZONES_POR_DIA} corazones de hoy`);
   const label = $('progressLabel');
   if (label) {
-    const proximo = HITOS_PIXEL.find(h => h.dias > dias);
-    if (siguiente && siguiente.dias === dias) label.textContent = `¡Desbloqueaste el recuerdo del día ${dias}! ♥`;
-    else if (proximo) { const f = proximo.dias - dias; label.textContent = `Te ${f === 1 ? 'falta 1 día' : `faltan ${f} días`} para el próximo recuerdo pixel`; }
-    else label.textContent = '¡Desbloqueaste todos los recuerdos pixel! ♥';
+    if (hoy === 0) label.textContent = 'Cada sonrisa o carta que abras hoy llena un corazón';
+    else if (hoy < CORAZONES_POR_DIA) label.textContent = `Llevas ${hoy} de ${CORAZONES_POR_DIA} corazones hoy`;
+    else label.textContent = '¡Llenaste tus corazones de hoy! Mañana se vuelven a llenar ♥';
+  }
+  const hl = $('hitoLabel');
+  if (hl) {
+    const proximo = HITOS_PIXEL.find(h => h.sonrisas > sonrisas);
+    if (proximo) {
+      const f = proximo.sonrisas - sonrisas;
+      hl.textContent = `Te ${f === 1 ? 'falta' : 'faltan'} ${txtSonrisas(f)} para el próximo recuerdo pixel`;
+    } else hl.textContent = '¡Desbloqueaste todos los recuerdos pixel! ♥';
   }
   pintarHitos();
 }
 
 function pintarHitos() {
   const host = $('pixelHitos'); if (!host) return;
-  const dias = diasVisitados.size;
   host.innerHTML = '';
   HITOS_PIXEL.forEach(h => {
-    const abierto = dias >= h.dias;
-    const faltan = h.dias - dias;
-    const txtFaltan = faltan === 1 ? 'falta 1 día' : `faltan ${faltan} días`;
+    const abierto = sonrisas >= h.sonrisas;
+    const faltan = h.sonrisas - sonrisas;
+    const txtFaltan = `${faltan === 1 ? 'falta' : 'faltan'} ${txtSonrisas(faltan)}`;
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'pixel-hito' + (abierto ? ' abierto' : '');
-    b.innerHTML = `<span class="pixel-hito-icono" aria-hidden="true">${abierto ? (h.imagen ? '▶' : '✏') : '🔒'}</span><span>Día ${h.dias}</span>`;
-    b.setAttribute('aria-label', abierto ? `Ver el recuerdo del día ${h.dias}` : `Bloqueado: ${txtFaltan}`);
+    b.innerHTML = `<span class="pixel-hito-icono" aria-hidden="true">${abierto ? (h.imagen ? '▶' : '✏') : '🔒'}</span><span>${abierto ? h.titulo : `${h.sonrisas} sonrisas`}</span>`;
+    b.setAttribute('aria-label', abierto ? `Ver «${h.titulo}»` : `Bloqueado: ${txtFaltan}`);
     b.onclick = () => {
       if (!abierto) {
-        const label = $('progressLabel');
-        if (label) label.textContent = `Este recuerdo se abre el día ${h.dias}: ${txtFaltan} 🔒`;
+        const hl = $('hitoLabel');
+        if (hl) hl.textContent = `Este recuerdo se abre con ${txtSonrisas(h.sonrisas)}: ${txtFaltan} 🔒`;
         return;
       }
       abrirHitoPixel(h);
@@ -403,6 +441,7 @@ function pintarHitos() {
 
 function abrirHitoPixel(h, celebrar = false) {
   const dlg = $('pixelDialog'); if (!dlg) return;
+  if (dlg.open) dlg.close();
   const t = $('pixelTitulo'); if (t) t.textContent = h.titulo;
   const img = $('pixelImg');
   if (img) { img.hidden = !h.imagen; if (h.imagen) img.src = h.imagen; }
@@ -413,13 +452,7 @@ function abrirHitoPixel(h, celebrar = false) {
   }
   if (celebrar) lanzarCelebracion();
   dlg.showModal();
-  notificar(`vio el recuerdo pixel del día ${h.dias}`, 'art');
-}
-
-function mostrarHitoPendiente() {
-  if (!hitoPendiente) return;
-  const h = hitoPendiente; hitoPendiente = null;
-  setTimeout(() => abrirHitoPixel(h, true), 900);
+  notificar(`vio el recuerdo pixel «${h.titulo}»`, 'art');
 }
 
 /* ============================================================
@@ -549,6 +582,7 @@ function abrirCartaDeAnimo(carta) {
   const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
   dlg.showModal();
   notificar(`abrió la carta «${carta.titulo || 'Ábreme cuando'}»`, 'envelope');
+  sumarCorazon();
   ajustarNotaAPantalla();
   if (document.fonts) document.fonts.ready.then(ajustarNotaAPantalla);
   requestAnimationFrame(() => scene.classList.add('is-opening'));
@@ -751,7 +785,6 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   setTimeout(() => {
     if (cover) { cover.classList.add('closed'); cover.classList.remove('opening'); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
-    mostrarHitoPendiente();
   }, delay);
 };
 
@@ -759,6 +792,7 @@ const randomBtn = $('random');
 if (randomBtn) randomBtn.onclick = () => {
   vibrar();
   actividad.recuerdos++;
+  sumarSonrisa();
   const q = currentId ? `?ultimo=${encodeURIComponent(currentId)}` : '';
   pedir(`${URL_BACKEND}/api/cumplido${q}`);
 };
@@ -880,7 +914,7 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
 const resetBtn = $('resetProgress');
 if (resetBtn) resetBtn.onclick = () => {
   if (!confirm('¿Quieres reiniciar tu progreso en este rincón?')) return;
-  ['dallanaSeen', 'dallanaFavorites', 'dallanaFavoriteTexts', 'dallanaDreamsDone', 'dallanaLetterUnlocked'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  ['dallanaSeen', 'dallanaFavorites', 'dallanaFavoriteTexts', 'dallanaDreamsDone', 'dallanaLetterUnlocked', 'dallanaSonrisas', 'dallanaCorazonesHoy'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   seen = new Set(); favorites = new Set(); favoriteTexts = {};
   actualizarBotonFavoritos();
   location.reload();
@@ -1328,7 +1362,6 @@ avisarVisita();
 actualizarContador();
 registrarDia();
 actualizarProgreso();
-if (!$('welcome')) mostrarHitoPendiente();
 actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();

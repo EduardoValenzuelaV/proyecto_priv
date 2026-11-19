@@ -343,7 +343,8 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .ph-corazon.lleno path{fill:#e0303f;stroke:#b8222f}
 .ph-corazon.late{animation:ph-late .65s cubic-bezier(.3,1.6,.5,1)}
 .progress-hearts.completo .ph-corazon{animation:ph-latido 1.6s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
-.pixel-hitos{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.hito-label{margin:18px 0 0}
+.pixel-hitos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .pixel-hito{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 12px;border:2px dashed var(--linea);border-radius:10px;background:var(--tarjeta);color:var(--tinta-suave);font-weight:600;font-size:14px;cursor:pointer}
 .pixel-hito.abierto{border-style:solid;border-color:var(--vino);color:var(--vino);box-shadow:3px 3px 0 var(--vino)}
 .pixel-hito.abierto:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--vino)}
