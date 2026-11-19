@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=5.3">
+<link rel="stylesheet" href="Dallana.css?v=5.4">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -357,6 +357,19 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<script src="Dallana.js?v=3.29" defer></script>
+<aside class="alejandro" id="alejandro" aria-label="Alejandro, tu ayudante">
+  <button class="alejandro-sprite" id="alejandroSprite" type="button" aria-label="Hablar con Alejandro" aria-expanded="false"></button>
+  <div class="alejandro-globo" id="alejandroGlobo" role="status" aria-live="polite" hidden>
+    <button class="alejandro-cerrar" id="alejandroCerrar" type="button" aria-label="Cerrar">×</button>
+    <strong class="alejandro-nombre">Alejandro 🦀</strong>
+    <p id="alejandroTexto"></p>
+    <div class="alejandro-pie">
+      <span id="alejandroPaso"></span>
+      <button class="alejandro-siguiente" id="alejandroSiguiente" type="button">Siguiente ›</button>
+    </div>
+  </div>
+</aside>
+
+<script src="Dallana.js?v=3.30" defer></script>
 </body>
 </html>

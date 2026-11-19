@@ -784,6 +784,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   setTimeout(() => {
     if (cover) { cover.classList.add('closed'); cover.classList.remove('opening'); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
+    saludoAlejandro();
   }, delay);
 };
 
@@ -1355,12 +1356,73 @@ document.addEventListener('visibilitychange', () => {
 addEventListener('pagehide', cerrarTramo);
 
 /* ============================================================
+   ALEJANDRO: AYUDANTE QUE CUENTA LAS NOVEDADES
+   Para anunciar algo nuevo: cambia NOVEDADES.version y escribe los mensajes.
+   Se abre solo una vez por versión; después se puede tocar a Alejandro para volver a verlas.
+   ============================================================ */
+const NOVEDADES = {
+  version: '2026-11-19',
+  mensajes: [
+    '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
+    'Ahora tienes 10 corazones cada día. Se llenan cuando tocas «Regálame una sonrisa» o abres una carta «Ábreme cuando».',
+    'Cada 5 sonrisas se desbloquea un recuerdo pixel de ustedes dos. ¡El primero es de su primer cumplemes!',
+    'La carta principal ya la puedes leer cuando quieras, en el capítulo 07. 💌',
+    'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
+    '¡Eso es todo por ahora! Tócame cuando quieras volver a verlas.'
+  ]
+};
+let alejandroPaso = 0;
+
+function pintarAlejandro() {
+  const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
+  const total = NOVEDADES.mensajes.length;
+  if (texto) texto.textContent = NOVEDADES.mensajes[alejandroPaso];
+  if (paso) paso.textContent = `${alejandroPaso + 1} de ${total}`;
+  if (sig) sig.textContent = alejandroPaso === total - 1 ? '¡Listo!' : 'Siguiente ›';
+}
+
+function abrirAlejandro(desde = 0) {
+  const globo = $('alejandroGlobo'); if (!globo) return;
+  alejandroPaso = desde;
+  pintarAlejandro();
+  globo.hidden = false;
+  $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
+}
+
+function cerrarAlejandro(leido) {
+  const globo = $('alejandroGlobo'); if (!globo) return;
+  globo.hidden = true;
+  $('alejandroSprite')?.setAttribute('aria-expanded', 'false');
+  try { localStorage.setItem('dallanaNovedades', NOVEDADES.version); } catch {}
+  if (leido) notificar('leyó las novedades de Alejandro 🦀', 'crab');
+}
+
+function saludoAlejandro() {
+  let vista = '';
+  try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
+  if (vista !== NOVEDADES.version) setTimeout(() => abrirAlejandro(0), 1500);
+}
+
+$('alejandroSprite')?.addEventListener('click', () => {
+  const globo = $('alejandroGlobo');
+  if (globo && !globo.hidden) cerrarAlejandro(false);
+  else abrirAlejandro(0);
+});
+$('alejandroCerrar')?.addEventListener('click', () => cerrarAlejandro(false));
+$('alejandroSiguiente')?.addEventListener('click', () => {
+  if (alejandroPaso >= NOVEDADES.mensajes.length - 1) { cerrarAlejandro(true); return; }
+  alejandroPaso++;
+  pintarAlejandro();
+});
+
+/* ============================================================
    INICIALIZACIÓN
    ============================================================ */
 avisarVisita();
 actualizarContador();
 registrarDia();
 actualizarProgreso();
+if (!$('welcome')) saludoAlejandro();
 actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();

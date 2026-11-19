@@ -744,3 +744,21 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
   .letter-scene.is-open .animated-note{opacity:1;transform:none;clip-path:none}
   .letter-scene.is-open .animated-envelope{opacity:0}
 }
+
+/* Alejandro: cangrejo ayudante en la esquina */
+.alejandro{position:fixed;left:8px;bottom:calc(8px + var(--safe-bottom));z-index:5;display:flex;align-items:flex-end;gap:4px;pointer-events:none}
+.alejandro-sprite{flex:none;width:88px;height:108px;padding:0;border:0;background:url(assets/pixel/alejandro.png) 0 0/1056px 108px no-repeat;image-rendering:pixelated;cursor:pointer;pointer-events:auto;animation:alejandro-salto 1.1s steps(12) infinite}
+.alejandro-sprite:focus-visible{outline:2px solid var(--vino);outline-offset:2px;border-radius:12px}
+@keyframes alejandro-salto{to{background-position:-1056px 0}}
+.alejandro-globo{position:relative;width:min(270px,calc(100vw - 112px));margin-bottom:58px;padding:10px 14px 10px;border:2px solid var(--vino);border-radius:14px;background:#fffefb;color:var(--tinta);box-shadow:3px 3px 0 var(--vino);pointer-events:auto;animation:alejandro-globo-in .35s cubic-bezier(.2,1.4,.4,1)}
+.alejandro-globo[hidden]{display:none}
+.alejandro-globo::before{content:"";position:absolute;left:-10px;bottom:14px;border:8px solid transparent;border-right:10px solid var(--vino);border-left:0}
+.alejandro-globo::after{content:"";position:absolute;left:-6px;bottom:16px;border:6px solid transparent;border-right:8px solid #fffefb;border-left:0}
+.alejandro-nombre{display:block;margin-right:24px;color:var(--vino);font-size:13px;letter-spacing:.3px}
+.alejandro-globo p{margin:4px 0 8px;font-size:14px;line-height:1.45}
+.alejandro-pie{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--tinta-suave)}
+.alejandro-siguiente{min-height:32px;padding:4px 12px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.alejandro-cerrar{position:absolute;top:4px;right:6px;width:28px;height:28px;border:0;background:transparent;color:var(--vino);font-size:20px;line-height:1;cursor:pointer}
+@keyframes alejandro-globo-in{from{opacity:0;transform:translateY(8px) scale(.9)}}
+@media (max-width:599px){.alejandro-sprite{width:66px;height:81px;background-size:792px 81px}@keyframes alejandro-salto{to{background-position:-792px 0}}.alejandro-globo{margin-bottom:44px}}
+@media (prefers-reduced-motion:reduce){.alejandro-sprite,.alejandro-globo{animation:none}}
