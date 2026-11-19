@@ -321,7 +321,7 @@ const HITOS_PIXEL = [
   { titulo: 'Nuestro primer cumplemes', imagen: 'assets/pixel/lluvia.gif', frase: 'Recuerdo de cómo corrimos bajo la lluvia en nuestro primer cumplemes.' },
   { titulo: 'Nuestro almuerzo de nuestro cumplemes', imagen: 'assets/pixel/cena.gif', frase: 'El Eduardo se llenó con las papas y no pudo comer más carne :(' },
   { titulo: 'Nuestra tarde en la laguna', imagen: 'assets/pixel/laguna.gif', frase: '' },
-  { titulo: 'Dormiditos abrazados', imagen: 'assets/pixel/dormir.gif', frase: '' },
+  { titulo: 'Dormiditos abrazados', imagen: 'assets/pixel/dormir.gif', frase: 'Tuvimos que dormir porque el Eduardo estaba muy cansadito por sus vecinos JSJSJS' },
   { titulo: 'Estudiando juntos', imagen: 'assets/pixel/estudio.gif', frase: '' }
 ].map((h, i) => ({ ...h, sonrisas: (i + 1) * SONRISAS_POR_RECUERDO }));
 const txtSonrisas = n => n === 1 ? '1 sonrisa' : `${n} sonrisas`;
