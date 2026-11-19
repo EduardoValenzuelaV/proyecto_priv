@@ -1,9 +1,9 @@
-const CACHE_NAME = 'dallana-v3.39';
+const CACHE_NAME = 'dallana-v3.40';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
   './Dallana.css?v=5.5',
-  './Dallana.js?v=3.32',
+  './Dallana.js?v=3.33',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/musica/Taylor%20Swift%20-%20Love%20Story.mp3',
