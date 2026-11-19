@@ -319,8 +319,8 @@ const CORAZONES_POR_DIA = 10;
 const SONRISAS_POR_RECUERDO = 5;
 const HITOS_PIXEL = [
   { titulo: 'Nuestro primer cumplemes', imagen: 'assets/pixel/lluvia.gif', frase: 'Recuerdo de cómo corrimos bajo la lluvia en nuestro primer cumplemes.' },
+  { titulo: 'Nuestro almuerzo de nuestro cumplemes', imagen: 'assets/pixel/cena.gif', frase: 'El Eduardo se llenó con las papas y no pudo comer más carne :(' },
   { titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
-  { titulo: 'Recuerdo 3', imagen: '', frase: '' },
   { titulo: 'Recuerdo 4', imagen: '', frase: '' },
   { titulo: 'Recuerdo 5', imagen: '', frase: '' }
 ].map((h, i) => ({ ...h, sonrisas: (i + 1) * SONRISAS_POR_RECUERDO }));
