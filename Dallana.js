@@ -314,7 +314,7 @@ const SVG_CORAZON = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20
    Al llegar a cada hito se desbloquea un recuerdo pixel. Si `imagen` está vacía, sale como "lo estoy dibujando".
    ============================================================ */
 const HITOS_PIXEL = [
-  { dias: 1, titulo: 'Bajo la lluvia', imagen: 'assets/pixel/lluvia.gif', frase: 'Tu primer día aquí. Contigo hasta correr bajo la lluvia es un buen plan, de la mano siempre. Cada día que vuelvas se llena un corazón, y algunos días esconden un recuerdo nuestro.' },
+  { dias: 1, titulo: 'Nuestro primer cumplemes', imagen: 'assets/pixel/lluvia.gif', frase: '' },
   { dias: 3, titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
   { dias: 7, titulo: 'Recuerdo del día 7', imagen: '', frase: '' },
   { dias: 14, titulo: 'Recuerdo del día 14', imagen: '', frase: '' },
@@ -407,7 +407,10 @@ function abrirHitoPixel(h, celebrar = false) {
   const img = $('pixelImg');
   if (img) { img.hidden = !h.imagen; if (h.imagen) img.src = h.imagen; }
   const frase = $('pixelFrase');
-  if (frase) frase.textContent = h.imagen ? (h.frase || '') : 'Este recuerdo lo estoy dibujando para ti. Vuelve pronto ✏️';
+  if (frase) {
+    frase.textContent = h.imagen ? (h.frase || '') : 'Este recuerdo lo estoy dibujando para ti. Vuelve pronto ✏️';
+    frase.hidden = !frase.textContent;
+  }
   if (celebrar) lanzarCelebracion();
   dlg.showModal();
   notificar(`vio el recuerdo pixel del día ${h.dias}`, 'art');
