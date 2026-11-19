@@ -395,7 +395,6 @@ function pintarCorazones(llenos, total) {
 
 function actualizarProgreso() {
   const hoy = leerCorazonesHoy();
-  const count = $('progressCount'); if (count) count.textContent = `${hoy} / ${CORAZONES_POR_DIA}`;
   pintarCorazones(hoy, CORAZONES_POR_DIA);
   const caja = $('progressHearts'); if (caja) caja.setAttribute('aria-label', `${hoy} de ${CORAZONES_POR_DIA} corazones de hoy`);
   const label = $('progressLabel');
@@ -418,19 +417,19 @@ function actualizarProgreso() {
 function pintarHitos() {
   const host = $('pixelHitos'); if (!host) return;
   host.innerHTML = '';
-  HITOS_PIXEL.forEach(h => {
+  HITOS_PIXEL.forEach((h, i) => {
     const abierto = sonrisas >= h.sonrisas;
     const faltan = h.sonrisas - sonrisas;
     const txtFaltan = `${faltan === 1 ? 'falta' : 'faltan'} ${txtSonrisas(faltan)}`;
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'pixel-hito' + (abierto ? ' abierto' : '');
-    b.innerHTML = `<span class="pixel-hito-icono" aria-hidden="true">${abierto ? (h.imagen ? '▶' : '✏') : '🔒'}</span><span>${abierto ? h.titulo : `${h.sonrisas} sonrisas`}</span>`;
-    b.setAttribute('aria-label', abierto ? `Ver «${h.titulo}»` : `Bloqueado: ${txtFaltan}`);
+    b.innerHTML = `<span class="pixel-hito-icono" aria-hidden="true">${abierto ? (h.imagen ? '▶' : '✏') : '🔒'}</span><span>Recuerdo ${i + 1}</span>`;
+    b.setAttribute('aria-label', abierto ? `Ver el recuerdo ${i + 1}: ${h.titulo}` : `Recuerdo ${i + 1} bloqueado: ${txtFaltan}`);
     b.onclick = () => {
       if (!abierto) {
         const hl = $('hitoLabel');
-        if (hl) hl.textContent = `Este recuerdo se abre con ${txtSonrisas(h.sonrisas)}: ${txtFaltan} 🔒`;
+        if (hl) hl.textContent = `El recuerdo ${i + 1} se abre con ${txtSonrisas(h.sonrisas)}: ${txtFaltan} 🔒`;
         return;
       }
       abrirHitoPixel(h);
