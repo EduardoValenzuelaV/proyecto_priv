@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=5.1">
+<link rel="stylesheet" href="Dallana.css?v=5.2">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -124,15 +124,16 @@
     <p class="music-hint" id="musicHint">Toca para escuchar una melodía</p>
   </section>
 
-  <section class="discovery" aria-label="Descubre recuerdos para abrir la carta">
+  <section class="discovery" aria-label="Días acumulados y recuerdos pixel">
     <img class="sticker sticker--tl" src="assets/stickers/stikers18.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     <img class="sticker sticker--tr" src="assets/stickers/stikers13.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     <div class="progress-heading">
-      <div><span class="chapter-kicker">02 · La colección</span><h3>Un recuerdo a la vez</h3></div>
-      <span id="progressCount">0 / 10</span>
+      <div><span class="chapter-kicker">02 · Nuestros días</span><h3>Un corazón por cada día</h3></div>
+      <span id="progressCount">Día 1</span>
     </div>
-    <p id="progressLabel" class="progress-label">Descubre recuerdos para abrir tu carta</p>
-    <div class="progress-hearts" id="progressHearts" role="img" aria-label="0 de 10 corazones"></div>
+    <p id="progressLabel" class="progress-label">Cada día que vuelves se llena un corazón</p>
+    <div class="progress-hearts" id="progressHearts" role="img" aria-label="Días acumulados"></div>
+    <div class="pixel-hitos" id="pixelHitos" aria-label="Recuerdos pixel"></div>
   </section>
 
   <section class="memory-feature" aria-label="Un recuerdo para ti">
@@ -224,8 +225,8 @@
     <img class="sticker sticker--bl" src="assets/stickers/stikers17.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     <span class="chapter-kicker">07 · Algo que quiero decirte</span>
     <h2>Hay palabras que<br><em>merecen su momento.</em></h2>
-    <p>Descubre diez recuerdos para abrir tu carta.</p>
-    <button class="btn secondary unlocked" id="openLetter" type="button">✉ Leer mi carta</button>
+    <p>Está aquí para cuando quieras leerla.</p>
+    <button class="btn secondary" id="openLetter" type="button">✉ Leer mi carta</button>
   </section>
 
   <footer class="page-footer">
@@ -274,6 +275,14 @@
   </div>
 </dialog>
 
+
+<dialog id="pixelDialog" class="pixel-dialog" aria-labelledby="pixelTitulo">
+  <button class="close" data-close="pixelDialog" aria-label="Cerrar">×</button>
+  <span class="chapter-kicker">Recuerdo pixel</span>
+  <h2 id="pixelTitulo">Un recuerdo</h2>
+  <img id="pixelImg" class="pixel-img" alt="Recuerdo nuestro en pixel art" decoding="async">
+  <p id="pixelFrase"></p>
+</dialog>
 
 <dialog id="favoritesDialog" class="favorites-dialog">
   <button class="close" data-close="favoritesDialog" aria-label="Cerrar">×</button>
@@ -348,6 +357,6 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<script src="Dallana.js?v=3.24" defer></script>
+<script src="Dallana.js?v=3.26" defer></script>
 </body>
 </html>

@@ -5,7 +5,6 @@ const URL_BACKEND = '';
 const FECHA_INICIO = '2026-10-17';
 // Aviso de visitas por ntfy.sh: suscríbete a este tema en la app ntfy. Vacío = sin aviso.
 const NTFY_TEMA = 'dallana-aviso-0232a591a0';
-const MENSAJES_PARA_CARTA = 10;
 
 /* Versión corta anterior de la carta (conservada como referencia local).
 const CARTA_LOCAL_CORTA = `Para mi Dallana 💙
@@ -309,11 +308,37 @@ function lanzarCelebracion() {
 }
 
 const SVG_CORAZON = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5.5 15.6 2 12.2 2 7.9 2 4.8 4.4 2.5 7.3 2.5c1.9 0 3.6 1 4.7 2.6 1.1-1.6 2.8-2.6 4.7-2.6 2.9 0 5.3 2.3 5.3 5.4 0 4.3-3.5 7.7-10 12.6z"/></svg>';
-function pintarCorazones(cantidad) {
+/* ============================================================
+   DÍAS ACUMULADOS Y RECUERDOS PIXEL
+   Cada día distinto que entra suma un corazón (no tienen que ser seguidos).
+   Al llegar a cada hito se desbloquea un recuerdo pixel. Si `imagen` está vacía, sale como "lo estoy dibujando".
+   ============================================================ */
+const HITOS_PIXEL = [
+  { dias: 1, titulo: 'Nosotros, en pixeles', imagen: 'assets/pixel/nosotros.gif', frase: 'Tu primer día aquí. Cada día que vuelvas se llena un corazón, y algunos días esconden un recuerdo nuestro.' },
+  { dias: 3, titulo: 'Bajo la lluvia', imagen: 'assets/pixel/lluvia.gif', frase: 'Contigo hasta correr bajo la lluvia es un buen plan. De la mano, siempre.' },
+  { dias: 7, titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
+  { dias: 14, titulo: 'Recuerdo del día 14', imagen: '', frase: '' },
+  { dias: 30, titulo: 'Recuerdo del día 30', imagen: '', frase: '' }
+];
+const hoyLocal = () => new Date().toLocaleDateString('en-CA');
+let diasVisitados = leerSet('dallanaDias');
+let hitoPendiente = null;
+
+function registrarDia() {
+  const hoy = hoyLocal();
+  if (diasVisitados.has(hoy)) return;
+  diasVisitados.add(hoy);
+  guardarSet('dallanaDias', diasVisitados);
+  const n = diasVisitados.size;
+  notificar(`entró a la página: lleva ${n} ${n === 1 ? 'día' : 'días'} acumulados 💗`, 'calendar');
+  hitoPendiente = HITOS_PIXEL.find(h => h.dias === n) || null;
+}
+
+function pintarCorazones(llenos, total) {
   const caja = $('progressHearts'); if (!caja) return;
-  if (caja.children.length !== MENSAJES_PARA_CARTA) {
+  if (caja.children.length !== total) {
     caja.innerHTML = '';
-    for (let i = 0; i < MENSAJES_PARA_CARTA; i++) {
+    for (let i = 0; i < total; i++) {
       const c = document.createElement('span');
       c.className = 'ph-corazon'; c.style.setProperty('--i', i);
       c.innerHTML = SVG_CORAZON;
@@ -321,38 +346,77 @@ function pintarCorazones(cantidad) {
     }
   }
   [...caja.children].forEach((c, i) => {
-    const lleno = i < cantidad;
+    const lleno = i < llenos;
     if (lleno && !c.classList.contains('lleno') && caja.dataset.listo) {
       c.classList.add('late'); setTimeout(() => c.classList.remove('late'), 700);
     }
     c.classList.toggle('lleno', lleno);
   });
   caja.dataset.listo = '1';
-  caja.classList.toggle('completo', cantidad >= MENSAJES_PARA_CARTA);
-  caja.setAttribute('aria-label', `${cantidad} de ${MENSAJES_PARA_CARTA} corazones`);
+  caja.classList.toggle('completo', llenos >= total);
 }
 
-function actualizarProgreso(abrirSiNuevo = false) {
-  const cantidad = Math.min(seen.size, MENSAJES_PARA_CARTA);
-  const count = $('progressCount'); if (count) count.textContent = `${cantidad} / ${MENSAJES_PARA_CARTA}`;
-  pintarCorazones(cantidad);
-  const boton = $('openLetter');
-  if (cantidad >= MENSAJES_PARA_CARTA) {
-    const label = $('progressLabel'); if (label) label.textContent = 'Tu carta ya está lista, Dallana';
-    if (boton) boton.classList.add('show');
-    let desbloqueada = false;
-    try { desbloqueada = localStorage.getItem('dallanaLetterUnlocked') === 'true'; } catch {}
-    if (abrirSiNuevo && !desbloqueada) {
-      try { localStorage.setItem('dallanaLetterUnlocked', 'true'); } catch {}
-      lanzarCelebracion();
-      cargarCarta();
-      const dlg = $('letterDialog'); if (dlg) dlg.showModal();
-      notificar('desbloqueó y abrió tu carta principal 💌', 'love_letter');
-    }
-  } else {
-    const label = $('progressLabel'); if (label) label.textContent = 'Descubre recuerdos para abrir tu carta';
-    if (boton) boton.classList.remove('show');
+function actualizarProgreso() {
+  const dias = diasVisitados.size;
+  const siguiente = HITOS_PIXEL.find(h => h.dias >= dias);
+  const anterior = [...HITOS_PIXEL].reverse().find(h => h.dias < dias);
+  const desde = anterior ? anterior.dias : 0;
+  const total = siguiente ? siguiente.dias - desde : 7;
+  const llenos = siguiente ? dias - desde : 7;
+  const count = $('progressCount'); if (count) count.textContent = `Día ${dias}`;
+  pintarCorazones(llenos, total);
+  const caja = $('progressHearts'); if (caja) caja.setAttribute('aria-label', `${dias} ${dias === 1 ? 'día' : 'días'} acumulados`);
+  const label = $('progressLabel');
+  if (label) {
+    const proximo = HITOS_PIXEL.find(h => h.dias > dias);
+    if (siguiente && siguiente.dias === dias) label.textContent = `¡Desbloqueaste el recuerdo del día ${dias}! ♥`;
+    else if (proximo) { const f = proximo.dias - dias; label.textContent = `Te ${f === 1 ? 'falta 1 día' : `faltan ${f} días`} para el próximo recuerdo pixel`; }
+    else label.textContent = '¡Desbloqueaste todos los recuerdos pixel! ♥';
   }
+  pintarHitos();
+}
+
+function pintarHitos() {
+  const host = $('pixelHitos'); if (!host) return;
+  const dias = diasVisitados.size;
+  host.innerHTML = '';
+  HITOS_PIXEL.forEach(h => {
+    const abierto = dias >= h.dias;
+    const faltan = h.dias - dias;
+    const txtFaltan = faltan === 1 ? 'falta 1 día' : `faltan ${faltan} días`;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pixel-hito' + (abierto ? ' abierto' : '');
+    b.innerHTML = `<span class="pixel-hito-icono" aria-hidden="true">${abierto ? (h.imagen ? '▶' : '✏') : '🔒'}</span><span>Día ${h.dias}</span>`;
+    b.setAttribute('aria-label', abierto ? `Ver el recuerdo del día ${h.dias}` : `Bloqueado: ${txtFaltan}`);
+    b.onclick = () => {
+      if (!abierto) {
+        const label = $('progressLabel');
+        if (label) label.textContent = `Este recuerdo se abre el día ${h.dias}: ${txtFaltan} 🔒`;
+        return;
+      }
+      abrirHitoPixel(h);
+    };
+    host.append(b);
+  });
+}
+
+function abrirHitoPixel(h, celebrar = false) {
+  const dlg = $('pixelDialog'); if (!dlg) return;
+  const t = $('pixelTitulo'); if (t) t.textContent = h.titulo;
+  const img = $('pixelImg');
+  if (img) { img.hidden = !h.imagen; if (h.imagen) img.src = h.imagen; }
+  const frase = $('pixelFrase');
+  if (frase) frase.textContent = h.imagen ? (h.frase || '') : 'Este recuerdo lo estoy dibujando para ti. Vuelve pronto ✏️';
+  if (celebrar) lanzarCelebracion();
+  dlg.showModal();
+  notificar(`vio el recuerdo pixel del día ${h.dias}`, 'art');
+}
+
+function mostrarHitoPendiente() {
+  if (!hitoPendiente) return;
+  const h = hitoPendiente; hitoPendiente = null;
+  setTimeout(() => abrirHitoPixel(h, true), 900);
 }
 
 /* ============================================================
@@ -410,7 +474,6 @@ function mostrar(d, label = 'Un mensaje para ti') {
     setTimeout(() => paper.classList.remove('new'), 900);
     soltarCorazoncitos(paper);
   }
-  actualizarProgreso(true);
 }
 
 async function pedir(url, label = 'Un mensaje para ti') {
@@ -685,6 +748,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   setTimeout(() => {
     if (cover) { cover.classList.add('closed'); cover.classList.remove('opening'); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
+    mostrarHitoPendiente();
   }, delay);
 };
 
@@ -806,7 +870,7 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
   lanzarCelebracion();
   cargarCarta();
   const dlg = $('letterDialog'); if (dlg) dlg.showModal();
-  notificar('volvió a leer tu carta principal', 'love_letter');
+  notificar('abrió tu carta principal 💌', 'love_letter');
 };
 
 
@@ -816,7 +880,6 @@ if (resetBtn) resetBtn.onclick = () => {
   ['dallanaSeen', 'dallanaFavorites', 'dallanaFavoriteTexts', 'dallanaDreamsDone', 'dallanaLetterUnlocked'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   seen = new Set(); favorites = new Set(); favoriteTexts = {};
   actualizarBotonFavoritos();
-  actualizarProgreso(false);
   location.reload();
 };
 
@@ -1260,7 +1323,9 @@ addEventListener('pagehide', cerrarTramo);
    ============================================================ */
 avisarVisita();
 actualizarContador();
-actualizarProgreso(false);
+registrarDia();
+actualizarProgreso();
+if (!$('welcome')) mostrarHitoPendiente();
 actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();

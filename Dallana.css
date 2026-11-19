@@ -343,6 +343,16 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .ph-corazon.lleno path{fill:#e0303f;stroke:#b8222f}
 .ph-corazon.late{animation:ph-late .65s cubic-bezier(.3,1.6,.5,1)}
 .progress-hearts.completo .ph-corazon{animation:ph-latido 1.6s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
+.pixel-hitos{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pixel-hito{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 12px;border:2px dashed var(--linea);border-radius:10px;background:var(--tarjeta);color:var(--tinta-suave);font-weight:600;font-size:14px;cursor:pointer}
+.pixel-hito.abierto{border-style:solid;border-color:var(--vino);color:var(--vino);box-shadow:3px 3px 0 var(--vino)}
+.pixel-hito.abierto:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--vino)}
+.pixel-hito-icono{font-size:13px}
+.pixel-dialog{width:min(520px,calc(100% - 20px));text-align:center}
+.pixel-dialog h2{margin:4px 44px 14px}
+.pixel-img{display:block;width:100%;max-width:440px;height:auto;margin:0 auto 14px;image-rendering:pixelated;border:4px solid var(--vino);border-radius:4px;box-shadow:6px 6px 0 rgba(120,48,40,.25)}
+.pixel-img[hidden]{display:none}
+.pixel-dialog p{margin:0 auto;max-width:420px;color:var(--tinta);font:600 22px/1.35 var(--firma)}
 @keyframes ph-late{0%{transform:scale(.6)}55%{transform:scale(1.3)}100%{transform:scale(1)}}
 @keyframes ph-latido{0%,60%,100%{transform:scale(1)}30%{transform:scale(1.14)}}
 @media (prefers-reduced-motion:reduce){.ph-corazon.late,.progress-hearts.completo .ph-corazon{animation:none}}
