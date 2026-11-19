@@ -314,9 +314,9 @@ const SVG_CORAZON = '<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20
    Al llegar a cada hito se desbloquea un recuerdo pixel. Si `imagen` está vacía, sale como "lo estoy dibujando".
    ============================================================ */
 const HITOS_PIXEL = [
-  { dias: 1, titulo: 'Nosotros, en pixeles', imagen: 'assets/pixel/nosotros.gif', frase: 'Tu primer día aquí. Cada día que vuelvas se llena un corazón, y algunos días esconden un recuerdo nuestro.' },
-  { dias: 3, titulo: 'Bajo la lluvia', imagen: 'assets/pixel/lluvia.gif', frase: 'Contigo hasta correr bajo la lluvia es un buen plan. De la mano, siempre.' },
-  { dias: 7, titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
+  { dias: 1, titulo: 'Bajo la lluvia', imagen: 'assets/pixel/lluvia.gif', frase: 'Tu primer día aquí. Contigo hasta correr bajo la lluvia es un buen plan, de la mano siempre. Cada día que vuelvas se llena un corazón, y algunos días esconden un recuerdo nuestro.' },
+  { dias: 3, titulo: 'Nuestra aventura', imagen: 'assets/pixel/aventura.gif', frase: 'Si nuestra historia fuera un videojuego, este sería mi nivel favorito: tú y yo, de la mano.' },
+  { dias: 7, titulo: 'Recuerdo del día 7', imagen: '', frase: '' },
   { dias: 14, titulo: 'Recuerdo del día 14', imagen: '', frase: '' },
   { dias: 30, titulo: 'Recuerdo del día 30', imagen: '', frase: '' }
 ];

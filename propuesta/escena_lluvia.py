@@ -5,7 +5,7 @@ import sys, math, random
 from PIL import Image, ImageDraw
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'lluvia'
-W, H, K, F = 256, 144, 2, 16
+W, H, K, F = 256, 144, 2, 24
 
 def lerp(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
@@ -63,18 +63,18 @@ def escena_base(f):
     d.ellipse([200, 10, 214, 24], fill=(200, 205, 225))
     for (x, y, w) in [(170, 18, 50), (196, 26, 40), (40, 12, 60), (90, 20, 44)]:
         d.rounded_rectangle([x, y, x + w, y + 7], radius=3, fill=(60, 70, 100))
-    im.paste(lejos.crop((f * 6, 0, f * 6 + W, H)), (0, 0), lejos.crop((f * 6, 0, f * 6 + W, H)))
-    im.paste(cerca.crop((f * 12, 0, f * 12 + W, H)), (0, 0), cerca.crop((f * 12, 0, f * 12 + W, H)))
+    im.paste(lejos.crop((f * 4, 0, f * 4 + W, H)), (0, 0), lejos.crop((f * 4, 0, f * 4 + W, H)))
+    im.paste(cerca.crop((f * 8, 0, f * 8 + W, H)), (0, 0), cerca.crop((f * 8, 0, f * 8 + W, H)))
     d = ImageDraw.Draw(im)
     # halos de las farolas sobre la vereda
     # vereda y calle
     d.rectangle([0, 108, W, 116], fill=(92, 98, 118))
-    for x in range(-(f * 12) % 16 - 16, W, 16):
+    for x in range(-(f * 8) % 16 - 16, W, 16):
         d.line([x, 108, x, 116], fill=(78, 84, 102))
     d.line([0, 108, W, 108], fill=(130, 138, 160))
     d.rectangle([0, 117, W, H], fill=(48, 52, 66))
     d.line([0, 117, W, 117], fill=(36, 38, 50))
-    for x in range(-(f * 16) % 32 - 32, W, 32):
+    for x in range(-(f * 8) % 32 - 32, W, 32):
         d.rectangle([x, 130, x + 14, 131], fill=(220, 210, 150))
     # reflejos de ventanas en el asfalto mojado
     px = im.load()
@@ -87,7 +87,7 @@ def escena_base(f):
                     px[x, y] = lerp(px[x, y], (r, g, b), .45)
     # charcos
     for (cx, w) in [(30, 26), (120, 34), (210, 22)]:
-        x0 = (cx - f * 16) % (W + 40) - 20
+        x0 = (cx - f * 8) % (W + 128) - 20
         d.ellipse([x0, 121, x0 + w, 126], fill=(84, 100, 140))
         d.line([x0 + 4, 123, x0 + w - 6, 123], fill=(130, 150, 190))
     return im
@@ -96,117 +96,117 @@ def escena_base(f):
 PAL = {
     'O': (34, 22, 26),
     # pelo
-    'H': (44, 30, 30), 'h': (78, 52, 46), 'c': (126, 88, 72),
+    'H': (44, 30, 30), 'h': (78, 52, 46), 'c': (130, 90, 72),
     # piel
-    'S': (234, 182, 142), 's': (206, 148, 112), 'K': (242, 140, 140), 'E': (30, 22, 24), 'M': (204, 90, 96),
+    'S': (236, 186, 146), 's': (204, 146, 110), 'K': (244, 138, 140), 'E': (30, 22, 24), 'M': (206, 88, 98),
     # lentes y aro (Dallana)
-    'R': (196, 32, 48), 'L': (222, 238, 248), 'G': (230, 230, 236),
+    'R': (200, 32, 50), 'L': (226, 240, 250), 'G': (232, 232, 238),
     # chaqueta morada (Dallana)
-    'V': (128, 78, 190), 'v': (92, 52, 148), 'u': (172, 128, 224),
-    'T': (242, 216, 172),
-    # chaqueta negra con azul (él)
-    'N': (36, 36, 46), 'n': (60, 62, 78), 'A': (52, 112, 214), 'a': (110, 164, 240),
+    'V': (128, 78, 190), 'v': (92, 52, 148), 'u': (176, 132, 228),
+    'T': (244, 218, 176),
+    # chaqueta negra con azul (Eduardo)
+    'N': (36, 36, 46), 'n': (64, 66, 84), 'A': (52, 112, 214), 'a': (120, 172, 244),
     'W': (248, 246, 242),
     # jeans y zapatillas
-    'P': (66, 84, 124), 'p': (46, 58, 90), 'Z': (246, 244, 240), 'z': (196, 192, 200),
+    'P': (68, 88, 130), 'p': (46, 58, 92), 'Z': (248, 246, 242), 'z': (192, 188, 200),
 }
 
 ELLA_ARRIBA = [
-    ".........OOOOOO",
-    "......OOOHHhHHHOO",
-    ".....OHHcHHHHHhHHO",
-    "....OHHHHHHhHHHHHHO",
-    "...OHhHHcHHHHHHHhHHO",
-    "...OHHHHHHHHHHHHHHHHO",
-    "..OHcHHhHHHHHHHHHSSSO",
-    "..OHHHHHHHHHHHHSSSSSSO",
-    ".OHHcHHHhHHHHHSSSOOOSO",
-    ".OHHHHHHHHHRRRRRRRRRSO",
-    ".OHcHHHhHHHHSSSRLEERSSO",
-    ".OHHHHHHHHHHGSSRLLLRSSSO",
+    "..........OO.OOO",
+    "........OOccOHHcOO",
+    "......OOHHHHhHHHHhOO",
+    ".....OHHcHHHHHhHHHHHO",
+    "....OHHHHHhcHHHHHHhHHO",
+    "...OHhHHcHHHHHHHHHHHHO",
+    "...OHHHHHHHhHHHHHHHSSO",
+    "..OHcHHhHHHHHHHHSSSSSO",
+    "..OHHHHHHHHHHHHSSOOOSSO",
+    ".OHHcHHHhHHHRRRRRRRRRSO",
+    ".OHcHHHhHHHHHsSRLLERSSO",
+    "OHHHHHHHHHHHGsSRLLERSSSO",
     "OHHcHHHhHHHGSGSRRRRRSSO",
-    "OHHHHHHHHHHHGSSSSSKKSSO",
-    "OHcHHHhHHHHHHSSSSSSMMO",
-    "OHHHHHHcHHHHHOSSSSSSO",
-    ".OHHcHHHHhHHHHOSSSSO",
-    ".OHHHHHHHHHHOVVuSSuVO",
-    "OHHcHHHhHHHOVVVuTTuVVO",
+    "OHcHHHHHHHHHGSSSSSKKSSO",
+    "OHHHHhHHHHHHHsSSSSSMMO",
+    "OHcHHHHHcHHHHOsSSSSSO",
+    ".OHHcHHHHhHHHHOssSSO",
+    "OHHHHHHHHHHHOVVussuVO",
+    "OHcHHcHHhHHOVVVuTTuVVO",
     "OHHHHHHHHHOVVVVuTTTuVVO",
-    "OHcHHhHHHOVVVVVuTTTuVVVO",
-    ".OHHcHHHOVVVvVVuTTTuVVVVOOOO",
-    ".OHHHHHOVVVVvVVuTTTuVVVVVVSSO",
-    "..OHHcOVVVVvVVVuTTTuVVOOOOOO",
+    ".OHcHHhHHOVVVvVuTTTuVVVO",
+    ".OHHHcHHOVVVvVVuTTTuVVVVOOOO",
+    "..OHHHHOVVVvVVVuTTTuVVVuuVSSO",
+    "..OcHHOVVVVvVVVuTTTuVVOOOOOO",
     "...OOOVVVVVvVVVuTTTuVO",
     "....OvvvvvvvvvvvvvvvvO",
 ]
 ELLA_PIERNAS = [
     [
         "......OPPPPPPPPPPPO",
-        ".....OPPPPPOOOPPPPPO",
-        "....OPPPPO....OPPPPO",
-        "...OPPPPO......OPPPO",
-        "..OPPPO.........OPPPO",
+        ".....OpppPPOOOPPPPPO",
+        "....OpppPO....OPPPPO",
+        "...OpppPO......OPPPO",
+        "..OpppO.........OPPPO",
         ".OZZZO..........OPPPO",
-        ".OZZZZO.........OZZZZO",
+        ".OZZzZO.........OZZzZO",
         "..OOOOO.........OOOOOO",
     ],
     [
         "......OPPPPPPPPPPPO",
-        "......OPPPPPPPPPPO",
-        ".......OPPPOOPPPO",
-        ".......OPPPOOPPPO",
-        ".......OPPPOOPPPO",
+        "......OpPPPPPPPPPO",
+        ".......OpppOOPPPO",
+        ".......OpppOOPPPO",
+        ".......OpppOOPPPO",
         "......OZZZOOOPPPO",
-        "......OZZZZOOZZZZO",
+        "......OZZzZOOZZzZO",
         ".......OOOOOOOOOOO",
     ],
 ]
 
 EL_ARRIBA = [
     ".......OOOOOOO",
-    ".....OOHHHHHHHOO",
-    "....OHHhHHHHHHHHO",
-    "...OHHHHHHHhHHHHHO",
-    "...OHHHHHHHHHHHHHHO",
-    "...OHhHHHHHHHHHSSHO",
-    "...OHHHHHHHHHSSSSSO",
-    "....OHHHHHHSSSSSSSO",
+    ".....OOhhHHHHHOO",
+    "....OHHHhcHHHHHHO",
+    "...OHHcHHHhHHHHHHOO",
+    "..OHHhHHHHHHHhchHHHO",
+    "..OHHHHHHHHHHHHHHHHHO",
+    "...OHHHHHHHHHHHHHHHO",
+    "...OHHHHHHHHHSSSSSSO",
     "....OHHHHHHSSSOOOSSO",
-    "....OHHHSSSSSSSESSSO",
-    "....OHSSsSSSSSSSSSSSO",
-    "....OSSssSSSSSSKSSSO",
-    ".....OSSSSSSSSSSMMO",
-    "......OSSSSSSSSSSO",
-    ".......OOSSSSSOO",
-    "......ONnASSSANnO",
+    "....OHHHssSSSSSSWESSO",
+    "....OHHsSssSSSSSEESSSO",
+    "....OHSssSSSSSSSKSSSO",
+    ".....OSSSSSSSSSSSSMO",
+    "......OsSSSSSSSSSSO",
+    ".......OOssSSSSSOO",
+    "......ONnAsssANnO",
     ".....ONNNAWWWANNNO",
     "....ONNNNAWWWANNNNO",
-    "OOOONNNNNAWWWANNNNO",
-    "SSONNNnNNAWWWANNNNO",
-    "OOONNNnNNAWWWANNNNO",
-    "....ONNnNAWWWANNNNO",
-    "....ONNNNAWWWANNNNO",
+    "OOOONNNNNAWWWANNNNNOO",
+    "SSONNNnNNAWWWANNnNNNNSO",
+    "OOONNNnNNAWWWANNNnNNSSO",
+    "....ONNnNAWWWANNNOOOOO",
+    "....ONNNNAWAWANNNNO",
     ".....OAAAAAAAAAAAAO",
 ]
 EL_PIERNAS = [
     [
         "......OPPPPPPPPPO",
-        ".....OPPPPOOPPPPPO",
-        "....OPPPPO..OPPPPO",
-        "...OPPPPO....OPPPO",
-        "..OPPPO.......OPPPO",
+        ".....OpppPOOPPPPPO",
+        "....OpppPO..OPPPPO",
+        "...OpppPO....OPPPO",
+        "..OpppO.......OPPPO",
         ".ONNNO........OPPPO",
-        ".ONAAAO.......ONAAAO",
+        ".ONAaAO.......ONAaAO",
         "..OOOOO.......OOOOOO",
     ],
     [
         "......OPPPPPPPPPO",
-        "......OPPPPPPPPO",
-        ".......OPPPOPPPO",
-        ".......OPPPOPPPO",
-        ".......OPPPOPPPO",
+        "......OpPPPPPPPO",
+        ".......OpppOPPPO",
+        ".......OpppOPPPO",
+        ".......OpppOPPPO",
         "......ONNNOOPPPO",
-        "......ONAAAOONAAAO",
+        "......ONAaAOONAaAO",
         ".......OOOOOOOOOOO",
     ],
 ]
@@ -220,48 +220,89 @@ def pegar(im, filas, x0, y0):
 
 CORAZON = ["0110110", "1111111", "1111111", "0111110", "0011100", "0001000"]
 
+def espejo_piernas(filas):
+    """La otra zancada: invierte las piernas y cambia cuál va sombreada."""
+    ancho = max(len(f) for f in filas)
+    swap = {'P': 'p', 'p': 'P'}
+    return [''.join(swap.get(c, c) for c in f.ljust(ancho, '.')[::-1]) for f in filas]
+
+# ciclo de carrera de 4 poses: zancada, paso, zancada contraria, paso
+CICLO_ELLA = [ELLA_PIERNAS[0], ELLA_PIERNAS[1], espejo_piernas(ELLA_PIERNAS[0]), ELLA_PIERNAS[1]]
+CICLO_EL = [espejo_piernas(EL_PIERNAS[0]), EL_PIERNAS[1], EL_PIERNAS[0], EL_PIERNAS[1]]
+REBOTE = [0, 2, 0, 2]
+
+def mover_brazo_libre(filas, arriba):
+    """El brazo de adelante de Eduardo sube y baja al correr."""
+    filas = list(filas)
+    if arriba:
+        filas[18], filas[19], filas[20] = filas[18][:19] + "NSO", filas[19][:19] + "NSO", filas[20][:19] + "OO"
+    return filas
+
+def relampago(im, fuerza):
+    px = im.load()
+    for y in range(0, 108):
+        for x in range(W):
+            px[x, y] = lerp(px[x, y], (220, 228, 255), fuerza)
+
 frames = []
 random.seed(21)
-gotas = [(random.randint(0, W), random.randint(0, H), random.choice([5, 6, 7])) for _ in range(150)]
+gotas = [(random.randint(0, W), random.randint(0, H), random.choice([5, 6, 7])) for _ in range(170)]
 for f in range(F):
     im = escena_base(f)
-    paso = (f // 2) % 2
-    rebote = 1 if paso == 1 else 0
+    pose = (f // 3) % 4
+    sub = f % 3
+    rebote = REBOTE[pose] if sub != 1 else REBOTE[pose] // 2 + (1 if REBOTE[pose] == 0 else 0)
+    rebote_el = rebote
+    if f in (14, 16):
+        relampago(im, .45 if f == 14 else .25)
     ex, ey = 88, 74 - rebote
-    hx0, hy0 = ex + 28, 76 - (1 - rebote)
-    pegar(im, ELLA_ARRIBA + ELLA_PIERNAS[paso], ex, ey)
-    pegar(im, EL_ARRIBA + EL_PIERNAS[1 - paso], hx0, hy0)
-    # manos tomadas: une la mano de ella con la de él
+    hx0, hy0 = ex + 28, 77 - rebote_el
+    ds = ImageDraw.Draw(im)
+    for (sx0, sx1, r) in [(ex + 2, ex + 22, rebote), (hx0 + 2, hx0 + 20, rebote_el)]:
+        ds.ellipse([sx0 + r, 106, sx1 - r, 109], fill=(66, 70, 88))
+    # el pelo de Dallana rebota un poco detrás del cuerpo
+    arriba_ella = [fila for fila in ELLA_ARRIBA]
+    pegar(im, arriba_ella + CICLO_ELLA[pose], ex, ey)
+    if rebote:
+        pm = im.load()
+        for yy in range(ey + 14, ey + 24):
+            for xx in range(ex, ex + 3):
+                if pm[xx, yy] == PAL['H'] or pm[xx, yy] == PAL['c']:
+                    pm[xx, yy + 1] = pm[xx, yy]
+    pegar(im, mover_brazo_libre(EL_ARRIBA, pose in (1, 2)) + CICLO_EL[pose], hx0, hy0)
     pm = im.load()
     for yy in sorted({ey + 22, hy0 + 19}):
         for xx in range(ex + 26, hx0 + 2):
             pm[xx, yy] = PAL['S']
-    # salpicaduras en los pies
     d = ImageDraw.Draw(im)
-    if paso == 0:
-        for (sx, sy) in [(ex + 3, 108), (ex + 46, 108)]:
-            d.point([(sx - 2, sy - 2), (sx + 3, sy - 3), (sx, sy - 4), (sx + 5, sy - 1)], fill=(170, 200, 240))
-    # lluvia: cae 8 px por frame (loop exacto en 16 frames con alto 128)
+    # salpicaduras cuando un pie toca el suelo
+    if pose in (0, 2) and sub == 0:
+        for sx in (ex + 4, ex + 18, hx0 + 4, hx0 + 18):
+            d.point([(sx - 2, 105), (sx + 3, 104), (sx, 103), (sx + 5, 106), (sx - 4, 106)], fill=(170, 200, 240))
+    # lluvia (loop exacto: 6 px x 24 cuadros = 144)
     for (gx, gy, largo) in gotas:
-        y = (gy + f * 9) % (H + 0)
-        x = (gx - f * 3) % W
+        y = (gy + f * 6) % H
+        x = (gx - (f * 32) // 3) % W
         d.line([x, y, x - 2, y + largo], fill=(170, 196, 236))
-    # gotas que rebotan en la calle
-    for j in range(10):
+    for j in range(12):
         if (f + j) % 4 == 0:
             rx = (j * 47 + f * 13) % W
             ry = 119 + (j * 7) % 22
             d.point([(rx - 1, ry), (rx + 1, ry), (rx, ry - 1)], fill=(190, 210, 245))
-    # corazoncito que sube entre los dos
-    t = (f % 8) / 8
-    hx, hy = ex + 25 + int(2 * math.sin(t * 6.28)), int(ey - 4 - t * 18)
+    # corazones que suben entre los dos
     p = im.load()
-    for r, fila in enumerate(CORAZON):
-        for c, v in enumerate(fila):
-            if v == '1':
-                p[hx + c, hy + r] = (255, 110, 140)
+    for k in range(2):
+        t = ((f + k * 12) % 24) / 24
+        hx = ex + 22 + k * 8 + int(2 * math.sin(t * 6.28 + k))
+        hy = int(ey - 2 - t * 30)
+        if t < .85:
+            col = (255, 110, 140) if k == 0 else (255, 160, 190)
+            for r, fila in enumerate(CORAZON):
+                for c, v in enumerate(fila):
+                    if v == '1' and 0 <= hy + r < H:
+                        p[hx + c, hy + r] = col
     frames.append(im.resize((W * K, H * K), Image.NEAREST))
 
-frames[0].save(OUT + '.gif', save_all=True, append_images=frames[1:], duration=90, loop=0, optimize=True)
+frames[0].save(OUT + '.gif', save_all=True, append_images=frames[1:], duration=80, loop=0, optimize=True)
 frames[0].save(OUT + '_f0.png')
 print('ok')
