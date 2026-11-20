@@ -1363,28 +1363,37 @@ addEventListener('pagehide', cerrarTramo);
    Se abre solo una vez por versión; después se puede tocar a Alejandro para volver a verlas.
    ============================================================ */
 const NOVEDADES = {
-  version: '2026-11-20',
+  version: '2026-11-20b',
   mensajes: [
     '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
     'Ahora tienes 10 corazones cada día. Se llenan cuando tocas «Regálame una sonrisa» o abres una carta «Ábreme cuando».',
     'Cada 5 sonrisas se desbloquea un recuerdo pixel de ustedes dos. ¡El primero es de su primer cumplemes!',
     'La carta principal ya la puedes leer cuando quieras, en el capítulo 07. 💌',
     'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
-    '¡Y ahora tengo más vida! Aplaudo cuando llenas tus 10 corazones y bailo cuando pones música. 🎶',
-    'De noche me duermo 😴, en la mañana bostezo y de vez en cuando salgo a pasear por la pantalla.',
+    'Tengo vida: aplaudo con tus 10 corazones, bailo con la música, de noche duermo y en la mañana bostezo.',
+    '¡Y me disfrazo! Cada ratito me pongo uno de mis 39 disfraces y te digo algo. 🎭',
+    '¡Ahora también soy cartero! 📬 Cuando papá te mande una carta, te la traigo. Tócame para abrirla.',
+    'Y si quieres decirle algo a papá, tócame y elige «Dile algo a papá». Yo se lo llevo al tiro. 💌',
+    'Ahora paseo por toda la pantalla… pero nunca encima de tus cartas, prometido.',
     'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
-    '¡Y ahora me disfrazo! Cada ratito me pongo un disfraz distinto y te digo algo. Tengo 39 disfraces. 🎭',
-    '¡Eso es todo por ahora! Tócame cuando quieras volver a verlas.'
+    '¡Eso es todo por ahora! Tócame cuando quieras.'
   ]
 };
 let alejandroPaso = 0;
 
-let alejandroSecreto = false;
+let alejandroModo = 'novedades';   // novedades | menu | secreto
+
+function modoGlobo(modo) {
+  alejandroModo = modo;
+  const menu = $('alejandroMenu'), pie = document.querySelector('.alejandro-pie');
+  if (menu) menu.hidden = modo !== 'menu';
+  if (pie) pie.hidden = modo === 'menu';
+}
 
 function pintarAlejandro() {
   const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
   const total = NOVEDADES.mensajes.length;
-  alejandroSecreto = false;
+  modoGlobo('novedades');
   if (sig) sig.hidden = false;
   if (texto) texto.textContent = NOVEDADES.mensajes[alejandroPaso];
   if (paso) paso.textContent = `${alejandroPaso + 1} de ${total}`;
@@ -1393,6 +1402,7 @@ function pintarAlejandro() {
 
 function abrirAlejandro(desde = 0) {
   const globo = $('alejandroGlobo'); if (!globo) return;
+  if (!enCasa()) { volverACasa(() => abrirAlejandro(desde), true); return; }
   alejandroPaso = desde;
   pintarAlejandro();
   globo.hidden = false;
@@ -1405,13 +1415,15 @@ function cerrarAlejandro(leido) {
   globo.hidden = true;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'false');
   estadoAlejandro();
-  if (alejandroSecreto) { alejandroSecreto = false; return; }
+  if (alejandroModo !== 'novedades') return;
   try { localStorage.setItem('dallanaNovedades', NOVEDADES.version); } catch {}
   if (leido) notificar('leyó las novedades de Alejandro 🦀', 'crab');
 }
 
 function saludoAlejandro() {
+  subirAlejandro();
   empezarDisfraces();
+  empezarCartero();
   let vista = '';
   try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
   if (vista !== NOVEDADES.version) setTimeout(() => abrirAlejandro(0), 1500);
@@ -1421,16 +1433,19 @@ $('alejandroSprite')?.addEventListener('click', () => {
   if (alejandroIgnorarClick) { alejandroIgnorarClick = false; return; }
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) { cerrarAlejandro(false); return; }
+  cancelarPaseo();
   // si estaba durmiendo, primero despierta bostezando
   if ($('alejandro')?.dataset.estado === 'dormir') alejandroReacciona('bostezar', 1800);
-  abrirAlejandro(0);
+  const carta = cartaPendiente();
+  if (carta) { volverACasa(() => abrirCartaPapa(carta), true); return; }
+  abrirMenuAlejandro();
 });
 $('alejandroCerrar')?.addEventListener('click', () => cerrarAlejandro(false));
 /* En el teléfono, Alejandro se agacha mientras haces scroll para no tapar nada */
 let alejandroTimer = 0;
 addEventListener('scroll', () => {
   const a = $('alejandro'), globo = $('alejandroGlobo');
-  if (!a || innerWidth >= 600 || (globo && !globo.hidden)) return;
+  if (!a || innerWidth >= 600 || (globo && !globo.hidden) || !enCasa()) return;
   a.classList.add('escondido');
   clearTimeout(alejandroTimer);
   alejandroTimer = setTimeout(() => a.classList.remove('escondido'), 1400);
@@ -1474,21 +1489,186 @@ function alejandroReacciona(tipo, ms) {
   estadoAlejandro();
 }
 
-/* De vez en cuando sale a pasear de lado, como los cangrejos, y vuelve a su esquina */
-function programarPaseo() {
-  setTimeout(() => {
-    const a = $('alejandro'), globo = $('alejandroGlobo');
-    const libre = a && globo && globo.hidden && !alejandroReaccion && !(musicAudio && !musicAudio.paused)
-      && estadoPorHora() === 'salto' && !a.classList.contains('escondido') && document.visibilityState === 'visible';
-    if (libre && !sinMovimiento()) {
-      alejandroCaminando = true;
-      estadoAlejandro();
-      clearTimeout(alejandroCaminaTimer);
-      alejandroCaminaTimer = setTimeout(() => { alejandroCaminando = false; estadoAlejandro(); }, 9000);
-    }
-    programarPaseo();
-  }, 25000 + Math.random() * 30000);
+/* ---------- Paseo libre: camina de lado por toda la pantalla y vuelve a su esquina ----------
+   Nunca pasa por encima del texto de una carta abierta. Se mueve con la propiedad CSS «translate»
+   (así no choca con el «transform» que lo agacha al hacer scroll en el teléfono). */
+const VEL_PASEO = 70;                // píxeles por segundo
+let alejandroPos = { x: 0, y: 0 }, paseoId = 0, paseoTimer = 0;
+const enCasa = () => Math.abs(alejandroPos.x) < 1 && Math.abs(alejandroPos.y) < 1;
+
+function zonasCarta() {
+  const sel = '#letterDialog[open] .letter-paper, #letterDialog[open] .letter-head, #openWhenDialog[open] .animated-note, '
+    + '#openWhenDialog[open] h2, #cartaPapaDialog[open] .carta-papa-papel, #cartaPapaDialog[open] .buzon-lista, #paraPapaDialog[open] form';
+  return [...document.querySelectorAll(sel)].map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);
 }
+
+/* Caja del cangrejo (sin el margen transparente de la hoja) cuando está en su esquina */
+function cajaEnCasa() {
+  const spr = $('alejandroSprite'); if (!spr) return null;
+  const r = spr.getBoundingClientRect();
+  const left = r.left + r.width * .16 - alejandroActual().x, top = r.top + r.height * .16 - alejandroActual().y;
+  return { left, top, right: left + r.width * .68, bottom: top + r.height * .84 };
+}
+
+function alejandroActual() {
+  const a = $('alejandro'); if (!a) return { x: 0, y: 0 };
+  const t = getComputedStyle(a).translate;
+  if (!t || t === 'none') return { x: 0, y: 0 };
+  const [x, y] = t.split(' ').map(v => parseFloat(v) || 0);
+  return { x, y: y || 0 };
+}
+
+function chocaConCartas(caja, zonas, x, y) {
+  const m = 10;
+  return zonas.some(z => caja.left + x < z.right + m && caja.right + x > z.left - m && caja.top + y < z.bottom + m && caja.bottom + y > z.top - m);
+}
+
+function caminoLibre(caja, zonas, desde, hasta) {
+  const dist = Math.hypot(hasta.x - desde.x, hasta.y - desde.y);
+  const pasos = Math.max(1, Math.ceil(dist / 12));
+  for (let k = 1; k <= pasos; k++) {
+    const t = k / pasos;
+    if (chocaConCartas(caja, zonas, desde.x + (hasta.x - desde.x) * t, desde.y + (hasta.y - desde.y) * t)) return false;
+  }
+  return true;
+}
+
+function limitesPaseo(caja) {
+  const m = 8;
+  return { minX: m - caja.left, maxX: innerWidth - m - caja.right, minY: m - caja.top, maxY: innerHeight - m - caja.bottom };
+}
+
+function elegirDestino(exigirCamino = true) {
+  const caja = cajaEnCasa(); if (!caja) return null;
+  const zonas = zonasCarta(), lim = limitesPaseo(caja), desde = alejandroActual();
+  if (lim.maxX < lim.minX || lim.maxY < lim.minY) return null;
+  for (let k = 0; k < 30; k++) {
+    const p = { x: lim.minX + Math.random() * (lim.maxX - lim.minX), y: lim.minY + Math.random() * (lim.maxY - lim.minY) };
+    if (Math.hypot(p.x - desde.x, p.y - desde.y) < 80) continue;
+    if (chocaConCartas(caja, zonas, p.x, p.y)) continue;
+    if (exigirCamino && !caminoLibre(caja, zonas, desde, p)) continue;
+    return p;
+  }
+  return null;
+}
+
+/* Lo mueve hasta (x, y). Devuelve una promesa que se cumple al llegar (o false si lo interrumpen). */
+function caminarA(p, rapido = false) {
+  const a = $('alejandro'); if (!a) return Promise.resolve(false);
+  const id = paseoId;
+  const desde = alejandroActual();
+  const dist = Math.hypot(p.x - desde.x, p.y - desde.y);
+  const seg = rapido ? Math.min(.6, dist / 600) : dist / VEL_PASEO;
+  alejandroCaminando = !rapido && dist > 2;
+  estadoAlejandro();
+  a.style.transition = `translate ${seg}s linear, transform .35s ease, opacity .35s ease`;
+  a.style.translate = `${p.x}px ${p.y}px`;
+  alejandroPos = { x: p.x, y: p.y };
+  return new Promise(res => setTimeout(() => {
+    if (id !== paseoId) return res(false);
+    alejandroCaminando = false;
+    estadoAlejandro();
+    res(true);
+  }, seg * 1000 + 30));
+}
+
+/* Lo deja quieto donde está (si lo interrumpen a medio camino) */
+function detenerAqui() {
+  const a = $('alejandro'); if (!a) return;
+  const p = alejandroActual();
+  a.style.transition = 'transform .35s ease, opacity .35s ease';
+  a.style.translate = `${p.x}px ${p.y}px`;
+  alejandroPos = p;
+  alejandroCaminando = false;
+  estadoAlejandro();
+}
+
+function cancelarPaseo() {
+  paseoId++;
+  if (alejandroCaminando) detenerAqui();
+}
+
+function volverACasa(despues, rapido = false) {
+  cancelarPaseo();
+  const id = paseoId;
+  if (enCasa()) { despues && despues(); return; }
+  caminarA({ x: 0, y: 0 }, rapido).then(ok => { if (ok && id === paseoId && despues) despues(); });
+}
+
+const espera = ms => new Promise(r => setTimeout(r, ms));
+
+async function pasear() {
+  cancelarPaseo();
+  const id = paseoId;
+  const paradas = 1 + Math.floor(Math.random() * 3);
+  for (let k = 0; k < paradas; k++) {
+    const destino = elegirDestino();
+    if (!destino) break;
+    if (!(await caminarA(destino)) || id !== paseoId) return;
+    await espera(2000 + Math.random() * 3500);
+    if (id !== paseoId) return;
+  }
+  // de vuelta a su esquina, si el camino no cruza una carta
+  const caja = cajaEnCasa();
+  if (caja && !caminoLibre(caja, zonasCarta(), alejandroActual(), { x: 0, y: 0 })) return;
+  await caminarA({ x: 0, y: 0 });
+}
+
+function programarPaseo() {
+  clearTimeout(paseoTimer);
+  paseoTimer = setTimeout(() => {
+    const a = $('alejandro'), globo = $('alejandroGlobo'), dice = $('alejandroDice');
+    const libre = a && globo && globo.hidden && (!dice || dice.hidden) && !alejandroReaccion && !(musicAudio && !musicAudio.paused)
+      && estadoPorHora() === 'salto' && !a.classList.contains('escondido') && !a.classList.contains('oculto-carta')
+      && document.visibilityState === 'visible';
+    if (libre && !sinMovimiento()) pasear();
+    programarPaseo();
+  }, 20000 + Math.random() * 25000);
+}
+
+/* Cuando se abre una carta: Alejandro sube a la capa de arriba (para seguir viéndose) y se aparta del texto.
+   Si no hay ningún lugar libre (cartas a pantalla completa en el teléfono), se esconde hasta que se cierre. */
+function subirAlejandro() {
+  const a = $('alejandro');
+  if (!a || typeof a.showPopover !== 'function') return;
+  try { if (a.matches(':popover-open')) a.hidePopover(); a.showPopover(); } catch {}
+}
+
+function apartarseDeCartas() {
+  const a = $('alejandro'); if (!a) return;
+  const caja = cajaEnCasa(); if (!caja) return;
+  const zonas = zonasCarta();
+  if (!zonas.length) { a.classList.remove('oculto-carta'); return; }
+  cancelarPaseo();
+  const aqui = alejandroActual();
+  if (!chocaConCartas(caja, zonas, aqui.x, aqui.y)) { a.classList.remove('oculto-carta'); return; }
+  // el lugar libre más cercano
+  const lim = limitesPaseo(caja);
+  let mejor = null, mejorD = Infinity;
+  for (let k = 0; k < 160; k++) {
+    const p = { x: lim.minX + Math.random() * (lim.maxX - lim.minX), y: lim.minY + Math.random() * (lim.maxY - lim.minY) };
+    if (chocaConCartas(caja, zonas, p.x, p.y)) continue;
+    const dd = Math.hypot(p.x - aqui.x, p.y - aqui.y);
+    if (dd < mejorD) { mejor = p; mejorD = dd; }
+  }
+  if (mejor) { a.classList.remove('oculto-carta'); caminarA(mejor, true); }
+  else a.classList.add('oculto-carta');
+}
+
+(() => {
+  const dialogos = document.querySelectorAll('dialog');
+  const obs = new MutationObserver(() => {
+    const abierto = [...dialogos].some(d => d.open);
+    if (abierto) { subirAlejandro(); setTimeout(apartarseDeCartas, 650); }
+    else {
+      const a = $('alejandro');
+      if (a) a.classList.remove('oculto-carta');
+      setTimeout(() => { if (!alejandroCaminando && !enCasa()) volverACasa(); }, 1200);
+    }
+  });
+  dialogos.forEach(d => obs.observe(d, { attributes: true, attributeFilter: ['open'] }));
+  addEventListener('resize', () => { if ([...dialogos].some(d => d.open)) apartarseDeCartas(); });
+})();
 
 /* Baila mientras suena la música */
 if (musicAudio) ['play', 'pause', 'ended'].forEach(ev => musicAudio.addEventListener(ev, estadoAlejandro));
@@ -1553,10 +1733,13 @@ function urlDisfraz(d) {
   return d ? `assets/pixel/disfraces/${d.id}.png?v=1` : 'assets/pixel/alejandro.png?v=4';
 }
 
-function alejandroDice(texto, titulo) {
+let alejandroDiceAccion = null;
+function alejandroDice(texto, titulo, accion = null) {
   const el = $('alejandroDice'); if (!el) return;
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) return;
+  if (!enCasa()) { volverACasa(() => alejandroDice(texto, titulo, accion), true); return; }
+  alejandroDiceAccion = accion;
   el.replaceChildren();
   const t = document.createElement('strong'); t.textContent = titulo;
   el.append(t, document.createTextNode(texto));
@@ -1564,7 +1747,11 @@ function alejandroDice(texto, titulo) {
   clearTimeout(alejandroDiceTimer);
   alejandroDiceTimer = setTimeout(() => { el.hidden = true; }, 8000);
 }
-$('alejandroDice')?.addEventListener('click', () => { $('alejandroDice').hidden = true; });
+$('alejandroDice')?.addEventListener('click', () => {
+  $('alejandroDice').hidden = true;
+  const accion = alejandroDiceAccion; alejandroDiceAccion = null;
+  if (accion) accion();
+});
 
 function ponerDisfraz(d, hablar = true) {
   const spr = $('alejandroSprite'); if (!spr) return;
@@ -1597,7 +1784,7 @@ function cambiarDisfraz() {
   const globo = $('alejandroGlobo');
   const pijama = DISFRACES.find(d => d.id === 'pijama');
   if (estadoPorHora() === 'dormir') ponerDisfraz(pijama, false);
-  else if (document.visibilityState !== 'visible' || (globo && !globo.hidden)) { programarDisfraz(10000); return; }
+  else if (document.visibilityState !== 'visible' || (globo && !globo.hidden) || alejandroCaminando || cartaPendiente()) { programarDisfraz(10000); return; }
   else ponerDisfraz(siguienteDisfraz(), true);
   programarDisfraz(180000 + Math.random() * 180000);   // el próximo, entre 3 y 6 minutos
 }
@@ -1614,6 +1801,179 @@ function empezarDisfraces() {
   programarDisfraz(15000 + Math.random() * 25000);      // el primero, al ratito de entrar
 }
 
+/* ---------- Alejandro cartero: cartas de papá (por ntfy) y mensajes de Dallana para papá ----------
+   Para mandarle una carta: en la app ntfy suscríbete al tema NTFY_CARTAS y publica ahí
+   (o entra a https://ntfy.sh/<NTFY_CARTAS> y escribe). El título es opcional.
+   ntfy.sh guarda los mensajes 12 horas: si Dallana no entra en ese tiempo, no le llega (te aviso cuando la recibe).
+   Lo que ella le escribe a papá llega al tema de avisos (NTFY_TEMA), igual que la actividad. */
+const NTFY_CARTAS = 'dallana-cartas-aaf3c4ba15';
+let buzon = leerJSON('dallanaBuzon', []);
+let carteroIniciado = false;
+const guardarBuzon = () => {
+  if (buzon.length > 80) buzon = buzon.slice(-80);
+  guardarJSON('dallanaBuzon', buzon);
+};
+const cartaPendiente = () => buzon.find(c => c.de === 'papa' && !c.leida) || null;
+
+function pintarSobre() {
+  const sobre = $('alejandroSobre');
+  if (sobre) sobre.hidden = !cartaPendiente();
+  const n = buzon.filter(c => c.de === 'papa' && !c.leida).length;
+  const badge = $('menuBuzonN'); if (badge) badge.textContent = n ? String(n) : '';
+}
+
+function fechaCarta(t) {
+  try { return new Date(t).toLocaleString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }); }
+  catch { return ''; }
+}
+
+async function revisarCartas() {
+  if (document.visibilityState !== 'visible') return;
+  try {
+    const r = await fetch(`https://ntfy.sh/${NTFY_CARTAS}/json?poll=1&since=all`, { cache: 'no-store' });
+    if (!r.ok) return;
+    let nuevas = 0;
+    for (const linea of (await r.text()).split('\n')) {
+      if (!linea.trim()) continue;
+      let m; try { m = JSON.parse(linea); } catch { continue; }
+      if (m.event !== 'message' || !m.message || buzon.some(c => c.id === m.id)) continue;
+      buzon.push({ id: m.id, de: 'papa', t: (m.time || Date.now() / 1000) * 1000, titulo: m.title || '', texto: m.message, leida: false });
+      nuevas++;
+    }
+    if (!nuevas) return;
+    buzon.sort((a, b) => a.t - b.t);
+    guardarBuzon();
+    pintarSobre();
+    notificar(`recibió ${nuevas === 1 ? 'tu carta' : nuevas + ' cartas tuyas'} en el buzón de Alejandro 📬`, 'mailbox_with_mail');
+    avisarCartaNueva();
+  } catch {}
+}
+
+function avisarCartaNueva() {
+  const globo = $('alejandroGlobo');
+  if (globo && !globo.hidden) return;
+  alejandroReacciona('aplaudir', 2000);
+  alejandroDice('¡Mamá! Papá me pidió que te entregara una carta. ¡Tócame para abrirla! 📬', 'Alejandro cartero 🦀',
+    () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
+}
+
+function mostrarVistaCarta(c) {
+  $('cartaPapaVista').hidden = false;
+  $('buzonVista').hidden = true;
+  const deMi = c.de === 'yo';
+  $('cartaPapaDe').textContent = deMi ? '💌 Lo que le dijiste a papá' : '💌 Alejandro te trajo una carta';
+  $('cartaPapaTitulo').textContent = deMi ? 'Para papá' : (c.titulo || 'Carta de papá');
+  $('cartaPapaFecha').textContent = fechaCarta(c.t);
+  $('cartaPapaTexto').textContent = c.texto;
+  $('cartaResponder').hidden = deMi;
+}
+
+function abrirCartaPapa(c) {
+  const dlg = $('cartaPapaDialog'); if (!dlg || !c) return;
+  cerrarAlejandro(false);
+  mostrarVistaCarta(c);
+  if (!dlg.open) dlg.showModal();
+  if (c.de === 'papa' && !c.leida) {
+    c.leida = true;
+    guardarBuzon();
+    pintarSobre();
+    notificar(`abrió tu carta 💌: «${c.texto.slice(0, 80)}${c.texto.length > 80 ? '…' : ''}»`, 'love_letter', 'Carta leida');
+  }
+}
+
+function abrirBuzon() {
+  const dlg = $('cartaPapaDialog'); if (!dlg) return;
+  cerrarAlejandro(false);
+  $('cartaPapaVista').hidden = true;
+  $('buzonVista').hidden = false;
+  const lista = $('buzonLista');
+  lista.replaceChildren();
+  [...buzon].reverse().forEach(c => {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    if (c.de === 'yo') b.classList.add('mia');
+    if (c.de === 'papa' && !c.leida) b.classList.add('nueva');
+    const de = document.createElement('small');
+    de.textContent = `${c.de === 'yo' ? 'Tú para papá' : 'De papá'} · ${fechaCarta(c.t)}`;
+    const txt = document.createElement('span');
+    txt.textContent = c.texto.length > 90 ? c.texto.slice(0, 90) + '…' : c.texto;
+    b.append(de, txt);
+    b.onclick = () => abrirCartaPapa(c);
+    li.append(b);
+    lista.append(li);
+  });
+  $('buzonVacio').hidden = buzon.length > 0;
+  if (!dlg.open) dlg.showModal();
+}
+
+function abrirParaPapa() {
+  const dlg = $('paraPapaDialog'); if (!dlg) return;
+  cerrarAlejandro(false);
+  $('cartaPapaDialog')?.open && $('cartaPapaDialog').close();
+  $('paraPapaEstado').textContent = '';
+  if (!dlg.open) dlg.showModal();
+  setTimeout(() => $('paraPapaTexto')?.focus(), 60);
+}
+
+$('paraPapaTexto')?.addEventListener('input', e => {
+  const c = $('paraPapaCuenta'); if (c) c.textContent = `${e.target.value.length} / 600`;
+});
+
+$('paraPapaForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const ta = $('paraPapaTexto'), btn = $('paraPapaEnviar'), estado = $('paraPapaEstado');
+  const texto = (ta?.value || '').trim();
+  if (!texto) return;
+  btn.disabled = true;
+  estado.textContent = 'Alejandro va corriendo donde papá… 🦀💨';
+  try {
+    const r = await fetch('https://ntfy.sh/', {
+      method: 'POST',
+      body: JSON.stringify({ topic: NTFY_TEMA, title: 'Mensaje de Dallana 💌', message: texto, tags: ['love_letter', 'crab'], priority: 4 })
+    });
+    if (!r.ok) throw new Error(String(r.status));
+    buzon.push({ id: `yo-${Date.now()}`, de: 'yo', t: Date.now(), texto, leida: true });
+    guardarBuzon();
+    ta.value = '';
+    $('paraPapaCuenta').textContent = '0 / 600';
+    $('paraPapaDialog').close();
+    alejandroReacciona('aplaudir', 2400);
+    setTimeout(() => alejandroDice('¡Listo, mamá! Ya se lo llevé a papá. 🦀💨', 'Alejandro cartero 🦀'), 400);
+  } catch {
+    estado.textContent = 'Ups, no pude llegar donde papá. Revisa tu internet y prueba otra vez.';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function abrirMenuAlejandro() {
+  const globo = $('alejandroGlobo'); if (!globo) return;
+  if (!enCasa()) { volverACasa(abrirMenuAlejandro, true); return; }
+  modoGlobo('menu');
+  pintarSobre();
+  const texto = $('alejandroTexto'); if (texto) texto.textContent = '¡Hola, mamá! ¿Qué hacemos? 🦀';
+  globo.hidden = false;
+  $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
+  estadoAlejandro();
+}
+$('menuBuzon')?.addEventListener('click', abrirBuzon);
+$('menuParaPapa')?.addEventListener('click', abrirParaPapa);
+$('menuNovedades')?.addEventListener('click', () => abrirAlejandro(0));
+$('cartaResponder')?.addEventListener('click', abrirParaPapa);
+$('cartaVerBuzon')?.addEventListener('click', abrirBuzon);
+$('buzonParaPapa')?.addEventListener('click', abrirParaPapa);
+
+function empezarCartero() {
+  if (carteroIniciado) return;
+  carteroIniciado = true;
+  pintarSobre();
+  if (cartaPendiente()) setTimeout(avisarCartaNueva, 4000);
+  setTimeout(revisarCartas, 2500);
+  setInterval(revisarCartas, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') revisarCartas(); });
+}
+
 /* Mantenerlo presionado muestra el mensaje secreto */
 function mostrarSecretoAlejandro() {
   const globo = $('alejandroGlobo'); if (!globo) return;
@@ -1621,7 +1981,8 @@ function mostrarSecretoAlejandro() {
   if (texto) texto.textContent = MENSAJE_SECRETO;
   if (paso) paso.textContent = '🤫 secreto';
   if (sig) sig.hidden = true;
-  alejandroSecreto = true;
+  cancelarPaseo();
+  modoGlobo('secreto');
   globo.hidden = false;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
   alejandroReacciona('aplaudir', 2400);
@@ -1657,6 +2018,7 @@ registrarDia();
 actualizarProgreso();
 if (!$('welcome')) saludoAlejandro();
 estadoAlejandro();
+pintarSobre();
 { const h = new Date().getHours(); if (h >= 7 && h < 11) setTimeout(() => alejandroReacciona('bostezar', 3600), 900); }
 programarPaseo();
 actualizarBotonFavoritos();

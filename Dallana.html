@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=5.9">
+<link rel="stylesheet" href="Dallana.css?v=6.0">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -276,6 +276,44 @@
 </dialog>
 
 
+<dialog id="cartaPapaDialog" class="carta-papa-dialog" aria-labelledby="cartaPapaTitulo">
+  <button class="close" data-close="cartaPapaDialog" aria-label="Cerrar">×</button>
+  <div id="cartaPapaVista">
+    <p class="carta-papa-de" id="cartaPapaDe">💌 Alejandro te trajo una carta</p>
+    <article class="carta-papa-papel">
+      <h2 id="cartaPapaTitulo">Carta de papá</h2>
+      <p class="carta-papa-fecha" id="cartaPapaFecha"></p>
+      <p class="carta-papa-texto" id="cartaPapaTexto"></p>
+    </article>
+    <div class="carta-papa-acciones">
+      <button type="button" class="carta-btn" id="cartaResponder">💌 Responderle a papá</button>
+      <button type="button" class="carta-btn suave" id="cartaVerBuzon">📬 Ver el buzón</button>
+    </div>
+  </div>
+  <div id="buzonVista" hidden>
+    <h2>Buzón de papá 📬</h2>
+    <p class="buzon-vacio" id="buzonVacio">Todavía no hay cartas… pero papá siempre está pensando en ti.</p>
+    <ul class="buzon-lista" id="buzonLista"></ul>
+    <div class="carta-papa-acciones">
+      <button type="button" class="carta-btn" id="buzonParaPapa">💌 Dile algo a papá</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="paraPapaDialog" class="para-papa-dialog" aria-labelledby="paraPapaTitulo">
+  <button class="close" data-close="paraPapaDialog" aria-label="Cerrar">×</button>
+  <h2 id="paraPapaTitulo">Dile algo a papá 💌</h2>
+  <p>Escríbele lo que quieras y Alejandro se lo lleva al tiro.</p>
+  <form id="paraPapaForm" class="para-papa-form">
+    <textarea id="paraPapaTexto" maxlength="600" rows="5" placeholder="Papá, te quería decir que…" required></textarea>
+    <div class="para-papa-pie">
+      <span id="paraPapaCuenta">0 / 600</span>
+      <button type="submit" class="carta-btn" id="paraPapaEnviar">Enviar con Alejandro 🦀</button>
+    </div>
+    <p class="para-papa-estado" id="paraPapaEstado" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+
 <dialog id="pixelDialog" class="pixel-dialog" aria-labelledby="pixelTitulo">
   <button class="close" data-close="pixelDialog" aria-label="Cerrar">×</button>
   <span class="chapter-kicker">Recuerdo pixel</span>
@@ -357,13 +395,19 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<aside class="alejandro" id="alejandro" aria-label="Alejandro, tu ayudante">
+<aside class="alejandro" id="alejandro" aria-label="Alejandro, tu ayudante" popover="manual">
+  <span class="alejandro-sobre" id="alejandroSobre" aria-hidden="true" hidden>💌</span>
   <button class="alejandro-sprite" id="alejandroSprite" type="button" aria-label="Hablar con Alejandro" aria-expanded="false"></button>
   <p class="alejandro-dice" id="alejandroDice" role="status" aria-live="polite" hidden></p>
   <div class="alejandro-globo" id="alejandroGlobo" role="status" aria-live="polite" hidden>
     <button class="alejandro-cerrar" id="alejandroCerrar" type="button" aria-label="Cerrar">×</button>
     <strong class="alejandro-nombre">Alejandro 🦀</strong>
     <p id="alejandroTexto"></p>
+    <div class="alejandro-menu" id="alejandroMenu" hidden>
+      <button type="button" id="menuBuzon">📬 Buzón de papá <span id="menuBuzonN"></span></button>
+      <button type="button" id="menuParaPapa">💌 Dile algo a papá</button>
+      <button type="button" id="menuNovedades">✨ Ver novedades</button>
+    </div>
     <div class="alejandro-pie">
       <span id="alejandroPaso"></span>
       <button class="alejandro-siguiente" id="alejandroSiguiente" type="button">Siguiente ›</button>
@@ -371,6 +415,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.39" defer></script>
+<script src="Dallana.js?v=3.40" defer></script>
 </body>
 </html>
