@@ -30,13 +30,17 @@
   --oro-oscuro:#9c6d22;
   --madera:#a86f43;
   --terciopelo:#b0243a;
-  --kraft:#d4ae7e;
-  --kraft-claro:#e6c89c;
-  --kraft-oscuro:#a98457;
+  --kraft:#efdcbc;
+  --kraft-claro:#fbf1de;
+  --kraft-oscuro:#cfb184;
   --mesa:#f4e4cb;
   --mesa-veta:#e7cba4;
   --cera:#e8505a;
   --postit:#ffe99a;
+  --madera-mesa:#c8935f;
+  --madera-mesa-oscura:#a87447;
+  --veta:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='300'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .09' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .24 0 0 0 0 .12 0 0 0 .55 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E");
+  --fibra:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .15 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --cordon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='38' viewBox='0 0 120 38'%3E%3Cpath d='M6 12Q62 34 120 12' fill='none' stroke='%23b0243a' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M8 11Q62 31 118 11' fill='none' stroke='%23e2576a' stroke-width='1'/%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --poste:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='38' viewBox='0 0 8 38'%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --corazones:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 38c-6-5-10-8-10-12a4.5 4.5 0 0 1 10-2 4.5 4.5 0 0 1 10 2c0 4-4 7-10 12z' fill='%23d1343f' fill-opacity='.08'/%3E%3C/svg%3E");
@@ -190,12 +194,13 @@ main>section:has(>.sticker--bl,>.sticker--br){padding-bottom:calc(var(--st) - va
 /* Portada: escritorio de madera clara con un sobre kraft sellado con cera, cosas pegadas alrededor
    y Alejandro cartero esperando. Al tocar: el sello se parte, se abre la solapa y sale la carta. */
 .envelope{
-  --sw:min(400px,78vw);
+  --sw:min(460px,78vw);
   position:fixed;inset:0;z-index:10;isolation:isolate;display:grid;place-items:center;padding:16px;overflow:hidden;
   background:
-    repeating-linear-gradient(90deg,transparent 0 158px,rgba(138,90,54,.10) 158px 160px),
-    repeating-linear-gradient(0deg,rgba(138,90,54,.035) 0 2px,transparent 2px 11px),
-    radial-gradient(ellipse at 50% 40%,var(--mesa) 0,var(--mesa-veta) 100%);
+    radial-gradient(ellipse at 50% 46%,transparent 35%,rgba(60,28,10,.42) 100%),
+    repeating-linear-gradient(180deg,transparent 0 126px,rgba(70,36,16,.3) 126px 128px,rgba(255,226,180,.1) 128px 130px),
+    var(--veta) 0 0/700px 280px,
+    linear-gradient(180deg,var(--madera-mesa),var(--madera-mesa-oscura));
   text-align:center;transition:opacity .6s ease,visibility .6s ease;
 }
 /* Mientras la bienvenida está abierta, los corazones flotan por encima de ella */
@@ -203,26 +208,24 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .envelope.closed{visibility:hidden;opacity:0;pointer-events:none}
 /* Luz: rayos de sol de día; de noche, todo más oscuro con una lámpara cálida */
 .portada-luz{position:absolute;inset:-20%;z-index:0;pointer-events:none;
-  background:repeating-linear-gradient(115deg,transparent 0 50px,rgba(255,250,228,.38) 50px 130px,transparent 130px 250px);
+  background:repeating-linear-gradient(115deg,transparent 0 50px,rgba(255,244,214,.22) 50px 130px,transparent 130px 250px);
   -webkit-mask:radial-gradient(ellipse at 25% 10%,#000 0,transparent 70%);mask:radial-gradient(ellipse at 25% 10%,#000 0,transparent 70%);
   animation:portada-rayos 14s ease-in-out infinite alternate}
 @keyframes portada-rayos{to{translate:40px 10px;opacity:.7}}
 .envelope.noche .portada-luz{inset:0;-webkit-mask:none;mask:none;animation:none;
-  background:radial-gradient(circle at 50% 50%,rgba(255,214,140,.3) 0,transparent 55%),linear-gradient(rgba(34,30,70,.32),rgba(34,30,70,.42))}
+  background:radial-gradient(circle at 50% 52%,rgba(255,206,130,.32) 0,transparent 55%),linear-gradient(rgba(26,20,52,.45),rgba(26,20,52,.58))}
 
-.portada-escena{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:min(720px,100%)}
-.welcome-label{color:var(--vino);font:700 12px var(--sans);letter-spacing:.16em;text-transform:uppercase}
-.welcome-copy{margin:6px 0 0;color:var(--vino-oscuro);font:600 clamp(38px,9vw,58px)/1.02 var(--firma)}
+.portada-escena{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:min(1040px,100%)}
+.welcome-label{color:var(--mantequilla);font:700 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 1px 3px rgba(60,28,10,.5)}
+.welcome-copy{margin:6px 0 0;color:var(--tarjeta);font:600 clamp(40px,9vw,64px)/1.02 var(--firma);text-shadow:0 3px 0 rgba(110,52,22,.4),0 8px 22px rgba(60,28,10,.35)}
 .welcome-resalte{position:relative;display:block;width:fit-content;margin:0 auto;isolation:isolate}
-.welcome-resalte::before{content:"";position:absolute;z-index:-1;left:-5%;right:-5%;bottom:.06em;height:.4em;border-radius:3px 12px 4px 10px;background:rgba(247,200,70,.5);rotate:-1.5deg;transform-origin:0 50%;animation:resalte-pinta .8s .5s cubic-bezier(.3,.8,.3,1) both}
+.welcome-resalte::before{content:"";position:absolute;z-index:-1;left:-5%;right:-5%;bottom:.06em;height:.4em;border-radius:3px 12px 4px 10px;background:rgba(209,52,63,.62);rotate:-1.5deg;transform-origin:0 50%;animation:resalte-pinta .8s .5s cubic-bezier(.3,.8,.3,1) both}
 .welcome-resalte::after{content:"♡";position:absolute;top:-.1em;right:-.65em;color:var(--coral);font-size:.5em;rotate:14deg;animation:latido 1.6s ease-in-out infinite}
 @keyframes resalte-pinta{from{scale:0 1}}
 @keyframes latido{50%{scale:1.25}}
-.envelope.noche .welcome-label{color:var(--tarjeta);text-shadow:0 2px 8px rgba(30,20,50,.45)}
-.envelope.noche .welcome-copy{color:var(--mantequilla);text-shadow:0 2px 8px rgba(30,20,50,.45)}
-.envelope.noche .welcome-resalte::before{background:rgba(209,52,63,.45)}
 
-.portada-mesa{position:relative;display:grid;place-items:center;width:100%;padding:124px 0 72px}
+
+.portada-mesa{position:relative;display:grid;place-items:center;width:100%;padding:128px 0 84px}
 .sobre-zona{position:relative;z-index:2}
 
 /* El sobre */
@@ -230,7 +233,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .env-button:focus-visible{outline:3px solid var(--azul);outline-offset:8px;border-radius:12px}
 .env{--rx:0deg;--ry:0deg;position:relative;display:block;width:var(--sw);aspect-ratio:3/2;perspective:1000px;
   transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .3s ease-out,translate .3s ease;animation:sobre-flota 4.5s ease-in-out infinite;
-  filter:drop-shadow(0 18px 20px rgba(90,55,30,.26)) drop-shadow(0 3px 4px rgba(90,55,30,.16))}
+  filter:drop-shadow(0 22px 24px rgba(50,22,8,.45)) drop-shadow(0 4px 5px rgba(50,22,8,.3))}
 @keyframes sobre-flota{50%{translate:0 -7px}}
 .env>:where(span){position:absolute;display:block}
 .sobre-fondo{inset:0;border-radius:10px;background:linear-gradient(180deg,var(--kraft-oscuro),var(--kraft))}
@@ -238,13 +241,14 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .sobre-carta-hola{display:block;color:var(--vino);font:600 clamp(18px,4.6vw,24px)/1 var(--firma)}
 .sobre-carta-lineas{display:block;height:40%;margin-top:6%;background:repeating-linear-gradient(180deg,transparent 0 12px,var(--linea) 12px 13px)}
 .sobre-carta-firma{display:block;margin-top:2%;color:var(--tinta-suave);font:600 15px var(--firma);text-align:right}
-.sobre-bolsillo{inset:0;z-index:2;border-radius:10px;clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);background:linear-gradient(165deg,var(--kraft-claro),var(--kraft) 75%)}
+.sobre-bolsillo{inset:0;z-index:2;border-radius:10px;clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);background:var(--fibra),linear-gradient(165deg,var(--kraft-claro),var(--kraft) 75%)}
 .sobre-bolsillo::before{content:"";position:absolute;inset:0;background:linear-gradient(to top right,transparent calc(50% - 1px),rgba(120,80,40,.28) 50%,transparent calc(50% + 1px)) left bottom/50% 56% no-repeat,linear-gradient(to top left,transparent calc(50% - 1px),rgba(120,80,40,.28) 50%,transparent calc(50% + 1px)) right bottom/50% 56% no-repeat}
-.sobre-bolsillo::after{content:"";position:absolute;inset:7px;border:1.5px dashed rgba(255,255,255,.6);border-radius:6px}
+.sobre-bolsillo::after{content:"";position:absolute;inset:7px;border:1.5px dashed rgba(165,34,46,.35);border-radius:6px}
 .sobre-para{position:absolute;right:0;left:0;top:73%;color:var(--tinta);font:600 clamp(20px,5.2vw,28px)/1 var(--firma)}
 .sobre-para b{color:var(--vino);font-weight:700}
 .sobre-de{position:absolute;right:0;left:0;top:89%;color:rgba(70,45,25,.7);font:600 clamp(8px,2.2vw,11px)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase}
-.sobre-solapa{top:0;right:0;left:0;height:62%;z-index:3;transform-origin:50% 0;clip-path:polygon(0 0,100% 0,50% 100%);border-radius:10px 10px 0 0;background:linear-gradient(180deg,var(--kraft-claro),var(--kraft) 80%,var(--kraft-oscuro))}
+.sobre-solapa{top:0;right:0;left:0;height:62%;z-index:3;transform-origin:50% 0;clip-path:polygon(0 0,100% 0,50% 100%);border-radius:10px 10px 0 0;background:var(--fibra),linear-gradient(180deg,var(--kraft-claro),var(--kraft) 80%,var(--kraft-oscuro))}
+.sobre-ramita{left:50%;top:56%;z-index:4;width:34%;aspect-ratio:170/60;translate:-62% -40%;rotate:-16deg;background:var(--doodle-ramita) center/contain no-repeat;transition:opacity .3s}
 /* Estampilla con Alejandro pixel, bordes perforados, y matasellos de Conce */
 .sobre-estampilla{top:7%;right:5%;z-index:4;width:15%;aspect-ratio:5/6;padding:4px;background:var(--tarjeta);rotate:5deg;
   -webkit-mask:linear-gradient(#000 0 0) content-box,radial-gradient(circle,transparent 2px,#000 2.5px) 50% 50%/7px 7px;-webkit-mask-composite:source-over;
@@ -277,27 +281,44 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .portada-cosa{position:absolute;z-index:1;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .portada-cosa.mueve{animation:cosa-mueve .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes cosa-mueve{30%{scale:1.14}60%{scale:.95}}
-.portada-polaroid{top:44px;left:2%;width:clamp(84px,18vw,138px);margin:0;padding:7px 7px 26px;background:var(--tarjeta);box-shadow:0 10px 18px -8px rgba(90,55,30,.45);rotate:-9deg;transform-origin:50% 0;animation:portada-mece 6s ease-in-out infinite}
+.portada-polaroid{top:26px;left:3%;width:clamp(86px,17vw,178px);margin:0;padding:8px 8px 30px;background:var(--tarjeta);box-shadow:0 10px 18px -8px rgba(90,55,30,.45);rotate:-9deg;transform-origin:50% 0;animation:portada-mece 6s ease-in-out infinite}
 .portada-polaroid img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
 .portada-polaroid figcaption{position:absolute;right:0;bottom:3px;left:0;color:var(--tinta);font:600 clamp(13px,3vw,16px)/1.2 var(--firma)}
 .portada-polaroid::before,.portada-postit::before{content:"";position:absolute;top:-9px;left:30%;width:42%;height:18px;background:rgba(61,114,196,.32);rotate:4deg}
 @keyframes portada-mece{50%{transform:rotate(3deg)}}
-.portada-postit{right:2%;bottom:84px;display:flex;flex-direction:column;align-items:center;gap:2px;width:clamp(96px,17vw,124px);padding:16px 8px 12px;background:var(--postit);box-shadow:0 10px 14px -8px rgba(90,55,30,.45);rotate:5deg;color:var(--tinta)}
+/* Tira de fotos de los dos */
+.portada-tira{top:4px;right:5%;width:clamp(70px,9vw,106px);margin:0;padding:6px;background:var(--tarjeta);box-shadow:0 12px 18px -8px rgba(60,28,10,.5);rotate:7deg;transform-origin:50% 0;animation:portada-mece 7s ease-in-out -2s infinite}
+.portada-tira img{display:block;width:100%;height:auto}
+.portada-tira::before{content:"";position:absolute;top:-9px;left:24%;width:52%;height:18px;background:rgba(79,154,74,.38);rotate:-5deg}
+/* Tacita pixel con vapor */
+.portada-taza{left:16%;bottom:0;width:124px;height:124px;background:url("assets/pixel/obras.png?v=1") 50% 0/1100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 6px 4px rgba(60,28,10,.35))}
+.portada-taza i{position:absolute;bottom:62%;left:var(--x,40%);width:7px;height:20px;border-radius:50%;background:rgba(255,255,255,.6);filter:blur(2.5px);opacity:0;animation:vapor 2.8s ease-in infinite}
+.portada-taza i:nth-child(2){--x:52%;animation-delay:.9s}
+.portada-taza i:nth-child(3){--x:30%;animation-delay:1.8s}
+@keyframes vapor{0%{translate:0 0;opacity:0}30%{opacity:.85}100%{translate:5px -34px;scale:1.5;opacity:0}}
+/* Guirnalda de lucecitas colgando arriba */
+.portada-luces{position:absolute;top:0;right:0;left:0;z-index:2;height:110px;pointer-events:none}
+.portada-luces svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.portada-luces i{position:absolute;width:11px;height:16px;margin:-1px 0 0 -5.5px;border-radius:50% 50% 50% 50%/42% 42% 58% 58%;background:var(--c);box-shadow:0 0 10px 3px var(--c),0 0 26px 6px var(--c);opacity:.55;animation:foco 2.6s ease-in-out var(--d) infinite alternate}
+.portada-luces i::before{content:"";position:absolute;top:-4px;left:2.5px;width:6px;height:5px;border-radius:1px;background:var(--kraft-oscuro)}
+@keyframes foco{to{opacity:1}}
+.envelope.opening .portada-luces i{animation:foco-fiesta .3s steps(2) infinite}
+@keyframes foco-fiesta{50%{opacity:.25}}
+.portada-postit{right:3%;bottom:40px;display:flex;flex-direction:column;align-items:center;gap:2px;width:clamp(96px,17vw,124px);padding:16px 8px 12px;background:var(--postit);box-shadow:0 10px 14px -8px rgba(90,55,30,.45);rotate:5deg;color:var(--tinta)}
 .portada-postit::before{background:rgba(209,52,63,.28);rotate:-3deg}
 .portada-postit b{color:var(--vino);font:700 clamp(24px,5vw,30px)/1 var(--firma)}
 .portada-postit span{font:600 12px/1.2 var(--sans)}
 .portada-postit small{color:var(--tinta-suave);font:500 10px/1.2 var(--sans);letter-spacing:.04em}
 .portada-sticker{height:auto;filter:drop-shadow(0 5px 6px rgba(90,55,30,.3))}
-.portada-sticker--1{bottom:8px;left:5%;width:clamp(74px,15vw,112px);rotate:-7deg}
-.portada-sticker--2{top:40px;right:3%;width:clamp(70px,13vw,96px);rotate:9deg}
-.portada-flor{bottom:-30px;left:24%;width:44px;height:124px;background:var(--doodle-tulipan) center/contain no-repeat;rotate:-68deg;pointer-events:none}
-.portada-lapiz{position:absolute;z-index:1;right:20%;bottom:22px;width:118px;height:11px;border-radius:2px;rotate:-14deg;pointer-events:none;
+.portada-sticker--1{bottom:4px;left:1%;width:clamp(74px,12vw,124px);rotate:-7deg}
+.portada-sticker--2{top:47%;right:15%;width:clamp(70px,9vw,92px);rotate:9deg}
+.portada-flor{bottom:-34px;left:30%;width:44px;height:124px;background:var(--doodle-tulipan) center/contain no-repeat;rotate:-68deg;pointer-events:none}
+.portada-lapiz{position:absolute;z-index:1;right:27%;bottom:16px;width:118px;height:11px;border-radius:2px;rotate:-14deg;pointer-events:none;
   background:linear-gradient(90deg,var(--rosa) 0 12%,var(--linea) 12% 16%,var(--postit) 16% 84%,var(--kraft-claro) 84% 96%,var(--tinta) 96%);
   clip-path:polygon(0 0,84% 0,100% 50%,84% 100%,0 100%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
-.portada-pista{margin-top:2px;color:var(--tinta-suave);font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;transition:opacity .3s}
+.portada-pista{margin-top:2px;color:var(--tarjeta);text-shadow:0 1px 3px rgba(60,28,10,.6);font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;transition:opacity .3s}
 .portada-pista span{display:inline-block;animation:pista-toca 1.4s ease-in-out infinite}
 @keyframes pista-toca{50%{translate:0 -4px}}
-.envelope.noche .portada-pista{color:var(--tarjeta)}
 
 /* Apertura: el sello se parte, la solapa se abre y sale la carta */
 .envelope.opening .env{animation:none;transform:none;translate:none}
@@ -312,13 +333,20 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 @keyframes carta-sale{to{translate:0 -54%}}
 .envelope.opening .portada-alejandro{animation:ale-se-va .35s ease-in forwards}
 @keyframes ale-se-va{to{scale:.2;opacity:0}}
-.envelope.opening .portada-pista,.envelope.opening .portada-globo{opacity:0}
+.envelope.opening .portada-pista,.envelope.opening .portada-globo,.envelope.opening .sobre-ramita{opacity:0}
 .envelope.opening .portada-escena{animation:escena-acerca .6s 1.45s ease-in forwards}
 @keyframes escena-acerca{to{scale:1.08;opacity:0}}
 
+@media (max-width:899px){
+  .portada-sticker--2,.portada-lapiz,.portada-flor{display:none}
+  .portada-tira{right:2%;top:10px}
+  .portada-taza{left:auto;right:30%;bottom:0;width:80px;height:80px}
+}
 @media (max-width:599px){
   .envelope{--sw:min(320px,84vw)}
   .portada-mesa{padding:112px 0 104px}
+  .portada-tira{display:none}
+  .portada-taza{right:auto;left:calc(50% - 34px);bottom:12px;width:68px;height:68px}
   .portada-alejandro{right:-6px;bottom:calc(100% - 12px)}
   .portada-alejandro-sprite{width:81px;height:96.75px;margin:0 -14px 0 -10px;background-size:972px 580.5px}
   @keyframes portada-ale{to{background-position-x:-972px}}

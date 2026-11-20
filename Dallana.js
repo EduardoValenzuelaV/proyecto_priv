@@ -959,6 +959,29 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
     }, 1500);
   }
 
+  // Guirnalda de lucecitas colgando en festones de lado a lado
+  const luces = $('portadaLuces');
+  const COLORES_LUZ = ['#ffd36b', '#ff8fa3', '#ff5a5f', '#8fb8ff', '#9be28c'];
+  function colgarLuces() {
+    if (!luces || cover.classList.contains('closed')) return;
+    const W = innerWidth, chico = W < 600;
+    const tramo = W / (chico ? 2 : W < 1100 ? 3 : 4), hondo = chico ? 34 : 54, sep = chico ? 32 : 44;
+    const y = x => 6 + hondo * Math.sin(Math.PI * ((x % tramo) / tramo));
+    let d = '';
+    for (let x = 0; x <= W; x += 6) d += `${x ? 'L' : 'M'}${x} ${y(x).toFixed(1)}`;
+    luces.innerHTML = `<svg viewBox="0 0 ${W} 110" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#5a3a22" stroke-width="1.6"/></svg>`;
+    for (let x = sep / 2, k = 0; x < W; x += sep, k++) {
+      const b = document.createElement('i');
+      b.style.left = `${x}px`; b.style.top = `${y(x) + 3}px`;
+      b.style.setProperty('--c', COLORES_LUZ[k % COLORES_LUZ.length]);
+      b.style.setProperty('--d', `${-(Math.random() * 2.6).toFixed(2)}s`);
+      luces.append(b);
+    }
+  }
+  colgarLuces();
+  let lucesTimer = 0;
+  addEventListener('resize', () => { clearTimeout(lucesTimer); lucesTimer = setTimeout(colgarLuces, 200); });
+
   // Las cosas del escritorio saltan al tocarlas
   cover.querySelectorAll('.portada-cosa').forEach(c => c.addEventListener('click', () => {
     c.classList.remove('mueve'); void c.offsetWidth; c.classList.add('mueve');

@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=6.9">
+<link rel="stylesheet" href="Dallana.css?v=7.0">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -58,13 +58,16 @@
 
 <div class="envelope" id="welcome">
   <div class="portada-luz" aria-hidden="true"></div>
+  <div class="portada-luces" id="portadaLuces" aria-hidden="true"></div>
   <div class="portada-escena">
     <div class="portada-cabeza">
       <span class="welcome-label" id="portadaSaludo">Para Dallana · con amor</span>
       <p class="welcome-copy">Un pequeño rincón <span class="welcome-resalte">hecho para ti</span></p>
     </div>
     <div class="portada-mesa">
-      <figure class="portada-polaroid portada-cosa" aria-hidden="true"><img src="assets/fotos/portada-polaroid.jpg" alt="" decoding="async"><figcaption>nosotros ♥</figcaption></figure>
+      <figure class="portada-polaroid portada-cosa" aria-hidden="true"><img src="assets/fotos/portada-polaroid.jpg?v=2" alt="" decoding="async"><figcaption>nosotros ♥</figcaption></figure>
+      <figure class="portada-tira portada-cosa" aria-hidden="true"><img src="assets/fotos/portada-tira.jpg?v=1" alt="" decoding="async"></figure>
+      <span class="portada-taza portada-cosa" aria-hidden="true"><i></i><i></i><i></i></span>
       <div class="portada-postit portada-cosa" aria-hidden="true"><b id="portadaDia">Día 1</b><span id="portadaDiaTexto">de nosotros</span><small id="portadaFecha"></small></div>
       <img class="portada-sticker portada-sticker--1 portada-cosa" src="assets/stickers/stikers.png" alt="" aria-hidden="true" decoding="async">
       <img class="portada-sticker portada-sticker--2 portada-cosa" src="assets/stickers/stikers3.png" alt="" aria-hidden="true" decoding="async">
@@ -82,6 +85,7 @@
             <span class="sobre-solapa"></span>
             <span class="sobre-estampilla"><i></i></span>
             <span class="sobre-matasellos"><span>Conce</span><b>17·10·26</b></span>
+            <span class="sobre-ramita"></span>
             <span class="sobre-sello"><span class="sello-mitad sello-mitad--a">D</span><span class="sello-mitad sello-mitad--b">D</span></span>
           </span>
         </button>
@@ -476,6 +480,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.53" defer></script>
+<script src="Dallana.js?v=3.54" defer></script>
 </body>
 </html>
