@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Portada nueva publicada; sin tarea abierta. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
+**Current focus**: Alejandro con más vida publicado; cumpleaños de Dallana (12 de agosto) en `CUMPLE_DALLANA`. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
 
 **In progress**:
 

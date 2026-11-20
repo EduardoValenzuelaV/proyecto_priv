@@ -356,7 +356,8 @@ function sumarCorazon() {
   if (n === CORAZONES_POR_DIA) {
     lanzarCelebracion();
     setTimeout(corazonGigante, 450);
-    alejandroReacciona('aplaudir', 3200);
+    alejandroReacciona('enamorado', 3200);
+    alejandroDice(`¡Llenaste los ${CORAZONES_POR_DIA} corazones de hoy, mamá! Papá va a estar feliz. 💗`, 'Alejandro 🦀', null, true);
     notificar(`llenó sus ${CORAZONES_POR_DIA} corazones de hoy 💗`, 'sparkling_heart');
   }
 }
@@ -1614,9 +1615,11 @@ function abrirAlejandro(desde = 0) {
 
 function cerrarAlejandro(leido) {
   const globo = $('alejandroGlobo'); if (!globo) return;
+  const estabaAbierto = !globo.hidden;
   globo.hidden = true;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'false');
   estadoAlejandro();
+  if (estabaAbierto) setTimeout(decirPendientes, 700);
   if (alejandroModo === 'tutorial') {
     $('buzonEsquina')?.classList.remove('resaltado');
     try { localStorage.setItem('dallanaTutorialBuzon', '1'); } catch {}
@@ -1634,6 +1637,8 @@ function saludoAlejandro() {
   subirAlejandro();
   empezarDisfraces();
   empezarCartero();
+  setTimeout(saludoDeRegreso, 2600);
+  setTimeout(revisarRutinas, 9000);
   let vista = '';
   try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
   if (vista !== NOVEDADES.version) setTimeout(() => abrirAlejandro(0), 1500);
@@ -1675,8 +1680,11 @@ $('alejandroSiguiente')?.addEventListener('click', () => {
 });
 
 /* ---------- Alejandro con vida: reacciona, duerme de noche, pasea y guarda un secreto ----------
-   Estados (filas de assets/pixel/alejandro.png): salto, aplaudir, bailar, dormir, bostezar, caminar.
-   Prioridad: una reacción del momento > música sonando > conversando > paseo > la hora del día. */
+   Estados (filas de assets/pixel/alejandro.png, las genera propuesta/alejandro2.py):
+     0 salto · 1 aplaudir · 2 bailar · 3 dormir · 4 bostezar · 5 caminar
+     6 saludar · 7 llorar (de emoción) · 8 enamorado · 9 enojado (de mentirita) · 10 mareado
+   Prioridad: una reacción del momento > música sonando > conversando > paseo > la hora del día.
+   Sus horas están en HORAS_ALEJANDRO (dormir y rutinas); la portada usa su propia noche visual (20–6). */
 const MENSAJE_SECRETO = 'Papá te extraña muchísimo 💗';
 const sinMovimiento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 let alejandroReaccion = null, alejandroReaccionTimer = 0, alejandroCaminando = false;
@@ -1685,11 +1693,12 @@ let alejandroIgnorarClick = false, alejandroPresionTimer = 0;
 /* De noche (23:00–7:00) duerme, pero si Dallana hace algo en la página se despierta y hace lo mismo que de día.
    Si pasa INACTIVIDAD_DORMIR sin que ella haga nada, se vuelve a dormir con su pijama. */
 const INACTIVIDAD_DORMIR = 90000;
+const HORAS_ALEJANDRO = { dormirDesde: 23, despertar: 7 };
 let despiertoDeNoche = false, inactividadTimer = 0, ultimaActividad = 0;
 
 function esDeNoche() {
   const h = new Date().getHours();
-  return h >= 23 || h < 7;
+  return h >= HORAS_ALEJANDRO.dormirDesde || h < HORAS_ALEJANDRO.despertar;
 }
 
 function estadoPorHora() {
@@ -1815,6 +1824,8 @@ function caminarA(p, rapido = false, vel = VEL_PASEO) {
   const dist = Math.hypot(p.x - desde.x, p.y - desde.y);
   const seg = rapido ? Math.min(.6, dist / 600) : dist / vel;
   alejandroCaminando = !rapido && dist > 2;
+  // al caminar se le pasa la reacción del momento (si no, caminaría con la pose de aplaudir o enamorado)
+  if (alejandroCaminando && alejandroReaccion) { clearTimeout(alejandroReaccionTimer); alejandroReaccion = null; }
   estadoAlejandro();
   a.style.transition = `translate ${seg}s linear, transform .35s ease, opacity .35s ease`;
   a.style.translate = `${p.x}px ${p.y}px`;
@@ -1924,6 +1935,7 @@ function apartarseDeCartas() {
       const a = $('alejandro');
       if (a) a.classList.remove('oculto-carta');
       setTimeout(() => { if (!alejandroCaminando && !enCasa()) volverACasa(); }, 1200);
+      setTimeout(decirPendientes, 1900);
     }
   });
   dialogos.forEach(d => obs.observe(d, { attributes: true, attributeFilter: ['open'] }));
@@ -1954,6 +1966,8 @@ setInterval(() => {
   if (alejandroEraNoche !== noche) pintarCielo();
   alejandroEraNoche = noche;
   estadoAlejandro();
+  revisarRutinas();
+  marcarUltimaVez();
 }, 60000);
 
 /* ---------- Disfraces: cada cierto tiempo se cambia de disfraz al azar y dice una frase ----------
@@ -2003,23 +2017,49 @@ const DISFRACES = [
 let disfrazActual = null, disfrazBolsa = [], disfracesIniciados = false, alejandroDiceTimer = 0, disfrazTimer = 0;
 
 function urlDisfraz(d) {
-  return d ? `assets/pixel/disfraces/${d.id}.png?v=1` : 'assets/pixel/alejandro.png?v=4';
+  return d ? `assets/pixel/disfraces/${d.id}.png?v=2` : 'assets/pixel/alejandro.png?v=5';
 }
 
+/* Lo que dice Alejandro en su globito chico. Devuelve true si lo dijo.
+   Si hay una carta o su globo grande abiertos, no habla; lo «importante» (cartas de papá, recados,
+   fechas especiales…) queda guardado y lo dice apenas se cierren (decirPendientes). */
 let alejandroDiceAccion = null;
-function alejandroDice(texto, titulo, accion = null) {
-  const el = $('alejandroDice'); if (!el) return;
+const dichosPendientes = [];
+function alejandroDice(texto, titulo, accion = null, importante = false) {
+  const el = $('alejandroDice'); if (!el) return false;
   const globo = $('alejandroGlobo');
-  if (globo && !globo.hidden) return;
-  if (document.querySelector('dialog[open]')) return;   // no habla encima de una carta abierta
-  if (!enCasa()) { volverACasa(() => alejandroDice(texto, titulo, accion), true); return; }
+  const ocupado = (globo && !globo.hidden) || document.querySelector('dialog[open]') || $('welcome')?.matches(':not(.closed)');
+  if (ocupado) {
+    if (importante && !dichosPendientes.some(d => d.texto === texto)) dichosPendientes.push({ texto, titulo, accion });
+    if (dichosPendientes.length > 5) dichosPendientes.shift();
+    return false;
+  }
+  if (!enCasa()) { volverACasa(() => alejandroDice(texto, titulo, accion, importante), true); return true; }
   alejandroDiceAccion = accion;
   el.replaceChildren();
   const t = document.createElement('strong'); t.textContent = titulo;
   el.append(t, document.createTextNode(texto));
   el.hidden = false;
   clearTimeout(alejandroDiceTimer);
-  alejandroDiceTimer = setTimeout(() => { el.hidden = true; }, 8000);
+  alejandroDiceTimer = setTimeout(() => { el.hidden = true; decirPendientes(); }, Math.max(8000, texto.length * 70));
+  return true;
+}
+
+function decirPendientes() {
+  if (!dichosPendientes.length) return;
+  const el = $('alejandroDice');
+  if (el && !el.hidden) return;   // ya está diciendo algo: sigue cuando termine
+  const d = dichosPendientes[0];
+  if (alejandroDice(d.texto, d.titulo, d.accion)) dichosPendientes.shift();
+}
+
+/* «¡!» sobre su cabeza cuando algo lo sorprende */
+function alejandroAlerta() {
+  const spr = $('alejandroSprite'); if (!spr || sinMovimiento()) return;
+  const a = document.createElement('span');
+  a.className = 'alejandro-alerta'; a.textContent = '!'; a.setAttribute('aria-hidden', 'true');
+  spr.append(a);
+  setTimeout(() => a.remove(), 950);
 }
 $('alejandroDice')?.addEventListener('click', () => {
   $('alejandroDice').hidden = true;
@@ -2057,7 +2097,9 @@ function siguienteDisfraz() {
 function cambiarDisfraz() {
   const globo = $('alejandroGlobo');
   const pijama = DISFRACES.find(d => d.id === 'pijama');
+  const especial = disfrazDelDia();
   if (estadoPorHora() === 'dormir') ponerDisfraz(pijama, false);
+  else if (especial) { ponerDisfraz(especial, false); programarDisfraz(600000); return; }
   else if (document.visibilityState !== 'visible' || (globo && !globo.hidden) || alejandroCaminando || cartaPendiente()) { programarDisfraz(10000); return; }
   else ponerDisfraz(siguienteDisfraz(), true);
   programarDisfraz(180000 + Math.random() * 180000);   // el próximo, entre 3 y 6 minutos
@@ -2072,6 +2114,7 @@ function empezarDisfraces() {
   if (disfracesIniciados) return;
   disfracesIniciados = true;
   if (estadoPorHora() === 'dormir') ponerDisfraz(DISFRACES.find(d => d.id === 'pijama'), false);
+  else if (disfrazDelDia()) ponerDisfraz(disfrazDelDia(), false);
   programarDisfraz(15000 + Math.random() * 25000);      // el primero, al ratito de entrar
 }
 
@@ -2180,6 +2223,8 @@ function fechaCarta(t) {
      /borrar todo     borra las cartas de las últimas 12 horas
      /editar <texto>  reemplaza la última carta por <texto>
      /buzon           la página de Dallana responde qué cartas tiene y cuáles leyó
+     /alejandro <frase>  Alejandro le dice <frase> de tu parte (con ojitos de corazón)
+     /disfraz <nombre>   Alejandro se pone ese disfraz por 10 minutos (ej. /disfraz chef)
    Todo mensaje que empiece con «/» se trata como comando. */
 const TITULOS_DE_LA_PAGINA = ['Actividad en tu pagina', 'Visita en tu pagina', 'Salio de tu pagina', 'Carta leida', 'Mensaje de Dallana 💌', 'Buzon de Dallana'];
 // Las pruebas que papá mandó antes de este momento (20-11-2026 13:34) se ignoran
@@ -2206,6 +2251,8 @@ async function leerTema(tema, esDePapa) {
   return lista;
 }
 
+const sinTildes = t => (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+const DISFRAZ_CARTERO = { id: 'cartero', nombre: 'cartero', frase: '¡Cartero listo para el reparto, mamá! 📬' };
 const cartasDePapaAntesDe = t => buzon.filter(c => c.de === 'papa' && c.t <= t).sort((a, b) => a.t - b.t);
 
 function ejecutarComando(m) {
@@ -2232,6 +2279,21 @@ function ejecutarComando(m) {
     ultima.editada = true;
     ultima.leida = false;
     return { aviso: `tiene tu carta corregida en el buzón ✏️: «${arg.slice(0, 60)}${arg.length > 60 ? '…' : ''}»`, nueva: true };
+  }
+  if (cmd === 'alejandro') {
+    if (!arg) return { aviso: 'no supe qué decirle: escribe /alejandro y tu frase 🦀' };
+    alejandroReacciona('enamorado', 3000);
+    alejandroDice(arg, 'Alejandro (recado de papá) 🦀', null, true);
+    return { aviso: `ya tiene tu recado: Alejandro le dice «${arg.slice(0, 60)}${arg.length > 60 ? '…' : ''}» 🦀` };
+  }
+  if (cmd === 'disfraz') {
+    const quiere = sinTildes(arg);
+    const d = quiere && DISFRACES.concat([DISFRAZ_GUIA, DISFRAZ_CARTERO]).find(x => sinTildes(x.nombre) === quiere || x.id === quiere.replace(/\s+/g, '-'))
+      || (quiere && DISFRACES.find(x => sinTildes(x.nombre).includes(quiere)));
+    if (!d) return { aviso: `no encontré ese disfraz. Algunos: ${DISFRACES.slice(0, 12).map(x => x.nombre).join(', ')}… 🦀` };
+    ponerDisfraz(d, true);
+    programarDisfraz(600000);
+    return { aviso: `Alejandro se puso el disfraz de ${d.nombre} 🦀` };
   }
   if (cmd === 'buzon') {
     const dePapa = buzon.filter(c => c.de === 'papa');
@@ -2283,9 +2345,9 @@ function avisarCartaNueva() {
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) return;
   const decir = () => {
-    alejandroReacciona('aplaudir', 2000);
+    alejandroReacciona('saludar', 2400);
     alejandroDice('¡Mamá! Llegó una carta de papá y te la traje. 💌 Tócame o toca el buzón para abrirla.', 'Alejandro cartero 🦀',
-      () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
+      () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); }, true);
   };
   const caja = cajaEnCasa(), bz = $('buzonEsquina');
   if (sinMovimiento() || !caja || !bz || document.visibilityState !== 'visible' || estadoPorHora() === 'dormir') { decir(); return; }
@@ -2293,13 +2355,15 @@ function avisarCartaNueva() {
   const id = paseoId;
   const sobre = $('alejandroSobre'); if (sobre) sobre.hidden = true;
   const r = bz.getBoundingClientRect();
-  volverACasa(() => {
-    caminarA({ x: r.left + r.width * .4 - caja.right, y: 0 }).then(ok => {
+  alejandroAlerta();
+  volverACasa(() => setTimeout(() => {
+    // sale corriendo al buzón (más rápido que en un paseo), saca la carta y vuelve
+    caminarA({ x: r.left + r.width * .4 - caja.right, y: 0 }, false, 210).then(ok => {
       if (!ok) { pintarSobre(); return; }
-      alejandroReacciona('aplaudir', 900);
-      setTimeout(() => { pintarSobre(); volverACasa(decir); }, 900);
+      alejandroReacciona('enamorado', 1100);
+      setTimeout(() => { pintarSobre(); caminarA({ x: 0, y: 0 }, false, 210).then(() => decir()); }, 1100);
     });
-  }, true);
+  }, 650), true);
 }
 
 function mostrarVistaCarta(c) {
@@ -2418,6 +2482,142 @@ function empezarCartero() {
   setInterval(revisarCartas, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') revisarCartas(); });
 }
+
+/* ---------- Rutinas según la hora y el día ----------
+   Cada rutina se hace una vez al día (dallanaRutinas). En una fecha especial Alejandro usa ese disfraz todo el día
+   (salvo de noche, que duerme con pijama) y la saluda al entrar. */
+// Cumpleaños de Dallana: 12 de agosto
+const CUMPLE_DALLANA = { mes: 8, dia: 12 };
+const FECHAS_ALEJANDRO = [
+  { mes: 2, dia: 14, disfraz: 'san-valentin', reaccion: 'enamorado', frase: () => '¡Feliz San Valentín, mamá! Papá y yo te queremos un montón. 💘' },
+  { mes: 10, dia: 31, disfraz: 'fantasmita', reaccion: 'saludar', frase: () => '¡Buuu! Feliz Halloween, mamá. ¿Me das un dulce? 🎃' },
+  { mes: 12, dia: 24, disfraz: 'navidad', reaccion: 'saludar', frase: () => '¡Mamá, mañana es Navidad! Le pedí al viejito pascuero que te cuide siempre. 🎄' },
+  { mes: 12, dia: 25, disfraz: 'navidad', reaccion: 'enamorado', frase: () => '¡Feliz Navidad, mamá! Tú eres el mejor regalo de papá. 🎄🎁' },
+  { mes: 12, dia: 31, disfraz: 'ano-nuevo', reaccion: 'saludar', frase: () => '¡Último día del año, mamá! Gracias por este año tan bonito. 🎆' },
+  { mes: 1, dia: 1, disfraz: 'ano-nuevo', reaccion: 'enamorado', frase: () => '¡Feliz año nuevo, mamá! Mi propósito es quererte todavía más. 🎆' },
+  { dia: Number(FECHA_INICIO.split('-')[2]), disfraz: 'cumpleanos', reaccion: 'llorar', celebrar: true,
+    frase: n => `¡Feliz cumplemes, mamá! Hoy papá y tú cumplen ${n} ${n === 1 ? 'mes' : 'meses'} juntos. Me emociono… 🥹🎂` }
+];
+if (CUMPLE_DALLANA) FECHAS_ALEJANDRO.unshift({ ...CUMPLE_DALLANA, disfraz: 'cumpleanos', reaccion: 'llorar', celebrar: true,
+  frase: () => '¡¡Feliz cumpleaños, mamá!! 🎂 Papá y yo te preparamos un día lleno de cariño. 🎉' });
+
+function mesesJuntos(hoy = new Date()) {
+  const [anio, mes, dia] = FECHA_INICIO.split('-').map(Number);
+  return (hoy.getFullYear() - anio) * 12 + hoy.getMonth() - (mes - 1) - (hoy.getDate() < dia ? 1 : 0);
+}
+
+function fechaEspecialHoy() {
+  const hoy = new Date(), m = hoy.getMonth() + 1, d = hoy.getDate();
+  return FECHAS_ALEJANDRO.find(f => f.dia === d && (f.mes ? f.mes === m : mesesJuntos(hoy) > 0)) || null;
+}
+const disfrazDelDia = () => { const f = fechaEspecialHoy(); return f ? DISFRACES.find(x => x.id === f.disfraz) || null : null; };
+
+const RUTINAS = [
+  { id: 'manana', desde: 7, hasta: 12, antes: 'bostezar', reaccion: 'saludar', frases: [
+    '¡Buenos días, mamá! ☀️ ¿Dormiste bien?',
+    '¡Buenos días! Papá me pidió que te diera el primer abrazo del día. 🤗',
+    'Despertaste… ¡y el día ya se puso más bonito, mamá! ☀️'] },
+  { id: 'almuerzo', desde: 13, hasta: 15, reaccion: 'enamorado', frases: [
+    'Mamá, ¿ya almorzaste? Papá dice que comas rico. 🍝',
+    'Hora de almorzar, mamá. ¡No te saltes la comida! 🍱'] },
+  { id: 'tarde', desde: 17, hasta: 20, reaccion: 'saludar', accion: () => abrirParaPapa(), frases: [
+    '¿Cómo te fue hoy, mamá? Tócame y se lo cuento a papá. 💌',
+    'Mamá, papá quiere saber cómo estuvo tu día. Tócame y le escribimos. 💌'] },
+  { id: 'noche', desde: 21, hasta: 23, reaccion: 'bostezar', frases: [
+    'Ya está oscurito, mamá… no te acuestes tan tarde. 🌙',
+    'Mamá, antes de dormir: papá te quiere muchísimo. 🌙💗'] }
+];
+let rutinasHoy = leerJSON('dallanaRutinas', {});
+
+function hacerRutina(id, decir) {
+  if (rutinasHoy.fecha !== hoyLocal()) rutinasHoy = { fecha: hoyLocal(), hechas: [] };
+  if (rutinasHoy.hechas.includes(id)) return;
+  if (!decir()) return;
+  rutinasHoy.hechas.push(id);
+  guardarJSON('dallanaRutinas', rutinasHoy);
+}
+
+function revisarRutinas() {
+  if (!disfracesIniciados || document.visibilityState !== 'visible' || estadoPorHora() === 'dormir' || alejandroCaminando) return;
+  const especial = fechaEspecialHoy();
+  if (especial) hacerRutina(`especial-${especial.disfraz}`, () => {
+    const dijo = alejandroDice(especial.frase(mesesJuntos()), 'Alejandro 🦀', null, true);
+    if (dijo) { alejandroReacciona(especial.reaccion, 3200); if (especial.celebrar) lanzarCelebracion(); }
+    return true;   // si no pudo decirlo ahora, queda en la fila de pendientes
+  });
+  const h = new Date().getHours();
+  const r = RUTINAS.find(x => h >= x.desde && h < x.hasta);
+  if (!r) return;
+  hacerRutina(r.id, () => {
+    const frase = r.frases[Math.floor(Math.random() * r.frases.length)];
+    if (!alejandroDice(frase, 'Alejandro 🦀', r.accion || null)) return false;
+    if (r.antes) { alejandroReacciona(r.antes, 1600); setTimeout(() => alejandroReacciona(r.reaccion, 2400), 1650); }
+    else alejandroReacciona(r.reaccion, 2600);
+    return true;
+  });
+}
+
+/* Si pasan 2 días o más sin que entre, al volver Alejandro llora de emoción; si solo dejó la pestaña un rato, la saluda */
+let ultimaVez = Number(leerJSON('dallanaUltimaVez', 0)) || 0, ocultaDesde = 0;
+const marcarUltimaVez = () => { if (document.visibilityState === 'visible') guardarJSON('dallanaUltimaVez', Date.now()); };
+function saludoDeRegreso() {
+  const dias = ultimaVez ? (Date.now() - ultimaVez) / 864e5 : 0;
+  marcarUltimaVez();
+  if (dias >= 2 && estadoPorHora() !== 'dormir') {
+    if (alejandroDice(`¡Mamá! Te extrañé muchísimo… ${Math.floor(dias)} días sin verte. 🥺 Qué bueno que volviste.`, 'Alejandro 🦀', null, true))
+      alejandroReacciona('llorar', 3400);
+  }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { marcarUltimaVez(); ocultaDesde = Date.now(); return; }
+  if (ocultaDesde && Date.now() - ocultaDesde > 20 * 60000 && disfracesIniciados && estadoPorHora() !== 'dormir') {
+    setTimeout(() => { if (alejandroDice('¡Volviste, mamá! Te estaba esperando. 🦀', 'Alejandro 🦀')) alejandroReacciona('saludar', 2200); }, 1200);
+  }
+  ocultaDesde = 0;
+  setTimeout(revisarRutinas, 4000);
+});
+
+/* Reacciones a lo que hace Dallana */
+// Muchos toques seguidos: se enoja de mentirita
+let toquesAlejandro = [];
+$('alejandroSprite')?.addEventListener('pointerdown', () => {
+  const ahora = Date.now();
+  toquesAlejandro = toquesAlejandro.filter(t => ahora - t < 2500).concat(ahora);
+  if (toquesAlejandro.length < 6) return;
+  toquesAlejandro = [];
+  alejandroIgnorarClick = true;
+  setTimeout(() => { alejandroIgnorarClick = false; }, 600);
+  cerrarAlejandro(false);
+  alejandroReacciona('enojado', 2400);
+  setTimeout(() => alejandroDice('¡Mamá, me haces cosquillas! 😤 …ya, ya, te perdono. 💗', 'Alejandro 🦀'), 300);
+});
+// Scroll muy rápido: se marea (como mucho una vez cada 5 minutos)
+(() => {
+  let ultimoY = scrollY, ultimoT = performance.now(), mareoListo = 0, mareoTimer = 0;
+  addEventListener('scroll', () => {
+    const t = performance.now(), v = Math.abs(scrollY - ultimoY) / Math.max(1, t - ultimoT);
+    ultimoY = scrollY; ultimoT = t;
+    if (v < 7 || Date.now() < mareoListo || !disfracesIniciados || sinMovimiento() || estadoPorHora() === 'dormir') return;
+    mareoListo = Date.now() + 300000;
+    clearTimeout(mareoTimer);
+    mareoTimer = setTimeout(() => {
+      if (!enCasa() || alejandroCaminando) return;
+      alejandroReacciona('mareado', 2600);
+      alejandroDice('Uyy… tan rápido me mareé, mamá. 😵‍💫', 'Alejandro 🦀');
+    }, 1500);
+  }, { passive: true });
+})();
+// La carta principal: si la lee con calma, Alejandro se emociona
+(() => {
+  const dlg = $('letterDialog'); if (!dlg) return;
+  let abiertaDesde = 0;
+  new MutationObserver(() => { if (dlg.open) abiertaDesde = Date.now(); }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
+  dlg.addEventListener('close', () => {
+    if (!abiertaDesde || Date.now() - abiertaDesde < 30000) return;
+    abiertaDesde = 0;
+    setTimeout(() => { alejandroReacciona('llorar', 3000); alejandroDice('Ay, mamá… esa carta me hizo llorar de emoción. 🥹', 'Alejandro 🦀'); }, 1500);
+  });
+})();
 
 /* Mantenerlo presionado muestra el mensaje secreto */
 function mostrarSecretoAlejandro() {
@@ -2679,9 +2879,11 @@ $('cartaPapaDialog')?.addEventListener('close', () => { escrituraId++; });
 /* 7. El mensaje para papá se dobla en avioncito; Alejandro lo atrapa y corre a entregarlo */
 const AVION_SVG = '<svg viewBox="0 0 44 34" aria-hidden="true"><path d="M2 16 42 2 30 32 21 21z" fill="#fffaf2" stroke="#b8222f" stroke-width="2" stroke-linejoin="round"/><path d="M42 2 21 21l-4 10 4-10" fill="#f3d9d2" stroke="#b8222f" stroke-width="2" stroke-linejoin="round"/><path d="M14 13c-2-3 1-6 4-4 2-3 6 0 4 3l-4 4z" fill="#e0303f"/></svg>';
 function entregarMensajeAPapa(desde) {
+  const antes = disfrazActual;
   const fin = () => {
-    alejandroReacciona('aplaudir', 2400);
-    setTimeout(() => alejandroDice('¡Entregado, mamá! Papá ya lo tiene. 💌', 'Alejandro cartero 🦀'), 400);
+    if (disfrazActual === DISFRAZ_CARTERO) ponerDisfraz(antes, false);
+    alejandroReacciona('enamorado', 2400);
+    setTimeout(() => alejandroDice('¡Entregado, mamá! Papá ya lo tiene. 💌', 'Alejandro cartero 🦀', null, true), 400);
   };
   const caja = cajaEnCasa(), a = $('alejandro');
   if (!animarMucho() || !caja || !a || !desde) { fin(); return; }
@@ -2699,7 +2901,8 @@ function entregarMensajeAPapa(desde) {
       llego = true;
       av.remove();
       const sobre = $('alejandroSobre'); if (sobre) sobre.hidden = false;
-      alejandroReacciona('aplaudir', 700);
+      ponerDisfraz(DISFRAZ_CARTERO, false);
+      alejandroReacciona('saludar', 700);
       setTimeout(() => {
         // corre fuera de la pantalla con la carta… y vuelve
         const fuera = innerWidth + 60 - caja.left;
@@ -2905,7 +3108,6 @@ actualizarProgreso();
 if (!$('welcome')) saludoAlejandro();
 estadoAlejandro();
 pintarSobre();
-{ const h = new Date().getHours(); if (h >= 7 && h < 11) setTimeout(() => alejandroReacciona('bostezar', 3600), 900); }
 programarPaseo();
 actualizarBotonFavoritos();
 renderContenido();
