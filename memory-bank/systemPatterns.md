@@ -25,4 +25,10 @@ _Link to key files or packages when it saves repetition._
 
 - Estado en `data-estado` del `<aside>`; prioridad: reacción > música > hablando > caminando > hora.
 - Movimiento con la propiedad CSS `translate` (no `transform`, que se usa para agacharse al hacer scroll). En su esquina no lleva `translate` (ni siquiera 0): crearía un marco para los globos `position:fixed` del teléfono.
-- Antes de hablar (globo, frase, carta) vuelve a su esquina con `volverACasa()`.
+- Antes de hablar (globo, frase, carta) vuelve a su esquina con `volverACasa()`. No habla si hay un `<dialog>` abierto.
+
+## Animaciones
+
+- Todas respetan `prefers-reduced-motion` (`animarMucho()`).
+- Nada que dependa solo de IntersectionObserver para mostrar contenido: siempre hay respaldo (scroll/tiempo).
+- Web Audio solo en PC con mouse; en teléfonos se usa la onda animada (bloquear la pantalla podría cortar la música).

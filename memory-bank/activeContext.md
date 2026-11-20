@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Alejandro (cangrejo ayudante) y el sistema de cartas entre Eduardo y Dallana. Última tarea: buzón en la esquina junto a Alejandro, con tutorial.
+**Current focus**: Alejandro (cangrejo ayudante) y el sistema de cartas entre Eduardo y Dallana. Última tarea: 11 animaciones nuevas en toda la página (bloque «ANIMACIONES» de `Dallana.js`).
 
 **In progress**:
 

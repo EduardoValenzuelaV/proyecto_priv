@@ -355,6 +355,7 @@ function sumarCorazon() {
   actualizarProgreso();
   if (n === CORAZONES_POR_DIA) {
     lanzarCelebracion();
+    setTimeout(corazonGigante, 450);
     alejandroReacciona('aplaudir', 3200);
     notificar(`llenó sus ${CORAZONES_POR_DIA} corazones de hoy 💗`, 'sparkling_heart');
   }
@@ -388,6 +389,7 @@ function pintarCorazones(llenos, total) {
     const lleno = i < llenos;
     if (lleno && !c.classList.contains('lleno') && caja.dataset.listo) {
       c.classList.add('late'); setTimeout(() => c.classList.remove('late'), 700);
+      chispasCorazon(c);
     }
     c.classList.toggle('lleno', lleno);
   });
@@ -446,6 +448,7 @@ function abrirHitoPixel(h, celebrar = false) {
   const t = $('pixelTitulo'); if (t) t.textContent = h.titulo;
   const img = $('pixelImg');
   if (img) { img.hidden = !h.imagen; if (h.imagen) img.src = h.imagen; }
+  revelarRecuerdo();
   const frase = $('pixelFrase');
   if (frase) {
     frase.textContent = h.imagen ? (h.frase || '') : 'Este recuerdo lo estoy dibujando para ti. Vuelve pronto ✏️';
@@ -586,7 +589,8 @@ function abrirCartaDeAnimo(carta) {
   sumarCorazon();
   ajustarNotaAPantalla();
   if (document.fonts) document.fonts.ready.then(ajustarNotaAPantalla);
-  requestAnimationFrame(() => scene.classList.add('is-opening'));
+  scene.classList.remove('rompe-sello');
+  requestAnimationFrame(() => { scene.classList.add('is-opening'); romperSello(scene); });
   const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620;
   setTimeout(() => { if (dlg.open) scene.classList.add('is-open'); }, delay);
 }
@@ -780,13 +784,14 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   const env = $('env');
   if (cover && cover.classList.contains('opening')) return;
   if (cover) cover.classList.add('opening');
+  const rectSobre = (env || openEnvelopeBtn).getBoundingClientRect();
   notificar('abrió el sobre de la portada', 'envelope_with_arrow');
   if (env) env.classList.add('open');
   const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 780;
   setTimeout(() => {
     if (cover) { cover.classList.add('closed'); cover.classList.remove('opening'); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
-    saludoAlejandro();
+    entradaAlejandro(rectSobre).then(saludoAlejandro);
   }, delay);
 };
 
@@ -1606,12 +1611,12 @@ function elegirDestino(exigirCamino = true) {
 }
 
 /* Lo mueve hasta (x, y). Devuelve una promesa que se cumple al llegar (o false si lo interrumpen). */
-function caminarA(p, rapido = false) {
+function caminarA(p, rapido = false, vel = VEL_PASEO) {
   const a = $('alejandro'); if (!a) return Promise.resolve(false);
   const id = paseoId;
   const desde = alejandroActual();
   const dist = Math.hypot(p.x - desde.x, p.y - desde.y);
-  const seg = rapido ? Math.min(.6, dist / 600) : dist / VEL_PASEO;
+  const seg = rapido ? Math.min(.6, dist / 600) : dist / vel;
   alejandroCaminando = !rapido && dist > 2;
   estadoAlejandro();
   a.style.transition = `translate ${seg}s linear, transform .35s ease, opacity .35s ease`;
@@ -1714,7 +1719,10 @@ function apartarseDeCartas() {
   const dialogos = document.querySelectorAll('dialog');
   const obs = new MutationObserver(() => {
     const abierto = [...dialogos].some(d => d.open);
-    if (abierto) { subirAlejandro(); setTimeout(apartarseDeCartas, 650); }
+    if (abierto) {
+      const dice = $('alejandroDice'); if (dice) dice.hidden = true;
+      subirAlejandro(); setTimeout(apartarseDeCartas, 650);
+    }
     else {
       const a = $('alejandro');
       if (a) a.classList.remove('oculto-carta');
@@ -1746,6 +1754,7 @@ setInterval(() => {
     if (despiertoDeNoche) { clearTimeout(inactividadTimer); inactividadTimer = setTimeout(dormirDeNuevo, INACTIVIDAD_DORMIR - (Date.now() - ultimaActividad)); }
     else programarDisfraz(1000);
   }
+  if (alejandroEraNoche !== noche) pintarCielo();
   alejandroEraNoche = noche;
   estadoAlejandro();
 }, 60000);
@@ -1805,6 +1814,7 @@ function alejandroDice(texto, titulo, accion = null) {
   const el = $('alejandroDice'); if (!el) return;
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) return;
+  if (document.querySelector('dialog[open]')) return;   // no habla encima de una carta abierta
   if (!enCasa()) { volverACasa(() => alejandroDice(texto, titulo, accion), true); return; }
   alejandroDiceAccion = accion;
   el.replaceChildren();
@@ -2016,7 +2026,7 @@ function mostrarVistaCarta(c) {
   $('cartaPapaDe').textContent = deMi ? '💌 Lo que le dijiste a papá' : '💌 Alejandro te trajo una carta';
   $('cartaPapaTitulo').textContent = deMi ? 'Para papá' : (c.titulo || 'Carta de papá');
   $('cartaPapaFecha').textContent = fechaCarta(c.t);
-  $('cartaPapaTexto').textContent = c.texto;
+  escribirCartaSola($('cartaPapaTexto'), c.texto, !deMi);
   $('cartaResponder').hidden = deMi;
 }
 
@@ -2089,9 +2099,9 @@ $('paraPapaForm')?.addEventListener('submit', async e => {
     guardarBuzon();
     ta.value = '';
     $('paraPapaCuenta').textContent = '0 / 600';
+    const desde = $('paraPapaForm').getBoundingClientRect();
     $('paraPapaDialog').close();
-    alejandroReacciona('aplaudir', 2400);
-    setTimeout(() => alejandroDice('¡Listo, mamá! Ya se lo llevé a papá. 🦀💨', 'Alejandro cartero 🦀'), 400);
+    entregarMensajeAPapa(desde);
   } catch {
     estado.textContent = 'Ups, no pude llegar donde papá. Revisa tu internet y prueba otra vez.';
   } finally {
@@ -2160,6 +2170,393 @@ function mostrarSecretoAlejandro() {
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => spr.addEventListener(ev, soltar));
   spr.addEventListener('contextmenu', e => e.preventDefault());
 })();
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+const animarMucho = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pixelSVG = (filas, colores, tam = 1) => {
+  const alto = filas.length, ancho = filas[0].length;
+  let r = '';
+  filas.forEach((f, y) => [...f].forEach((ch, x) => { if (ch !== '.') r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${colores[ch]}"/>`; }));
+  return `<svg viewBox="0 0 ${ancho} ${alto}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+};
+const CORAZON_PIXEL = ['.oo.oo.', 'orrorro', 'orrrrro', '.orrro.', '..oro..', '...o...'];
+const corazonPixel = (relleno, borde = '#8d1f2e') => pixelSVG(CORAZON_PIXEL, { o: borde, r: relleno });
+
+/* 1. Alejandro sale del sobre de la portada y corre a su esquina */
+function entradaAlejandro(rect) {
+  subirAlejandro();
+  const a = $('alejandro'), spr = $('alejandroSprite');
+  const caja = cajaEnCasa();
+  if (!a || !spr || !caja || !rect || !animarMucho()) return Promise.resolve();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height * .45;
+  const x = cx - (caja.left + caja.right) / 2, y = cy - (caja.top + caja.bottom) / 2;
+  a.style.transition = 'none';
+  a.style.translate = `${x}px ${y}px`;
+  alejandroPos = { x, y };
+  spr.classList.add('sale-sobre');
+  alejandroReacciona('aplaudir', 1300);
+  return new Promise(res => setTimeout(() => {
+    spr.classList.remove('sale-sobre');
+    caminarA({ x: 0, y: 0 }, false, 260).then(() => {
+      let vista = '';
+      try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
+      if (vista === NOVEDADES.version && !tutorialPendiente()) alejandroDice('¡Hola, mamá! Te estaba esperando. 🦀💗', 'Alejandro 🦀');
+      res();
+    });
+  }, 1300));
+}
+
+/* 2. La onda del reproductor sigue el sonido real y salen notitas pixel del vinilo.
+   En iPhone/iPad no se conecta el análisis de audio (cortaría la música con la pantalla bloqueada). */
+const esIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Solo en PC (mouse, sin pantalla táctil): en teléfonos el sistema puede pausar el audio analizado al bloquear la pantalla
+const usarAudioReal = !esIOS && matchMedia('(pointer: fine)').matches && !matchMedia('(any-pointer: coarse)').matches;
+let analizador = null, datosAudio = null, visualizando = false, notaTimer = 0;
+const NOTA_PIXEL = ['..oo', '..oo', '..o.', '..o.', 'ooo.', 'ooo.'];
+
+function iniciarVisualizador() {
+  const player = document.querySelector('.music-player');
+  if (!player || !musicAudio || !animarMucho()) return;
+  if (usarAudioReal && !analizador) {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new Ctx();
+      // conectar el audio al analizador es irreversible: solo si el sistema de audio está corriendo (si no, la música quedaría muda)
+      if (ctx.state !== 'running') { ctx.close(); throw new Error('audio suspendido'); }
+      const fuente = ctx.createMediaElementSource(musicAudio);
+      analizador = ctx.createAnalyser();
+      analizador.fftSize = 256;
+      analizador.smoothingTimeConstant = .78;
+      fuente.connect(analizador); analizador.connect(ctx.destination);
+      datosAudio = new Uint8Array(analizador.frequencyBinCount);
+      analizador._ctx = ctx;
+    } catch { analizador = null; }
+  }
+  if (analizador && analizador._ctx.state === 'suspended') analizador._ctx.resume().catch(() => {});
+  if (analizador) player.classList.add('en-vivo');
+  if (!visualizando) { visualizando = true; requestAnimationFrame(cuadroVisualizador); }
+  clearInterval(notaTimer);
+  notaTimer = setInterval(soltarNota, 900);
+}
+
+function cuadroVisualizador() {
+  if (!musicAudio || musicAudio.paused) { visualizando = false; detenerVisualizador(); return; }
+  if (analizador && musicWave && document.visibilityState === 'visible') {
+    analizador.getByteFrequencyData(datosAudio);
+    const barras = musicWave.children, n = barras.length, utiles = Math.floor(datosAudio.length * .72);
+    for (let i = 0; i < n; i++) {
+      const desde = Math.floor(Math.pow(i / n, 1.6) * utiles), hasta = Math.max(desde + 1, Math.floor(Math.pow((i + 1) / n, 1.6) * utiles));
+      let suma = 0; for (let k = desde; k < hasta; k++) suma += datosAudio[k];
+      barras[i].style.setProperty('--nivel', ((suma / (hasta - desde)) / 255).toFixed(3));
+    }
+  }
+  requestAnimationFrame(cuadroVisualizador);
+}
+
+function detenerVisualizador() {
+  clearInterval(notaTimer);
+  document.querySelector('.music-player')?.classList.remove('en-vivo');
+}
+
+function soltarNota() {
+  if (!musicAudio || musicAudio.paused || document.visibilityState !== 'visible') return;
+  const escena = document.querySelector('.album-stage'); if (!escena) return;
+  if (escena.querySelectorAll('.nota-musica').length > 6) return;
+  const n = document.createElement('span');
+  n.className = 'nota-musica';
+  const col = ['#d1343f', '#3d72c4', '#4f9a4a', '#ff7a6b'][Math.floor(Math.random() * 4)];
+  n.innerHTML = pixelSVG(NOTA_PIXEL, { o: col });
+  n.style.setProperty('--x', `${20 + Math.random() * 30}%`);
+  n.style.setProperty('--y', `${30 + Math.random() * 30}%`);
+  n.style.setProperty('--dx', `${-20 + Math.random() * 40}px`);
+  n.style.setProperty('--rot', `${-20 + Math.random() * 40}deg`);
+  escena.append(n);
+  setTimeout(() => n.remove(), 2500);
+}
+if (musicAudio) {
+  musicAudio.addEventListener('play', iniciarVisualizador);
+  musicAudio.addEventListener('pause', detenerVisualizador);
+}
+
+/* 3. Chispitas cuando se llena un corazón y corazón gigante al completar los 10 */
+function chispasCorazon(c) {
+  if (!animarMucho()) return;
+  const colores = ['#e0303f', '#f2c14e', '#ff7a6b', '#3d72c4'];
+  for (let k = 0; k < 7; k++) {
+    const ch = document.createElement('i');
+    ch.className = 'ph-chispa';
+    const ang = (k / 7) * Math.PI * 2, dist = 16 + Math.random() * 10;
+    ch.style.setProperty('--dx', `${Math.cos(ang) * dist}px`);
+    ch.style.setProperty('--dy', `${Math.sin(ang) * dist}px`);
+    ch.style.setProperty('--c', colores[k % colores.length]);
+    c.append(ch);
+    setTimeout(() => ch.remove(), 650);
+  }
+}
+
+const CORAZON_GRANDE = ['.ooo.ooo.', 'orrrorrro', 'orwrrrrro', 'orrrrrrro', '.orrrrro.', '..orrro..', '...oro...', '....o....'];
+function corazonGigante() {
+  if (!animarMucho()) return;
+  const caja = $('progressHearts');
+  const cx = innerWidth / 2, cy = innerHeight / 2;
+  if (caja) [...caja.children].forEach((c, i) => {
+    const r = c.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    const v = document.createElement('span');
+    v.className = 'corazon-viajero';
+    v.innerHTML = SVG_CORAZON;
+    v.style.left = `${r.left}px`; v.style.top = `${r.top}px`;
+    document.body.append(v);
+    v.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 },
+               { transform: `translate(${cx - r.left - 14}px, ${cy - r.top - 13}px) scale(.6)`, opacity: .9 }],
+              { duration: 650, delay: i * 45, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' }).onfinish = () => v.remove();
+  });
+  setTimeout(() => {
+    const g = document.createElement('div');
+    g.className = 'corazon-gigante';
+    g.innerHTML = pixelSVG(CORAZON_GRANDE, { o: '#8d1f2e', r: '#e0303f', w: '#ffb3b8' });
+    document.body.append(g);
+    setTimeout(() => g.remove(), 2700);
+  }, 950);
+}
+
+/* 4. El recuerdo pixel se revela como una foto instantánea */
+function revelarRecuerdo() {
+  const m = $('pixelMarco'); if (!m || !animarMucho()) return;
+  m.classList.remove('revelando'); void m.offsetWidth; m.classList.add('revelando');
+  setTimeout(() => m.classList.remove('revelando'), 2800);
+}
+
+/* 5. El sello de cera se parte en pedacitos al abrir una carta «Ábreme cuando» */
+function romperSello(scene) {
+  const sello = scene.querySelector('.envelope-seal');
+  if (!sello || !animarMucho()) return;
+  const rs = sello.getBoundingClientRect(), re = scene.getBoundingClientRect();
+  const x = rs.left - re.left + rs.width / 2, y = rs.top - re.top + rs.height / 2;
+  scene.classList.add('rompe-sello');
+  const destello = document.createElement('span');
+  destello.className = 'sello-destello';
+  destello.style.left = `${x - 30}px`; destello.style.top = `${y - 30}px`;
+  scene.append(destello);
+  setTimeout(() => destello.remove(), 500);
+  for (let k = 0; k < 8; k++) {
+    const t = document.createElement('span');
+    t.className = 'sello-trozo';
+    const w = 8 + Math.random() * 10, h = 7 + Math.random() * 9;
+    t.style.setProperty('--w', `${w}px`); t.style.setProperty('--h', `${h}px`);
+    t.style.left = `${x - w / 2 + (Math.random() * 16 - 8)}px`; t.style.top = `${y - h / 2 + (Math.random() * 16 - 8)}px`;
+    const ang = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.4;
+    t.style.setProperty('--dx', `${Math.cos(ang) * (40 + Math.random() * 50)}px`);
+    t.style.setProperty('--dy', `${120 + Math.random() * 90}px`);
+    t.style.setProperty('--rot', `${Math.random() * 540 - 270}deg`);
+    t.style.clipPath = `polygon(${Math.random() * 30}% 0, 100% ${Math.random() * 40}%, ${70 + Math.random() * 30}% 100%, 0 ${50 + Math.random() * 50}%)`;
+    scene.append(t);
+    setTimeout(() => t.remove(), 950);
+  }
+}
+
+/* 6. La carta de papá se escribe sola, letra por letra, con una plumita (toca la carta para verla entera) */
+let escrituraId = 0;
+const PLUMA_SVG = pixelSVG(['......oo', '.....owo', '....owo.', '...owo..', '..owo...', '.oo.....', 'oo......', 'o.......'], { o: '#5a3a2a', w: '#fffaf2' });
+function escribirCartaSola(el, texto, animar) {
+  const id = ++escrituraId;
+  const papel = el.closest('.carta-papa-papel');
+  if (!animar || !animarMucho()) { el.textContent = texto; papel?.classList.remove('escribiendo'); return; }
+  el.textContent = '';
+  el.setAttribute('aria-label', texto);
+  const escrito = document.createTextNode('');
+  const pluma = document.createElement('span');
+  pluma.className = 'pluma'; pluma.innerHTML = PLUMA_SVG;
+  el.append(escrito, pluma);
+  papel?.classList.add('escribiendo');
+  const terminar = () => {
+    if (id !== escrituraId) return;
+    escrituraId++;
+    el.textContent = texto; el.removeAttribute('aria-label');
+    papel?.classList.remove('escribiendo');
+    if (papel) papel.onclick = null;
+  };
+  if (papel) papel.onclick = terminar;
+  const pausa = Math.max(14, Math.min(45, 5500 / Math.max(1, texto.length)));
+  let i = 0;
+  const paso = () => {
+    if (id !== escrituraId) return;
+    if (i >= texto.length) { terminar(); return; }
+    const ch = texto[i++];
+    escrito.data += ch;
+    setTimeout(paso, /[.,!?¡¿…\n]/.test(ch) ? pausa * 6 : pausa);
+  };
+  setTimeout(paso, 350);
+}
+$('cartaPapaDialog')?.addEventListener('close', () => { escrituraId++; });
+
+/* 7. El mensaje para papá se dobla en avioncito; Alejandro lo atrapa y corre a entregarlo */
+const AVION_SVG = '<svg viewBox="0 0 44 34" aria-hidden="true"><path d="M2 16 42 2 30 32 21 21z" fill="#fffaf2" stroke="#b8222f" stroke-width="2" stroke-linejoin="round"/><path d="M42 2 21 21l-4 10 4-10" fill="#f3d9d2" stroke="#b8222f" stroke-width="2" stroke-linejoin="round"/><path d="M14 13c-2-3 1-6 4-4 2-3 6 0 4 3l-4 4z" fill="#e0303f"/></svg>';
+function entregarMensajeAPapa(desde) {
+  const fin = () => {
+    alejandroReacciona('aplaudir', 2400);
+    setTimeout(() => alejandroDice('¡Entregado, mamá! Papá ya lo tiene. 💌', 'Alejandro cartero 🦀'), 400);
+  };
+  const caja = cajaEnCasa(), a = $('alejandro');
+  if (!animarMucho() || !caja || !a || !desde) { fin(); return; }
+  cancelarPaseo();
+  volverACasa(() => {
+    const av = document.createElement('div');
+    av.className = 'avioncito'; av.innerHTML = AVION_SVG;
+    document.body.append(av);
+    const x0 = desde.left + desde.width / 2 - 22, y0 = desde.top + desde.height / 2 - 17;
+    const x1 = (caja.left + caja.right) / 2 - 22, y1 = caja.top + 10;
+    const mx = (x0 + x1) / 2 + 60, my = Math.min(y0, y1) - 120;
+    av.animate([
+      { transform: `translate(${x0}px, ${y0}px) rotate(-10deg) scale(1.3)` },
+      { transform: `translate(${mx}px, ${my}px) rotate(-35deg) scale(1)`, offset: .45 },
+      { transform: `translate(${x1}px, ${y1}px) rotate(15deg) scale(.6)` }
+    ], { duration: 1300, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => {
+      av.remove();
+      const sobre = $('alejandroSobre'); if (sobre) sobre.hidden = false;
+      alejandroReacciona('aplaudir', 700);
+      setTimeout(() => {
+        // corre fuera de la pantalla con la carta… y vuelve
+        const fuera = innerWidth + 60 - caja.left;
+        caminarA({ x: fuera, y: 0 }, false, 340).then(() => setTimeout(() => {
+          pintarSobre();
+          caminarA({ x: 0, y: 0 }, false, 340).then(fin);
+        }, 1400));
+      }, 700);
+    };
+  }, true);
+}
+
+/* 8. Las polaroids se mecen con el scroll */
+(() => {
+  if (!animarMucho()) return;
+  let ultimo = scrollY, pendiente = false;
+  addEventListener('scroll', () => {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => {
+      pendiente = false;
+      const delta = scrollY - ultimo; ultimo = scrollY;
+      if (Math.abs(delta) < 2) return;
+      document.querySelectorAll('.photo-card').forEach((c, i) => {
+        const r = c.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        const f = [1, -.8, 1.2, -1][i % 4];
+        c.style.setProperty('--mecer', Math.max(-5, Math.min(5, delta * .12 * f)).toFixed(2));
+        clearTimeout(c._mecer);
+        c._mecer = setTimeout(() => c.style.setProperty('--mecer', '0'), 120);
+      });
+    });
+  }, { passive: true });
+})();
+
+/* 9. Cielo detrás de la página: estrellitas y estrella fugaz de noche, nubecitas de día */
+const NUBE_PIXEL = ['....oooo........', '..oowwwwoo.oooo..', '.owwwwwwwwowwwwo.', 'owwwwwwwwwwwwwwwo', 'owwwwwwwwwwwwwwwo', '.ooooooooooooooo.'];
+let fugazTimer = 0;
+function pintarCielo() {
+  const cielo = $('cielo'); if (!cielo) return;
+  const noche = esDeNoche();
+  cielo.replaceChildren();
+  cielo.classList.toggle('noche', noche);
+  clearInterval(fugazTimer);
+  if (!animarMucho()) return;
+  if (noche) {
+    const cols = ['#f2c14e', '#f2c14e', '#ff9aa2', '#8fb3ee'];
+    const n = innerWidth < 600 ? 22 : 38;
+    for (let k = 0; k < n; k++) {
+      const e = document.createElement('i');
+      e.className = 'estrella';
+      e.style.left = `${Math.random() * 100}%`; e.style.top = `${Math.random() * 100}%`;
+      e.style.setProperty('--t', `${Math.random() < .2 ? 4 : 3}px`);
+      e.style.setProperty('--c', cols[k % cols.length]);
+      e.style.setProperty('--d', `${2 + Math.random() * 3}s`);
+      e.style.setProperty('--r', `${-Math.random() * 4}s`);
+      cielo.append(e);
+    }
+    fugazTimer = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      const f = document.createElement('i');
+      f.className = 'fugaz';
+      f.style.left = `${40 + Math.random() * 60}%`; f.style.top = `${Math.random() * 40}%`;
+      cielo.append(f);
+      setTimeout(() => f.remove(), 1400);
+    }, 14000);
+  } else {
+    const n = innerWidth < 600 ? 3 : 5;
+    for (let k = 0; k < n; k++) {
+      const nb = document.createElement('i');
+      nb.className = 'nube';
+      nb.innerHTML = pixelSVG(NUBE_PIXEL.map(f => f.padEnd(17, '.')), { o: '#c9d9f0', w: '#f4f8ff' });
+      nb.style.setProperty('--y', `${5 + k * (85 / n) + Math.random() * 8}%`);
+      nb.style.setProperty('--w', `${90 + Math.random() * 80}px`);
+      const d = 90 + Math.random() * 70;
+      nb.style.setProperty('--d', `${d}s`);
+      nb.style.setProperty('--r', `${-Math.random() * d}s`);
+      cielo.append(nb);
+    }
+  }
+}
+
+/* 10. Las secciones entran como páginas de álbum que se pegan con cinta */
+(() => {
+  if (!animarMucho() || !('IntersectionObserver' in window)) return;
+  const paginas = document.querySelectorAll('main>section:not([hidden]),main>header');
+  const pegar = el => {
+    if (!el.classList.contains('por-pegar')) return;
+    obs.unobserve(el);
+    el.classList.remove('por-pegar');
+    el.classList.add('pegada');
+    setTimeout(() => el.classList.remove('pegada'), 1300);
+  };
+  const obs = new IntersectionObserver(entradas => entradas.forEach(en => { if (en.isIntersecting) pegar(en.target); }),
+    { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+  // respaldo por si el observador no avisa (navegadores antiguos): al hacer scroll se muestran las que ya están en pantalla
+  let revisando = false;
+  const revisar = () => {
+    revisando = false;
+    document.querySelectorAll('main>.por-pegar').forEach(el => { if (el.getBoundingClientRect().top < innerHeight * .95) pegar(el); });
+  };
+  ['scroll', 'resize'].forEach(ev => addEventListener(ev, () => { if (!revisando) { revisando = true; setTimeout(revisar, 150); } }, { passive: true }));
+  setTimeout(revisar, 2500);
+  paginas.forEach((el, i) => {
+    if (i > 0) {
+      const cinta = document.createElement('span');
+      cinta.className = 'cinta-album'; cinta.setAttribute('aria-hidden', 'true');
+      cinta.style.background = ['rgba(240,150,140,.55)', 'rgba(170,200,240,.6)', 'rgba(242,193,78,.5)', 'rgba(160,210,150,.55)'][i % 4];
+      el.append(cinta);
+    }
+    el.classList.add('por-pegar');
+    obs.observe(el);
+  });
+})();
+
+/* 11. Corazoncitos pixel donde tocas la pantalla */
+(() => {
+  if (!animarMucho()) return;
+  let ultimo = 0;
+  const cols = ['#e0303f', '#ff7a6b', '#f2a0b4', '#d1343f'];
+  // sale solo con un toque o clic (no al deslizar para hacer scroll en el teléfono)
+  let inicio = null;
+  document.addEventListener('pointerdown', e => { inicio = { x: e.clientX, y: e.clientY, t: performance.now() }; }, { passive: true });
+  document.addEventListener('pointerup', e => {
+    if (!inicio || Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y) > 10 || performance.now() - inicio.t > 600) return;
+    inicio = null;
+    if (e.target.closest('input, textarea, select, .waveform, .music-volume')) return;
+    const ahora = performance.now();
+    if (ahora - ultimo < 110) return;
+    ultimo = ahora;
+    const h = document.createElement('span');
+    h.className = 'toque-corazon';
+    h.innerHTML = corazonPixel(cols[Math.floor(Math.random() * cols.length)]);
+    h.style.left = `${e.clientX}px`; h.style.top = `${e.clientY}px`;
+    document.body.append(h);
+    setTimeout(() => h.remove(), 950);
+  }, { passive: true });
+})();
+
+pintarCielo();
 
 /* ============================================================
    INICIALIZACIÓN
