@@ -16,12 +16,11 @@
 - 2026-11-20: Alejandro cartero: cartas de papá por ntfy con buzón guardado en `localStorage` (`dallanaBuzon`), «Dile algo a papá» (ntfy JSON a `NTFY_TEMA`), menú al tocarlo, paseo libre por la pantalla sin pisar el texto de cartas abiertas.
 - 2026-11-20: sección «Buzón de papá» con buzón pixel, contador, última carta y aviso superior; `propuesta/` ordenada. CSS v6.1, JS v3.41, caché dallana-v3.50.
 - 2026-11-20: de noche Alejandro se despierta con la actividad de Dallana y vuelve a dormir tras 90 s inactiva. JS v3.42, caché dallana-v3.51.
+- 2026-11-20: canciones a MP3 128 kbps CBR con volumen parejo (loudnorm dos pasadas a −14 LUFS, ffmpeg de winget). 46 → 33 MB. `sw.js` ya no precarga la música y deja pasar las peticiones de audio/Range directo a la red (iPhone). Caché dallana-v3.52.
 
 **Not started / backlog**
 
 - Configurar `URL_BACKEND` y las variables del servidor cuando se publique la API.
-- Comprimir canciones (46 MB) a 128 kbps: requiere instalar ffmpeg.
-- `sw.js` precarga todas las canciones al instalar: cambiar a caché bajo demanda.
 - Temas ntfy reservados (lectura/escritura protegidas).
 
 **Known issues**

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dallana-v3.51';
+const CACHE_NAME = 'dallana-v3.52';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
@@ -6,15 +6,6 @@ const ASSETS_TO_CACHE = [
   './Dallana.js?v=3.42',
   './manifest.json',
   './assets/fotos/portada-musica.png',
-  './assets/musica/Taylor%20Swift%20-%20Love%20Story.mp3',
-  './assets/musica/The%20Weeknd%2C%20Ariana%20Grande%20-%20Die%20For%20You%20(Remix%20Lyric%20Video).mp3',
-  './assets/musica/The%20Weeknd%20%26%20Ariana%20Grande%20-%20Save%20Your%20Tears%20(Remix)%20(Official%20Video).mp3',
-  './assets/musica/Swedish%20House%20Mafia%20and%20The%20Weeknd%20-%20Moth%20To%20A%20Flame%20(Official%20Video).mp3',
-  './assets/musica/Billie%20Eilish%20-%20CHIHIRO%20(Official%20Music%20Video).mp3',
-  './assets/musica/Nessa%20Barrett%20-%20die%20first%20(official%20music%20video).mp3',
-  './assets/musica/Billie%20Eilish%20-%20BIRDS%20OF%20A%20FEATHER%20(Official%20Music%20Video).mp3',
-  './assets/musica/The%20Verve%20-%20Bitter%20Sweet%20Symphony.mp3',
-  './assets/musica/New%20West%20-%20Those%20Eyes%20(Chapter%201).mp3',
   './assets/fotos/migeo.jpg',
   './assets/stickers/stikers3.png',
   './assets/icons/icon-192.png',
@@ -42,6 +33,9 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   const mismoOrigen = url.origin === self.location.origin;
+  // La música va directo a la red (y al caché normal del navegador): así funcionan las peticiones
+  // por partes (Range) que usa el iPhone para reproducir y adelantar, y no se descargan 33 MB de una vez.
+  if (request.headers.has('range') || url.pathname.includes('/assets/musica/')) return;
   event.respondWith(
     fetch(request).then(response => {
       if (mismoOrigen && response.ok && !url.pathname.includes('/api/')) {

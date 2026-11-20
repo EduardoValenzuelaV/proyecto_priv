@@ -6,7 +6,7 @@
 
 - [x] Sección «Buzón de papá» en la página (`#buzonSection`, buzón pixel `assets/pixel/buzon.png`) + aviso arriba `#cartaAviso` cuando llega una carta.
 - [x] Limpieza de `propuesta/` (scripts viejos borrados).
-- [ ] Comprimir canciones a 128 kbps: pendiente, ffmpeg no aparece instalado (winget no lo registra).
+- [x] Canciones comprimidas a 128 kbps con volumen parejo; la música ya no se precarga en el service worker.
 
 **Decisions (recent)**:
 
@@ -18,6 +18,5 @@
 **Open questions**:
 
 - Los temas ntfy son públicos (están en el JS): evaluar temas reservados con ntfy Pro.
-- Precarga de 46 MB de música en `sw.js` al instalar: pasar a caché bajo demanda.
 
 _Update when the task or branch focus changes._

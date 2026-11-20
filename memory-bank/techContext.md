@@ -17,5 +17,5 @@
 
 **Constraints**
 
-- En este equipo no hay Node ni ffmpeg; el servidor local y `pip install` fueron denegados por el modo automático.
+- En este equipo no hay Node. ffmpeg está instalado con winget (`Gyan.FFmpeg`, en `%LOCALAPPDATA%\Microsoft\WinGet\Packages`). Servidor local de prueba: `.claude/launch.json` (`python -m http.server 8765`, sin soporte de Range).
 - Cada cambio de CSS/JS sube versiones en `Dallana.html` y `sw.js`.
