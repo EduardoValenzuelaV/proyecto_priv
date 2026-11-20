@@ -26,11 +26,28 @@ MADERA = (130, 84, 48)
 def lienzo():
     return Image.new('RGBA', (CW, CH), (0, 0, 0, 0))
 
+CUADRO = {}   # pose del cuadro de animación que se está dibujando (lo llena hoja_disfraz)
+
+def mezclar(kw):
+    """Une la pose del disfraz con la del cuadro: las pinzas que sostienen algo y la mirada son del disfraz;
+    los ojos y la boca son del disfraz salvo cuando el cuadro los necesita (dormir, bostezar, aplaudir)."""
+    if not CUADRO:
+        return kw
+    fijo = CUADRO.get('_fijo', set())
+    final = {k: v for k, v in CUADRO.items() if not k.startswith('_')}
+    for k, v in kw.items():
+        if k in ('ojos', 'boca') and k in fijo:
+            continue
+        if k == 'ojos' and CUADRO.get('ojos') == 'parpadeo' and v == 'abiertos':
+            continue
+        final[k] = v
+    return final
+
 def armar(atras=None, adelante=None, detalle=None, tenir=None, ojos_encima=True, **kw):
     im = lienzo()
     if atras:
         capa_ = lienzo(); atras(ImageDraw.Draw(capa_)); im.alpha_composite(A.contorno(capa_))
-    cang = pose(**kw)
+    cang = pose(**mezclar(kw))
     im.alpha_composite(cang, (OX, OY))
     if tenir:
         tenir(im)
@@ -822,6 +839,31 @@ CATEGORIAS = [
     ('Otros', [('Chef', chef), ('Pirata', pirata), ('Astronauta', astronauta), ('Graduado', graduado),
                ('Vaquero', vaquero), ('Rey', rey), ('Hada', hada), ('Abejita', abejita), ('Marinero', marinero)]),
 ]
+
+def ident(nombre):
+    t = nombre.lower()
+    for a_, b_ in (('á', 'a'), ('é', 'e'), ('í', 'i'), ('ó', 'o'), ('ú', 'u'), ('ñ', 'n')):
+        t = t.replace(a_, b_)
+    return '-'.join(t.split())
+
+def hoja_disfraz(fn):
+    global CUADRO
+    def render(kw):
+        global CUADRO
+        CUADRO = kw
+        return fn(), OX, OY
+    hoja = A.hacer_hoja(render)
+    CUADRO = {}
+    return hoja
+
+if __name__ == '__main__' and len(sys.argv) > 2 and sys.argv[1] == '--hojas':
+    carpeta = sys.argv[2]
+    os.makedirs(carpeta, exist_ok=True)
+    for cat, lista in CATEGORIAS:
+        for nombre, fn in lista:
+            hoja_disfraz(fn).save(os.path.join(carpeta, ident(nombre) + '.png'), optimize=True)
+            print(ident(nombre))
+    sys.exit(0)
 
 if __name__ == '__main__':
     carpeta = sys.argv[1] if len(sys.argv) > 1 else '.'

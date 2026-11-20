@@ -124,68 +124,78 @@ def pose(gl=(17, 3), gr=(17, 3), ojos='abiertos', boca='feliz', patas=0, mira=0)
     return contorno(S)
 
 # ---------------- hoja de sprites ----------------
-FW, FH, N, FILAS = 44, 54, 12, 6
+# Celdas de 72x86 para que quepan gorros, espadas y capas de los disfraces.
+# El cangrejo (lienzo de 44x50) queda en x=14 y con su base en y=86 (como antes, pero con margen).
+FW, FH, N, FILAS = 72, 86, 12, 6
+CX0, CY0 = 14, 36            # dónde va el lienzo del cangrejo dentro de la celda (si no salta)
 Z = ["111", "001", "010", "100", "111"]
 ESTRELLA = ["010", "111", "010"]
-CORA = ["0101", "1111", "0110"]
 
-def hacer_hoja(pose_fn=pose):
-    hoja = Image.new('RGBA', (FW * N, FH * FILAS), (0, 0, 0, 0))
-    ds = ImageDraw.Draw(hoja)
+def render_base(kw):
+    """Dibuja solo a Alejandro. Devuelve (imagen, x del lienzo del cangrejo, y del lienzo)."""
+    return pose(**{k: v for k, v in kw.items() if not k.startswith('_')}), 0, 0
 
-    def poner(spr, i, fila, alto=0, dx=0, sombra=13):
-        x0, y0 = i * FW + dx, fila * FH + FH - spr.height - alto
-        if y0 < fila * FH:
-            spr = spr.crop((0, fila * FH - y0, spr.width, spr.height)); y0 = fila * FH
-        ancho = max(4, sombra - alto)
-        ds.ellipse([i * FW + 22 - ancho, fila * FH + 51, i * FW + 22 + ancho, fila * FH + 53], fill=(0, 0, 0, 55))
-        hoja.alpha_composite(spr, (x0, y0))
-
-    def fig(forma, x, y, col):
-        for rr, fila in enumerate(forma):
-            for c, v in enumerate(fila):
-                if v == '1' and 0 <= y + rr < hoja.height:
-                    hoja.putpixel((x + c, y + rr), col + (255,))
-
-    # 0. salta y saluda
+def cuadros():
+    """Lista de (fila, i, kw, alto, dx). kw['_fijo'] dice qué no puede cambiar un disfraz."""
+    out = []
     SALTO = [0, 0, 1, 3, 6, 8, 9, 8, 6, 3, 1, 0]
     for i, alto in enumerate(SALTO):
         gy = 2 if (alto >= 3 or i % 2 == 0) else 6
-        poner(pose_fn((17, gy), (17, gy), 'parpadeo' if i == 1 else 'abiertos'), i, 0, alto)
-    # 1. aplaude feliz con estrellitas
+        out.append((0, i, dict(gl=(17, gy), gr=(17, gy), ojos='parpadeo' if i == 1 else 'abiertos', _fijo=set()), alto, 0))
     for i in range(N):
         junta = i % 4 in (1, 2)
         pz = (6, -8) if junta else (14, -5)
-        poner(pose_fn(pz, pz, 'felices'), i, 1, [0, 1, 1, 0][i % 4])
-        if i % 4 == 2:
-            fig(ESTRELLA, i * FW + 21, FH + 0, (255, 214, 80))
-            fig(ESTRELLA, i * FW + 5, FH + 6, (255, 240, 160))
-            fig(ESTRELLA, i * FW + 36, FH + 4, (255, 240, 160))
-    # 2. baila meciéndose
+        out.append((1, i, dict(gl=pz, gr=pz, ojos='felices', _fijo={'ojos'}), [0, 1, 1, 0][i % 4], 0))
     MECE = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 0, -1]
     for i in range(N):
         arriba, abajo = (15, -3), (16, 8)
         izq = (i // 3) % 2 == 0
-        poner(pose_fn(arriba if izq else abajo, abajo if izq else arriba, 'felices' if i % 6 >= 4 else 'abiertos', mira=MECE[i]),
-              i, 2, [0, 2, 3, 2][i % 4], MECE[i])
-    # 3. duerme con Zzz
+        out.append((2, i, dict(gl=arriba if izq else abajo, gr=abajo if izq else arriba,
+                               ojos='felices' if i % 6 >= 4 else 'abiertos', mira=MECE[i], _fijo=set()), [0, 2, 3, 2][i % 4], MECE[i]))
     for i in range(N):
-        respira = 1 if (i // 3) % 2 else 0
-        poner(pose_fn((15, 10), (15, 10), 'cerrados', 'dormido'), i, 3, respira, sombra=14)
-        for n in range(2):
-            t = ((i + n * 6) % N) / N
-            fig(Z, i * FW + 31 + int(t * 7), 3 * FH + 11 - int(t * 11), (110, 120, 200) if t < .6 else (170, 180, 230))
-    # 4. bosteza estirándose
+        out.append((3, i, dict(gl=(15, 10), gr=(15, 10), ojos='cerrados', boca='dormido', _fijo={'ojos', 'boca'}), 1 if (i // 3) % 2 else 0, 0))
     BOCA_B = [0, 1, 2, 4, 5, 6, 6, 6, 5, 3, 1, 0]
     for i, n in enumerate(BOCA_B):
         estira = n >= 4
         pz = (17, -3) if estira else (16, 6)
         ojos = 'cerrados' if 2 <= i <= 9 else ('parpadeo' if i in (1, 10) else 'abiertos')
-        poner(pose_fn(pz, pz, ojos, ('bostezo', n) if 1 <= i <= 10 else 'feliz'), i, 4, 1 if estira else 0)
-    # 5. camina de lado
+        out.append((4, i, dict(gl=pz, gr=pz, ojos=ojos, boca=('bostezo', n) if 1 <= i <= 10 else 'feliz', _fijo={'ojos', 'boca'}), 1 if estira else 0, 0))
     for i in range(N):
         gy = 3 if (i // 2) % 2 == 0 else 5
-        poner(pose_fn((17, gy), (17, gy), 'parpadeo' if i == 7 else 'abiertos', patas=1 + i % 2, mira=1), i, 5, i % 2)
+        out.append((5, i, dict(gl=(17, gy), gr=(17, gy), ojos='parpadeo' if i == 7 else 'abiertos', patas=1 + i % 2, mira=1, _fijo=set()), i % 2, 0))
+    return out
+
+def hacer_hoja(render=render_base):
+    hoja = Image.new('RGBA', (FW * N, FH * FILAS), (0, 0, 0, 0))
+    ds = ImageDraw.Draw(hoja)
+
+    def fig(forma, x, yy, col):
+        for rr, fila in enumerate(forma):
+            for c, v in enumerate(fila):
+                if v == '1' and 0 <= yy + rr < hoja.height:
+                    hoja.putpixel((x + c, yy + rr), col + (255,))
+
+    for fila, i, kw, alto, dx in cuadros():
+        im, rx, ry = render(kw)
+        x0, y0 = i * FW + CX0 - rx + dx, fila * FH + CY0 - ry - alto
+        # recorta lo que se saldría de la celda
+        cx0, cy0 = max(x0, i * FW), max(y0, fila * FH)
+        cx1, cy1 = min(x0 + im.width, (i + 1) * FW), min(y0 + im.height, (fila + 1) * FH)
+        trozo = im.crop((cx0 - x0, cy0 - y0, cx1 - x0, cy1 - y0))
+        ancho = max(4, (14 if fila == 3 else 13) - alto)
+        bx, by = i * FW + CX0 + 22, fila * FH + FH - 3
+        ds.ellipse([bx - ancho, by, bx + ancho, by + 2], fill=(0, 0, 0, 55))
+        hoja.alpha_composite(trozo, (cx0, cy0))
+        # efectos: estrellitas al aplaudir y Zzz al dormir (coordenadas de la celda vieja + desplazamiento)
+        ox, oy = i * FW + CX0, fila * FH + CY0 - 4
+        if fila == 1 and i % 4 == 2:
+            fig(ESTRELLA, ox + 21, oy + 0, (255, 214, 80))
+            fig(ESTRELLA, ox + 5, oy + 6, (255, 240, 160))
+            fig(ESTRELLA, ox + 36, oy + 4, (255, 240, 160))
+        if fila == 3:
+            for n in range(2):
+                t = ((i + n * 6) % N) / N
+                fig(Z, ox + 31 + int(t * 7), oy + 11 - int(t * 11), (110, 120, 200) if t < .6 else (170, 180, 230))
     return hoja
 
 if __name__ == '__main__':
@@ -193,10 +203,11 @@ if __name__ == '__main__':
     hoja = hacer_hoja()
     hoja.save(OUT + '_hoja.png')
     # vista: primer cuadro de cada fila en grande + la hoja completa
-    E = 6
+    E = 4
     vista = Image.new('RGBA', (FW * 6 * E, FH * E), (250, 242, 232, 255))
     for k in range(6):
-        cuadro = hoja.crop(([0, 2, 0, 5, 6, 0][k] * FW, k * FH, ([0, 2, 0, 5, 6, 0][k] + 1) * FW, (k + 1) * FH))
+        c = [0, 2, 0, 5, 6, 0][k]
+        cuadro = hoja.crop((c * FW, k * FH, (c + 1) * FW, (k + 1) * FH))
         vista.alpha_composite(cuadro.resize((FW * E, FH * E), Image.NEAREST), (k * FW * E, 0))
     vista.save(OUT + '_vista.png')
     print('ok')

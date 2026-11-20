@@ -1363,7 +1363,7 @@ addEventListener('pagehide', cerrarTramo);
    Se abre solo una vez por versión; después se puede tocar a Alejandro para volver a verlas.
    ============================================================ */
 const NOVEDADES = {
-  version: '2026-11-19b',
+  version: '2026-11-20',
   mensajes: [
     '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
     'Ahora tienes 10 corazones cada día. Se llenan cuando tocas «Regálame una sonrisa» o abres una carta «Ábreme cuando».',
@@ -1373,6 +1373,7 @@ const NOVEDADES = {
     '¡Y ahora tengo más vida! Aplaudo cuando llenas tus 10 corazones y bailo cuando pones música. 🎶',
     'De noche me duermo 😴, en la mañana bostezo y de vez en cuando salgo a pasear por la pantalla.',
     'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
+    '¡Y ahora me disfrazo! Cada ratito me pongo un disfraz distinto y te digo algo. Tengo 39 disfraces. 🎭',
     '¡Eso es todo por ahora! Tócame cuando quieras volver a verlas.'
   ]
 };
@@ -1410,6 +1411,7 @@ function cerrarAlejandro(leido) {
 }
 
 function saludoAlejandro() {
+  empezarDisfraces();
   let vista = '';
   try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
   if (vista !== NOVEDADES.version) setTimeout(() => abrirAlejandro(0), 1500);
@@ -1495,10 +1497,122 @@ if (musicAudio) ['play', 'pause', 'ended'].forEach(ev => musicAudio.addEventList
 let alejandroUltimaHora = estadoPorHora();
 setInterval(() => {
   const ahora = estadoPorHora();
-  if (alejandroUltimaHora === 'dormir' && ahora === 'salto') alejandroReacciona('bostezar', 3600);
+  if (alejandroUltimaHora === 'dormir' && ahora === 'salto') { alejandroReacciona('bostezar', 3600); programarDisfraz(5000); }
+  if (alejandroUltimaHora === 'salto' && ahora === 'dormir') programarDisfraz(1000);
   alejandroUltimaHora = ahora;
   estadoAlejandro();
 }, 60000);
+
+/* ---------- Disfraces: cada cierto tiempo se cambia de disfraz al azar y dice una frase ----------
+   Cada disfraz es una hoja de sprites en assets/pixel/disfraces/<id>.png (las genera propuesta/disfraces2.py --hojas).
+   De noche, mientras duerme, usa el pijama. */
+const DISFRACES = [
+  ['aprendiz-de-mago', 'aprendiz de mago', '¡Mami, mira! ¡Wingardium Leviosa! ✨ Es leviÓsa, no leviosÁ.'],
+  ['sombrero-que-habla', 'sombrero que habla', 'Mmm… difícil, muy difícil… ¡Ya sé! Te pongo en la casa del corazón de mamá. 🎩'],
+  ['buscador-en-escoba', 'buscador en escoba', '¡Mami, atrapé la snitch dorada! ¡150 puntos para nosotros! 🧹'],
+  ['brujita-de-pociones', 'brujita de pociones', 'Estoy preparando una poción de amor… pero creo que tú ya me la diste, mamá. 🧪'],
+  ['hobbit-con-el-anillo', 'hobbit', 'Mi tesoro… 💍 ¡Mentira, mamá! Mi tesoro eres tú.'],
+  ['el-mago-gris', 'mago gris', '¡No puedes pasaaar! …a menos que me des un abrazo, mamá. 🧙'],
+  ['elfo-arquero', 'elfo arquero', 'Mamá, mis ojos de elfo ven algo hermoso a lo lejos… ¡eres tú! 🏹'],
+  ['caballero-espacial', 'caballero espacial', 'Que la fuerza te acompañe, mamá. ✨'],
+  ['el-lado-oscuro', 'lado oscuro', 'Mamá… yo soy tu cangrejo. 🖤'],
+  ['maestro-verde', 'maestro verde', 'Adorable tú eres, mamá. Mucho amor en ti yo siento. 💚'],
+  ['princesa-galactica', 'princesa galáctica', 'Ayúdame, mamá… eres mi única esperanza. 💫'],
+  ['hombre-arana', 'hombre araña', 'Un gran poder conlleva una gran responsabilidad… y la mía es cuidarte, mamá. 🕸️'],
+  ['capitan-del-escudo', 'capitán del escudo', 'Mamá, podría hacer esto todo el día. 🛡️'],
+  ['dios-del-trueno', 'dios del trueno', '¡Mamá, soy digno! Levanté el martillo. ⚡'],
+  ['armadura-de-hierro', 'armadura de hierro', 'Mamá, te quiero 3000. ❤️'],
+  ['gigante-verde', 'gigante verde', '¿Mi secreto, mamá? Siempre estoy feliz… cuando estás tú. 💚'],
+  ['hechicero-supremo', 'hechicero supremo', 'Vi 14.000.605 futuros, mamá… y en todos te quiero. 🔮'],
+  ['murcielago', 'murciélago', 'Mamá, no le digas a nadie… ¡soy Batman! 🦇'],
+  ['kriptoniano', 'kriptoniano', '¿Es un pájaro? ¿Es un avión? ¡No, mamá, soy yo! 💙'],
+  ['amazona', 'amazona', '¡Mira, mamá, soy como tú! Fuerte, valiente y preciosa. ✨'],
+  ['velocista', 'velocista', '¡Mamá, corrí tan rápido que llegué antes de que me extrañaras! ⚡'],
+  ['rey-del-mar', 'rey del mar', 'Mamá, hablé con los peces y todos dicen que eres la más linda del mar. 🔱'],
+  ['anillo-verde', 'anillo verde', 'En el día más brillante o la noche más oscura… siempre te voy a querer, mamá. 💚'],
+  ['san-valentin', 'cupido', 'Mamá, ¿quieres ser mi San Valentín? 💘'],
+  ['pijama', 'pijama', 'Mami, ¿me cuentas un cuento antes de dormir? 🧸'],
+  ['navidad', 'Navidad', '¡Jo, jo, jo! Mamá, en mi carta a Santa solo pedí estar contigo. 🎄'],
+  ['cumpleanos', 'cumpleaños', '¡Mamá, hagamos una fiesta! Cualquier día contigo hay que celebrarlo. 🎂'],
+  ['fantasmita', 'fantasmita', '¡Buuu! ¿Te asusté, mamá? 👻 Es broma, soy yo, Alejandro.'],
+  ['ano-nuevo', 'Año Nuevo', '¡Feliz año, mamá! Mi propósito es quererte todavía más. 🎆'],
+  ['conejito-de-pascua', 'conejito', 'Mamá, te encontré un huevito de Pascua. 🐰'],
+  ['chef', 'chef', 'Mamá, te cociné algo con mucho amor… ¿lo probamos? 🍳'],
+  ['pirata', 'pirata', '¡Arrr! Encontré un tesoro, mamá… ¡y eres tú! 🏴‍☠️'],
+  ['astronauta', 'astronauta', 'Mamá, fui hasta la Luna y volví solo para decirte que te quiero. 🚀'],
+  ['graduado', 'graduado', '¡Me gradué, mamá! Con honores en quererte. 🎓'],
+  ['vaquero', 'vaquero', '¡Yiii-ja! Mamá, en este pueblo no hay nadie más linda que tú. 🤠'],
+  ['rey', 'rey', 'Mamá, tú eres la reina de este castillo. 👑'],
+  ['hada', 'hada', 'Mamá, te concedo un deseo… ¿qué quieres? 🧚'],
+  ['abejita', 'abejita', 'Bzzz… mamá, eres más dulce que la miel. 🐝'],
+  ['marinero', 'marinero', '¡Ahoy, mamá! Navegué todos los mares y no encontré a nadie como tú. ⚓']
+].map(([id, nombre, frase]) => ({ id, nombre, frase }));
+let disfrazActual = null, disfrazBolsa = [], disfracesIniciados = false, alejandroDiceTimer = 0, disfrazTimer = 0;
+
+function urlDisfraz(d) {
+  return d ? `assets/pixel/disfraces/${d.id}.png?v=1` : 'assets/pixel/alejandro.png?v=4';
+}
+
+function alejandroDice(texto, titulo) {
+  const el = $('alejandroDice'); if (!el) return;
+  const globo = $('alejandroGlobo');
+  if (globo && !globo.hidden) return;
+  el.replaceChildren();
+  const t = document.createElement('strong'); t.textContent = titulo;
+  el.append(t, document.createTextNode(texto));
+  el.hidden = false;
+  clearTimeout(alejandroDiceTimer);
+  alejandroDiceTimer = setTimeout(() => { el.hidden = true; }, 8000);
+}
+$('alejandroDice')?.addEventListener('click', () => { $('alejandroDice').hidden = true; });
+
+function ponerDisfraz(d, hablar = true) {
+  const spr = $('alejandroSprite'); if (!spr) return;
+  if (d === disfrazActual) return;
+  const img = new Image();
+  img.onload = () => {
+    disfrazActual = d;
+    spr.style.backgroundImage = `url("${urlDisfraz(d)}")`;
+    if (!sinMovimiento()) { spr.classList.remove('poof'); void spr.offsetWidth; spr.classList.add('poof'); setTimeout(() => spr.classList.remove('poof'), 750); }
+    if (d && hablar) {
+      alejandroDice(d.frase, `Alejandro ${d.nombre} 🦀`);
+      if (estadoPorHora() !== 'dormir') alejandroReacciona('aplaudir', 1600);
+    }
+  };
+  img.src = urlDisfraz(d);
+}
+
+function siguienteDisfraz() {
+  if (!disfrazBolsa.length) {
+    disfrazBolsa = DISFRACES.filter(d => d.id !== 'pijama' && d !== disfrazActual);
+    for (let i = disfrazBolsa.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [disfrazBolsa[i], disfrazBolsa[j]] = [disfrazBolsa[j], disfrazBolsa[i]];
+    }
+  }
+  return disfrazBolsa.pop();
+}
+
+function cambiarDisfraz() {
+  const globo = $('alejandroGlobo');
+  const pijama = DISFRACES.find(d => d.id === 'pijama');
+  if (estadoPorHora() === 'dormir') ponerDisfraz(pijama, false);
+  else if (document.visibilityState !== 'visible' || (globo && !globo.hidden)) { programarDisfraz(10000); return; }
+  else ponerDisfraz(siguienteDisfraz(), true);
+  programarDisfraz(180000 + Math.random() * 180000);   // el próximo, entre 3 y 6 minutos
+}
+
+function programarDisfraz(ms) {
+  clearTimeout(disfrazTimer);
+  disfrazTimer = setTimeout(cambiarDisfraz, ms);
+}
+
+function empezarDisfraces() {
+  if (disfracesIniciados) return;
+  disfracesIniciados = true;
+  if (estadoPorHora() === 'dormir') ponerDisfraz(DISFRACES.find(d => d.id === 'pijama'), false);
+  programarDisfraz(15000 + Math.random() * 25000);      // el primero, al ratito de entrar
+}
 
 /* Mantenerlo presionado muestra el mensaje secreto */
 function mostrarSecretoAlejandro() {
