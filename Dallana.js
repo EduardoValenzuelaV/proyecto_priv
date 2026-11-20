@@ -1370,7 +1370,7 @@ const NOVEDADES = {
     'Cada 5 sonrisas se desbloquea un recuerdo pixel de ustedes dos. ¡El primero es de su primer cumplemes!',
     'La carta principal ya la puedes leer cuando quieras, en el capítulo 07. 💌',
     'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
-    'Tengo vida: aplaudo con tus 10 corazones, bailo con la música, de noche duermo y en la mañana bostezo.',
+    'Tengo vida: aplaudo con tus 10 corazones, bailo con la música y en la mañana bostezo. De noche duermo, pero si estás despierta me despierto para acompañarte.',
     '¡Y me disfrazo! Cada ratito me pongo uno de mis 39 disfraces y te digo algo. 🎭',
     '¡Ahora también soy cartero! 📬 Cuando papá te mande una carta, te la traigo. Tócame para abrirla.',
     'Y si quieres decirle algo a papá, tócame y elige «Dile algo a papá». Yo se lo llevo al tiro. 💌',
@@ -1464,10 +1464,47 @@ const sinMovimiento = () => matchMedia('(prefers-reduced-motion: reduce)').match
 let alejandroReaccion = null, alejandroReaccionTimer = 0, alejandroCaminando = false, alejandroCaminaTimer = 0;
 let alejandroIgnorarClick = false, alejandroPresionTimer = 0;
 
-function estadoPorHora() {
+/* De noche (23:00–7:00) duerme, pero si Dallana hace algo en la página se despierta y hace lo mismo que de día.
+   Si pasa INACTIVIDAD_DORMIR sin que ella haga nada, se vuelve a dormir con su pijama. */
+const INACTIVIDAD_DORMIR = 90000;
+let despiertoDeNoche = false, inactividadTimer = 0, ultimaActividad = 0;
+
+function esDeNoche() {
   const h = new Date().getHours();
-  return (h >= 23 || h < 7) ? 'dormir' : 'salto';
+  return h >= 23 || h < 7;
 }
+
+function estadoPorHora() {
+  return (esDeNoche() && !despiertoDeNoche) ? 'dormir' : 'salto';
+}
+
+function actividadUsuario() {
+  ultimaActividad = Date.now();
+  if (!esDeNoche()) return;
+  clearTimeout(inactividadTimer);
+  inactividadTimer = setTimeout(dormirDeNuevo, INACTIVIDAD_DORMIR);
+  if (!despiertoDeNoche) despertarDeNoche();
+}
+
+function despertarDeNoche() {
+  despiertoDeNoche = true;
+  alejandroReacciona('bostezar', 1800);
+  if (disfracesIniciados) {
+    setTimeout(() => alejandroDice('¡Mamá! ¿Tampoco puedes dormir? Te acompaño un ratito. 🦀', 'Alejandro 🦀'), 1900);
+    programarDisfraz(20000);
+  }
+}
+
+function dormirDeNuevo() {
+  if (!esDeNoche() || !despiertoDeNoche) return;
+  despiertoDeNoche = false;
+  const pijama = DISFRACES.find(d => d.id === 'pijama');
+  volverACasa(() => { if (disfracesIniciados) ponerDisfraz(pijama, false); estadoAlejandro(); });
+  estadoAlejandro();
+  programarDisfraz(180000);
+}
+
+['pointerdown', 'keydown', 'scroll', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, actividadUsuario, { passive: true }));
 
 function estadoAlejandro() {
   const a = $('alejandro'); if (!a) return;
@@ -1674,12 +1711,24 @@ function apartarseDeCartas() {
 if (musicAudio) ['play', 'pause', 'ended'].forEach(ev => musicAudio.addEventListener(ev, estadoAlejandro));
 
 /* Revisa la hora: si se hace de día, se despierta bostezando */
-let alejandroUltimaHora = estadoPorHora();
+let alejandroEraNoche = esDeNoche();
 setInterval(() => {
-  const ahora = estadoPorHora();
-  if (alejandroUltimaHora === 'dormir' && ahora === 'salto') { alejandroReacciona('bostezar', 3600); programarDisfraz(5000); }
-  if (alejandroUltimaHora === 'salto' && ahora === 'dormir') programarDisfraz(1000);
-  alejandroUltimaHora = ahora;
+  const noche = esDeNoche();
+  if (alejandroEraNoche && !noche) {
+    // amaneció: si estaba durmiendo, despierta bostezando
+    clearTimeout(inactividadTimer);
+    const dormia = !despiertoDeNoche;
+    despiertoDeNoche = false;
+    if (dormia) alejandroReacciona('bostezar', 3600);
+    programarDisfraz(5000);
+  }
+  if (!alejandroEraNoche && noche) {
+    // anocheció: sigue despierto solo si ella está haciendo algo
+    despiertoDeNoche = Date.now() - ultimaActividad < INACTIVIDAD_DORMIR;
+    if (despiertoDeNoche) { clearTimeout(inactividadTimer); inactividadTimer = setTimeout(dormirDeNuevo, INACTIVIDAD_DORMIR - (Date.now() - ultimaActividad)); }
+    else programarDisfraz(1000);
+  }
+  alejandroEraNoche = noche;
   estadoAlejandro();
 }, 60000);
 

@@ -15,6 +15,7 @@
 - 2026-11-20: Alejandro 2.0 (diseño chibi, `propuesta/alejandro2.py`) con hoja de 6 filas × 12 cuadros de 72×86. 39 disfraces animados (`propuesta/disfraces2.py --hojas`) que cambian al azar con frase propia.
 - 2026-11-20: Alejandro cartero: cartas de papá por ntfy con buzón guardado en `localStorage` (`dallanaBuzon`), «Dile algo a papá» (ntfy JSON a `NTFY_TEMA`), menú al tocarlo, paseo libre por la pantalla sin pisar el texto de cartas abiertas.
 - 2026-11-20: sección «Buzón de papá» con buzón pixel, contador, última carta y aviso superior; `propuesta/` ordenada. CSS v6.1, JS v3.41, caché dallana-v3.50.
+- 2026-11-20: de noche Alejandro se despierta con la actividad de Dallana y vuelve a dormir tras 90 s inactiva. JS v3.42, caché dallana-v3.51.
 
 **Not started / backlog**
 
