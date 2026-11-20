@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=6.8">
+<link rel="stylesheet" href="Dallana.css?v=6.9">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,20 +57,41 @@
 <div class="cielo" id="cielo" aria-hidden="true"></div>
 
 <div class="envelope" id="welcome">
-  <div class="envelope-content">
-    <div class="welcome-label">Para Dallana · con amor</div>
-    <button class="env-button" id="openEnvelope" type="button" aria-label="Abrir sobre">
-      <span class="env" id="env">
-        <svg class="envelope-art" viewBox="0 0 180 150" aria-hidden="true">
-          <rect x="20" y="39" width="140" height="96" rx="7" fill="#fffaf2" stroke="#8d263b" stroke-width="3"/>
-          <path d="M22 45 90 94l68-49v15L90 111 22 60Z" fill="#c9d9ec"/>
-          <path d="m23 130 53-47 14 10 14-10 53 47" fill="#f5e8dd" stroke="#8d263b" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M90 69c-12-16-29 0-17 13l17 17 17-17c12-13-5-29-17-13Z" fill="#9d1f36" stroke="#fffaf2" stroke-width="2"/>
-        </svg>
-      </span>
-    </button>
-    <span class="welcome-copy">Un pequeño rincón hecho para ti</span>
-    <small>Toca el sobre para abrir</small>
+  <div class="portada-luz" aria-hidden="true"></div>
+  <div class="portada-escena">
+    <div class="portada-cabeza">
+      <span class="welcome-label" id="portadaSaludo">Para Dallana · con amor</span>
+      <p class="welcome-copy">Un pequeño rincón <span class="welcome-resalte">hecho para ti</span></p>
+    </div>
+    <div class="portada-mesa">
+      <figure class="portada-polaroid portada-cosa" aria-hidden="true"><img src="assets/fotos/portada-polaroid.jpg" alt="" decoding="async"><figcaption>nosotros ♥</figcaption></figure>
+      <div class="portada-postit portada-cosa" aria-hidden="true"><b id="portadaDia">Día 1</b><span id="portadaDiaTexto">de nosotros</span><small id="portadaFecha"></small></div>
+      <img class="portada-sticker portada-sticker--1 portada-cosa" src="assets/stickers/stikers.png" alt="" aria-hidden="true" decoding="async">
+      <img class="portada-sticker portada-sticker--2 portada-cosa" src="assets/stickers/stikers3.png" alt="" aria-hidden="true" decoding="async">
+      <span class="portada-flor portada-cosa" aria-hidden="true"></span>
+      <span class="portada-lapiz" aria-hidden="true"></span>
+      <div class="sobre-zona">
+        <button class="env-button" id="openEnvelope" type="button" aria-label="Abrir el sobre">
+          <span class="env" id="env">
+            <span class="sobre-fondo"></span>
+            <span class="sobre-carta"><span class="sobre-carta-hola">Hola, mi amor ♥</span><span class="sobre-carta-lineas"></span><span class="sobre-carta-firma">— Eduardo</span></span>
+            <span class="sobre-bolsillo">
+              <span class="sobre-para">Para: <b>mi Dallana</b></span>
+              <span class="sobre-de">De: Eduardo, con todo mi amor</span>
+            </span>
+            <span class="sobre-solapa"></span>
+            <span class="sobre-estampilla"><i></i></span>
+            <span class="sobre-matasellos"><span>Conce</span><b>17·10·26</b></span>
+            <span class="sobre-sello"><span class="sello-mitad sello-mitad--a">D</span><span class="sello-mitad sello-mitad--b">D</span></span>
+          </span>
+        </button>
+        <div class="portada-alejandro" aria-hidden="true">
+          <span class="portada-globo" id="portadaGlobo"></span>
+          <span class="portada-alejandro-sprite"></span>
+        </div>
+      </div>
+    </div>
+    <small class="portada-pista"><span aria-hidden="true">👆</span> Toca el sello para abrir</small>
   </div>
 </div>
 
@@ -455,6 +476,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.52" defer></script>
+<script src="Dallana.js?v=3.53" defer></script>
 </body>
 </html>

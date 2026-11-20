@@ -843,6 +843,28 @@ def guia_museo():
         chispa(d, cx - 24, y(-8))
     return armar(None, adel, det, gr=(19, 4), ojos='felices', boca='sonrisa')
 
+def cartero():
+    """Cartero de la portada: gorra con visera, bolso de cuero cruzado y una carta con corazón en la pinza."""
+    AZUL = (60, 84, 150)
+    CUERO = (150, 96, 54)
+    def adel(d):
+        d.chord([cx - 11, y(-9), cx + 11, y(5)], 180, 360, fill=AZUL)
+        d.rectangle([cx - 11, y(-3), cx + 15, y(0)], fill=tono(AZUL, .75))
+        d.line([cx - 12, y(14), cx + 12, y(30)], fill=CUERO, width=3)
+        d.rounded_rectangle([cx + 6, y(26), cx + 18, y(36)], radius=2, fill=CUERO)
+        cx_, cy_ = cx + 21, y(-2)
+        d.rectangle([cx_ - 6, cy_ - 4, cx_ + 6, cy_ + 4], fill=BLANCO)
+    def det(d):
+        d.rectangle([cx - 11, y(-5), cx + 11, y(-4)], fill=(214, 52, 63))
+        corazon(d, cx - 2, y(-9), ORO)
+        d.line([cx + 6, y(28), cx + 18, y(28)], fill=tono(CUERO, .7))
+        d.point((cx + 12, y(30)), fill=ORO)
+        cx_, cy_ = cx + 21, y(-2)
+        d.line([cx_ - 6, cy_ - 4, cx_, cy_, cx_ + 6, cy_ - 4], fill=(200, 190, 180))
+        corazon(d, cx_ - 2, cy_ - 1, (214, 52, 63))
+        chispa(d, cx + 29, y(-10))
+    return armar(None, adel, det, gr=(19, -1), ojos='felices', boca='sonrisa')
+
 CATEGORIAS = [
     ('Magia', [('Aprendiz de mago', aprendiz_mago), ('Sombrero que habla', sombrero_seleccionador),
                ('Buscador en escoba', buscador_escoba), ('Brujita de pociones', bruja_pociones)]),
@@ -857,7 +879,7 @@ CATEGORIAS = [
                            ('Fantasmita', fantasmita), ('Año Nuevo', anio_nuevo), ('Conejito de Pascua', conejito)]),
     ('Otros', [('Chef', chef), ('Pirata', pirata), ('Astronauta', astronauta), ('Graduado', graduado),
                ('Vaquero', vaquero), ('Rey', rey), ('Hada', hada), ('Abejita', abejita), ('Marinero', marinero),
-               ('Guía de museo', guia_museo)]),
+               ('Guía de museo', guia_museo), ('Cartero', cartero)]),
 ]
 
 def ident(nombre):

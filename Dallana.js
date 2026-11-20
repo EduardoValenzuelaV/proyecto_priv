@@ -906,17 +906,75 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   const cover = $('welcome');
   const env = $('env');
   if (cover && cover.classList.contains('opening')) return;
-  if (cover) cover.classList.add('opening');
   const rectSobre = (env || openEnvelopeBtn).getBoundingClientRect();
+  if (cover) cover.classList.add('opening');
   notificar('abrió el sobre de la portada', 'envelope_with_arrow');
-  if (env) env.classList.add('open');
-  const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 780;
+  const lento = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (lento) {
+    vibrar();
+    chispasCorazon(document.querySelector('.sobre-sello'));
+    setTimeout(() => chispasCorazon(document.querySelector('.sobre-carta')), 1300);
+  }
   setTimeout(() => {
-    if (cover) { cover.classList.add('closed'); cover.classList.remove('opening'); }
+    // «opening» se queda hasta que termina de desvanecerse (si no, el sobre se vuelve a armar mientras se va)
+    if (cover) { cover.classList.add('closed'); setTimeout(() => cover.classList.remove('opening'), 900); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
     entradaAlejandro(rectSobre).then(saludoAlejandro);
-  }, delay);
+  }, lento ? 1950 : 0);
 };
+
+/* ---------- Portada: saludo según la hora, post-it con el día, globito de Alejandro y escritorio que responde ---------- */
+(() => {
+  const cover = $('welcome'); if (!cover) return;
+  const movimiento = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const h = new Date().getHours();
+  const saludo = h >= 6 && h < 12 ? 'Buenos días' : h >= 12 && h < 20 ? 'Buenas tardes' : 'Buenas noches';
+  const elSaludo = $('portadaSaludo'); if (elSaludo) elSaludo.textContent = `${saludo}, mi Dallana ♥`;
+  cover.classList.toggle('noche', h >= 20 || h < 6);
+
+  // Post-it: día de nosotros (y cumplemes los 17)
+  const [anio, mes, dia] = FECHA_INICIO.split('-').map(Number);
+  const ahora = new Date();
+  const dias = Math.round((Date.UTC(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()) - Date.UTC(anio, mes - 1, dia)) / 864e5) + 1;
+  const meses = (ahora.getFullYear() - anio) * 12 + ahora.getMonth() - (mes - 1);
+  if (ahora.getDate() === dia && meses > 0) {
+    $('portadaDia').textContent = '¡Cumplemes!';
+    $('portadaDiaTexto').textContent = `${meses} ${meses === 1 ? 'mes' : 'meses'} juntos 🎉`;
+  } else if (dias > 0) {
+    $('portadaDia').textContent = `Día ${dias}`;
+  }
+  const fecha = ahora.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+  $('portadaFecha').textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+
+  // Alejandro escribe su globito letra por letra
+  const globo = $('portadaGlobo');
+  const texto = h >= 20 || h < 6 ? '¡Mamá! Llegó una carta de noche… ¿la abres? 🌙' : '¡Mamá! Te llegó una carta… ¿la abres? 💌';
+  if (globo) {
+    if (!movimiento) { globo.textContent = texto; globo.classList.add('visible'); }
+    else setTimeout(() => {
+      if (cover.classList.contains('closed')) return;
+      globo.classList.add('visible');
+      const letras = [...texto]; let i = 0;
+      const t = setInterval(() => { globo.textContent = letras.slice(0, ++i).join(''); if (i >= letras.length) clearInterval(t); }, 38);
+    }, 1500);
+  }
+
+  // Las cosas del escritorio saltan al tocarlas
+  cover.querySelectorAll('.portada-cosa').forEach(c => c.addEventListener('click', () => {
+    c.classList.remove('mueve'); void c.offsetWidth; c.classList.add('mueve');
+  }));
+
+  // En PC el sobre se inclina siguiendo el mouse
+  const env = $('env');
+  if (env && movimiento && matchMedia('(pointer: fine)').matches) {
+    cover.addEventListener('pointermove', e => {
+      if (cover.classList.contains('opening')) return;
+      const dx = e.clientX / innerWidth - .5, dy = e.clientY / innerHeight - .5;
+      env.style.setProperty('--ry', `${(dx * 14).toFixed(2)}deg`);
+      env.style.setProperty('--rx', `${(-dy * 10).toFixed(2)}deg`);
+    });
+  }
+})();
 
 const randomBtn = $('random');
 if (randomBtn) randomBtn.onclick = () => {

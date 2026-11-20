@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Museo de ti terminado y publicado; sin tarea abierta. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
+**Current focus**: Portada nueva publicada; sin tarea abierta. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
 
 **In progress**:
 
