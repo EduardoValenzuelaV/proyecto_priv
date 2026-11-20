@@ -1371,15 +1371,8 @@ const NOVEDADES = {
   version: '2026-11-20b',
   mensajes: [
     '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
-    'Ahora tienes 10 corazones cada día. Se llenan cuando tocas «Regálame una sonrisa» o abres una carta «Ábreme cuando».',
-    'Cada 5 sonrisas se desbloquea un recuerdo pixel de ustedes dos. ¡El primero es de su primer cumplemes!',
-    'La carta principal ya la puedes leer cuando quieras, en el capítulo 07. 💌',
-    'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
-    'Tengo vida: aplaudo con tus 10 corazones, bailo con la música y en la mañana bostezo. De noche duermo, pero si estás despierta me despierto para acompañarte.',
-    '¡Y me disfrazo! Cada ratito me pongo uno de mis 39 disfraces y te digo algo. 🎭',
     '¡Ahora también soy cartero! 📬 A mi lado está nuestro buzón: ahí llegan las cartas de papá y yo te las traigo.',
     'Y si quieres decirle algo a papá, toca el buzón y elige «Escríbele a papá». Yo se lo llevo al tiro. 💌',
-    'Ahora paseo por toda la pantalla… pero nunca encima de tus cartas, prometido.',
     'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
     '¡Eso es todo por ahora! Tócame cuando quieras.'
   ]
