@@ -355,6 +355,7 @@ function sumarCorazon() {
   actualizarProgreso();
   if (n === CORAZONES_POR_DIA) {
     lanzarCelebracion();
+    alejandroReacciona('aplaudir', 3200);
     notificar(`llenó sus ${CORAZONES_POR_DIA} corazones de hoy 💗`, 'sparkling_heart');
   }
 }
@@ -368,6 +369,7 @@ function sumarSonrisa() {
   if (hito) {
     notificar(`desbloqueó un recuerdo pixel con ${txtSonrisas(sonrisas)}: «${hito.titulo}»`, 'tada');
     setTimeout(() => abrirHitoPixel(hito, true), 1300);
+    alejandroReacciona('aplaudir', 2400);
   }
 }
 
@@ -1361,21 +1363,28 @@ addEventListener('pagehide', cerrarTramo);
    Se abre solo una vez por versión; después se puede tocar a Alejandro para volver a verlas.
    ============================================================ */
 const NOVEDADES = {
-  version: '2026-11-19',
+  version: '2026-11-19b',
   mensajes: [
     '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
     'Ahora tienes 10 corazones cada día. Se llenan cuando tocas «Regálame una sonrisa» o abres una carta «Ábreme cuando».',
     'Cada 5 sonrisas se desbloquea un recuerdo pixel de ustedes dos. ¡El primero es de su primer cumplemes!',
     'La carta principal ya la puedes leer cuando quieras, en el capítulo 07. 💌',
     'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
+    '¡Y ahora tengo más vida! Aplaudo cuando llenas tus 10 corazones y bailo cuando pones música. 🎶',
+    'De noche me duermo 😴, en la mañana bostezo y de vez en cuando salgo a pasear por la pantalla.',
+    'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
     '¡Eso es todo por ahora! Tócame cuando quieras volver a verlas.'
   ]
 };
 let alejandroPaso = 0;
 
+let alejandroSecreto = false;
+
 function pintarAlejandro() {
   const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
   const total = NOVEDADES.mensajes.length;
+  alejandroSecreto = false;
+  if (sig) sig.hidden = false;
   if (texto) texto.textContent = NOVEDADES.mensajes[alejandroPaso];
   if (paso) paso.textContent = `${alejandroPaso + 1} de ${total}`;
   if (sig) sig.textContent = alejandroPaso === total - 1 ? '¡Listo!' : 'Siguiente ›';
@@ -1387,12 +1396,15 @@ function abrirAlejandro(desde = 0) {
   pintarAlejandro();
   globo.hidden = false;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
+  estadoAlejandro();
 }
 
 function cerrarAlejandro(leido) {
   const globo = $('alejandroGlobo'); if (!globo) return;
   globo.hidden = true;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'false');
+  estadoAlejandro();
+  if (alejandroSecreto) { alejandroSecreto = false; return; }
   try { localStorage.setItem('dallanaNovedades', NOVEDADES.version); } catch {}
   if (leido) notificar('leyó las novedades de Alejandro 🦀', 'crab');
 }
@@ -1404,9 +1416,12 @@ function saludoAlejandro() {
 }
 
 $('alejandroSprite')?.addEventListener('click', () => {
+  if (alejandroIgnorarClick) { alejandroIgnorarClick = false; return; }
   const globo = $('alejandroGlobo');
-  if (globo && !globo.hidden) cerrarAlejandro(false);
-  else abrirAlejandro(0);
+  if (globo && !globo.hidden) { cerrarAlejandro(false); return; }
+  // si estaba durmiendo, primero despierta bostezando
+  if ($('alejandro')?.dataset.estado === 'dormir') alejandroReacciona('bostezar', 1800);
+  abrirAlejandro(0);
 });
 $('alejandroCerrar')?.addEventListener('click', () => cerrarAlejandro(false));
 /* En el teléfono, Alejandro se agacha mientras haces scroll para no tapar nada */
@@ -1424,6 +1439,101 @@ $('alejandroSiguiente')?.addEventListener('click', () => {
   pintarAlejandro();
 });
 
+/* ---------- Alejandro con vida: reacciona, duerme de noche, pasea y guarda un secreto ----------
+   Estados (filas de assets/pixel/alejandro.png): salto, aplaudir, bailar, dormir, bostezar, caminar.
+   Prioridad: una reacción del momento > música sonando > conversando > paseo > la hora del día. */
+const MENSAJE_SECRETO = 'Papá te extraña muchísimo 💗';
+const sinMovimiento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+let alejandroReaccion = null, alejandroReaccionTimer = 0, alejandroCaminando = false, alejandroCaminaTimer = 0;
+let alejandroIgnorarClick = false, alejandroPresionTimer = 0;
+
+function estadoPorHora() {
+  const h = new Date().getHours();
+  return (h >= 23 || h < 7) ? 'dormir' : 'salto';
+}
+
+function estadoAlejandro() {
+  const a = $('alejandro'); if (!a) return;
+  const globo = $('alejandroGlobo');
+  let e;
+  if (alejandroReaccion) e = alejandroReaccion;
+  else if (musicAudio && !musicAudio.paused) e = 'bailar';
+  else if (globo && !globo.hidden) e = 'salto';
+  else if (alejandroCaminando) e = 'caminar';
+  else e = estadoPorHora();
+  a.dataset.estado = e;
+}
+
+function alejandroReacciona(tipo, ms) {
+  alejandroReaccion = tipo;
+  alejandroCaminando = false;
+  clearTimeout(alejandroReaccionTimer);
+  alejandroReaccionTimer = setTimeout(() => { alejandroReaccion = null; estadoAlejandro(); }, ms);
+  estadoAlejandro();
+}
+
+/* De vez en cuando sale a pasear de lado, como los cangrejos, y vuelve a su esquina */
+function programarPaseo() {
+  setTimeout(() => {
+    const a = $('alejandro'), globo = $('alejandroGlobo');
+    const libre = a && globo && globo.hidden && !alejandroReaccion && !(musicAudio && !musicAudio.paused)
+      && estadoPorHora() === 'salto' && !a.classList.contains('escondido') && document.visibilityState === 'visible';
+    if (libre && !sinMovimiento()) {
+      alejandroCaminando = true;
+      estadoAlejandro();
+      clearTimeout(alejandroCaminaTimer);
+      alejandroCaminaTimer = setTimeout(() => { alejandroCaminando = false; estadoAlejandro(); }, 9000);
+    }
+    programarPaseo();
+  }, 25000 + Math.random() * 30000);
+}
+
+/* Baila mientras suena la música */
+if (musicAudio) ['play', 'pause', 'ended'].forEach(ev => musicAudio.addEventListener(ev, estadoAlejandro));
+
+/* Revisa la hora: si se hace de día, se despierta bostezando */
+let alejandroUltimaHora = estadoPorHora();
+setInterval(() => {
+  const ahora = estadoPorHora();
+  if (alejandroUltimaHora === 'dormir' && ahora === 'salto') alejandroReacciona('bostezar', 3600);
+  alejandroUltimaHora = ahora;
+  estadoAlejandro();
+}, 60000);
+
+/* Mantenerlo presionado muestra el mensaje secreto */
+function mostrarSecretoAlejandro() {
+  const globo = $('alejandroGlobo'); if (!globo) return;
+  const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
+  if (texto) texto.textContent = MENSAJE_SECRETO;
+  if (paso) paso.textContent = '🤫 secreto';
+  if (sig) sig.hidden = true;
+  alejandroSecreto = true;
+  globo.hidden = false;
+  $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
+  alejandroReacciona('aplaudir', 2400);
+  lanzarCelebracion();
+  try { navigator.vibrate?.(40); } catch {}
+  notificar('descubrió el mensaje secreto de Alejandro 🤫', 'crab');
+}
+(() => {
+  const spr = $('alejandroSprite'), a = $('alejandro');
+  if (!spr || !a) return;
+  const soltar = () => { clearTimeout(alejandroPresionTimer); a.classList.remove('presionando'); };
+  spr.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    a.classList.add('presionando');
+    clearTimeout(alejandroPresionTimer);
+    alejandroPresionTimer = setTimeout(() => {
+      a.classList.remove('presionando');
+      alejandroIgnorarClick = true;
+      setTimeout(() => { alejandroIgnorarClick = false; }, 1200);
+      mostrarSecretoAlejandro();
+    }, 700);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => spr.addEventListener(ev, soltar));
+  spr.addEventListener('contextmenu', e => e.preventDefault());
+})();
+
 /* ============================================================
    INICIALIZACIÓN
    ============================================================ */
@@ -1432,6 +1542,9 @@ actualizarContador();
 registrarDia();
 actualizarProgreso();
 if (!$('welcome')) saludoAlejandro();
+estadoAlejandro();
+{ const h = new Date().getHours(); if (h >= 7 && h < 11) setTimeout(() => alejandroReacciona('bostezar', 3600), 900); }
+programarPaseo();
 actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();
