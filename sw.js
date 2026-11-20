@@ -1,15 +1,22 @@
-const CACHE_NAME = 'dallana-v3.58';
+const CACHE_NAME = 'dallana-v3.60';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=6.3',
-  './Dallana.js?v=3.48',
+  './Dallana.css?v=6.5',
+  './Dallana.js?v=3.49',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/fotos/migeo.jpg',
   './assets/stickers/stikers3.png',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './assets/icons/icon-512.png',
+  './assets/pixel/alejandro.png?v=4',
+  './assets/pixel/buzon.png?v=1',
+  './assets/pixel/lluvia.gif',
+  './assets/pixel/cena.gif',
+  './assets/pixel/laguna.gif',
+  './assets/pixel/dormir.gif',
+  './assets/pixel/estudio.gif'
 ];
 
 self.addEventListener('install', event => {

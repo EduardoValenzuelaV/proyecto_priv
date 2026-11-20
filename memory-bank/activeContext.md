@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Cartero de Alejandro: recepción desde ambos temas ntfy y comandos de Eduardo (/borrar, /editar, /buzon).
+**Current focus**: Cierre de la actualización general (sin cambios previstos por un mes). Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
 
 **In progress**:
 

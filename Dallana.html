@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=6.3">
+<link rel="stylesheet" href="Dallana.css?v=6.5">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,6 +35,15 @@
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 </head>
 <body>
+
+<div class="carga" id="carga" role="status" aria-live="polite">
+  <div class="carga-escena" aria-hidden="true">
+    <span class="carga-alejandro"></span>
+    <span class="carga-suelo"></span>
+  </div>
+  <div class="carga-barra" id="cargaBarra" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <p class="carga-texto">Preparando tu rincón…</p>
+</div>
 
 <noscript>
   <div class="noscript-banner" role="status">
@@ -439,6 +448,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.48" defer></script>
+<script src="Dallana.js?v=3.49" defer></script>
 </body>
 </html>

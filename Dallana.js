@@ -1475,7 +1475,7 @@ $('alejandroSiguiente')?.addEventListener('click', () => {
    Prioridad: una reacción del momento > música sonando > conversando > paseo > la hora del día. */
 const MENSAJE_SECRETO = 'Papá te extraña muchísimo 💗';
 const sinMovimiento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-let alejandroReaccion = null, alejandroReaccionTimer = 0, alejandroCaminando = false, alejandroCaminaTimer = 0;
+let alejandroReaccion = null, alejandroReaccionTimer = 0, alejandroCaminando = false;
 let alejandroIgnorarClick = false, alejandroPresionTimer = 0;
 
 /* De noche (23:00–7:00) duerme, pero si Dallana hace algo en la página se despierta y hace lo mismo que de día.
@@ -2642,6 +2642,54 @@ function pintarCielo() {
 })();
 
 pintarCielo();
+
+/* ============================================================
+   PANTALLA DE CARGA: los corazones se llenan según lo que va cargando
+   ============================================================ */
+(() => {
+  const carga = $('carga'); if (!carga) return;
+  const corazones = [...document.querySelectorAll('#cargaBarra i')];
+  const inicio = performance.now();
+  let progreso = 0, terminado = false;
+  const pintar = frac => {
+    progreso = Math.max(progreso, frac);
+    const n = Math.round(progreso * corazones.length);
+    corazones.forEach((c, k) => c.classList.toggle('llena', k < n));
+  };
+  const imagenes = [...document.images];
+  const contar = () => {
+    if (terminado) return;
+    const listas = imagenes.filter(im => im.complete).length;
+    pintar(.15 + .75 * (imagenes.length ? listas / imagenes.length : 1));
+  };
+  imagenes.forEach(im => { if (!im.complete) { im.addEventListener('load', contar, { once: true }); im.addEventListener('error', contar, { once: true }); } });
+  contar();
+  const terminar = () => {
+    if (terminado) return;
+    terminado = true;
+    pintar(1);
+    // se queda al menos un ratito para que se vea a Alejandro corriendo
+    const espera = Math.max(0, 1100 - (performance.now() - inicio));
+    setTimeout(() => { carga.classList.add('lista'); setTimeout(() => carga.remove(), 600); }, espera + 250);
+  };
+  const listo = () => (document.fonts ? document.fonts.ready.catch(() => {}) : Promise.resolve()).then(terminar);
+  if (document.readyState === 'complete') listo();
+  else addEventListener('load', listo, { once: true });
+  setTimeout(terminar, 6000);   // por si alguna imagen nunca termina (sin internet)
+})();
+
+/* ============================================================
+   CAMBIO DE DÍA SIN RECARGAR: a medianoche se vacían los corazones y cuenta el día nuevo
+   ============================================================ */
+let diaActual = hoyLocal();
+setInterval(() => {
+  const hoy = hoyLocal();
+  if (hoy === diaActual) return;
+  diaActual = hoy;
+  actualizarProgreso();
+  registrarDia();
+  actualizarContador();
+}, 30000);
 
 /* ============================================================
    INICIALIZACIÓN

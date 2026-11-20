@@ -22,6 +22,7 @@
 - 2026-11-20: verificado en el sitio publicado (commits hasta 89ff249 en GitHub). Respaldo con temporizador para el avioncito y los corazones viajeros (si la animación se congela por pantalla apagada, el recorrido igual termina). JS v3.45, caché dallana-v3.55.
 - 2026-11-20: arreglo cartero: las respuestas de Eduardo desde la app llegaban al tema de avisos y la página solo leía `NTFY_CARTAS`. Ahora lee ambos (`leerTema`); en el de avisos toma como carta todo mensaje cuyo título no esté en `TITULOS_DE_LA_PAGINA` (ignora «triggered»). JS v3.47, caché dallana-v3.57.
 - 2026-11-20: comandos de Eduardo desde la app (todo mensaje que empieza con «/»): `/borrar`, `/borrar N`, `/borrar todo` (12 h), `/editar <texto>` (marca «corregida»), `/buzon` (la página de Dallana responde con título «Buzon de Dallana»). Ids borrados y comandos ya hechos en `localStorage` (`dallanaCartasBorradas`, `dallanaComandosHechos`). Pruebas anteriores a `CORTE_PRUEBAS` (1795192450) se ignoran. JS v3.48, caché dallana-v3.58.
+- 2026-11-20 (cierre del mes): Alejandro ×1,25 en teléfono y buzón más chico (60×55 PC, 48×44 teléfono). Pantalla de carga pixel (`#carga`, Alejandro caminando + 10 corazones; se va sola a los 8 s si falla el JS). Cambio de día sin recargar (`diaActual`, cada 30 s). `sw.js` precarga Alejandro, buzón y los 5 GIF: la página funciona sin internet salvo la música. Quitados `.unlocked` y `alejandroCaminaTimer`. Recorrido final OK a 375 y 1280 px. CSS v6.5, JS v3.49, caché dallana-v3.60.
 
 **Not started / backlog**
 
