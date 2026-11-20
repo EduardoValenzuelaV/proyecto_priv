@@ -1,18 +1,22 @@
 # Active context
 
-**Current focus** (one short paragraph): Estabilización del sitio después de cambios de interfaz y API.
+**Current focus**: Alejandro (cangrejo ayudante) y el sistema de cartas entre Eduardo y Dallana. Última tarea: hacer más visible el «Buzón de papá».
 
 **In progress**:
 
-- [x] Corregido el error de carga del JavaScript y renovada la caché del sitio.
-- [x] Revisión de errores: caché del SW, manifiesto, avisos de consola y rendimiento (JS v2.5).
+- [x] Sección «Buzón de papá» en la página (`#buzonSection`, buzón pixel `assets/pixel/buzon.png`) + aviso arriba `#cartaAviso` cuando llega una carta.
+- [x] Limpieza de `propuesta/` (scripts viejos borrados).
+- [ ] Comprimir canciones a 128 kbps: pendiente, no hay ffmpeg en el equipo.
 
 **Decisions (recent)**:
 
-- La API es opcional: el sitio conserva contenido local si no hay backend configurado.
+- Cartas de papá llegan por ntfy (tema `NTFY_CARTAS` en `Dallana.js`); los mensajes de Dallana van al tema de avisos `NTFY_TEMA`. ntfy.sh guarda solo 12 h.
+- Alejandro vive en la capa superior (`popover="manual"`) para seguir visible sobre los diálogos de cartas; nunca camina sobre el texto (`zonasCarta()`).
+- Disfraces: 39 hojas en `assets/pixel/disfraces/`, cambio aleatorio cada 3–6 min; de noche pijama.
 
 **Open questions**:
 
-- Ninguna.
+- Los temas ntfy son públicos (están en el JS): evaluar temas reservados con ntfy Pro.
+- Precarga de 46 MB de música en `sw.js` al instalar: pasar a caché bajo demanda.
 
 _Update when the task or branch focus changes._

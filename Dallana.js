@@ -1820,7 +1820,49 @@ function pintarSobre() {
   if (sobre) sobre.hidden = !cartaPendiente();
   const n = buzon.filter(c => c.de === 'papa' && !c.leida).length;
   const badge = $('menuBuzonN'); if (badge) badge.textContent = n ? String(n) : '';
+  pintarSeccionBuzon(n);
+  if (!n) { const aviso = $('cartaAviso'); if (aviso) aviso.hidden = true; }
 }
+
+/* La sección «Buzón de papá» de la página: buzón con bandera, estado, última carta y botones */
+function pintarSeccionBuzon(nuevas) {
+  const sec = $('buzonSection'); if (!sec) return;
+  const dePapa = buzon.filter(c => c.de === 'papa');
+  const ultima = dePapa[dePapa.length - 1];
+  sec.classList.toggle('tiene-cartas', nuevas > 0);
+  const cont = $('buzonContador');
+  if (cont) { cont.hidden = !nuevas; cont.textContent = String(nuevas); }
+  const estado = $('buzonEstado');
+  if (estado) estado.textContent = nuevas
+    ? (nuevas === 1 ? '¡Tienes una carta nueva de papá! 💌' : `¡Tienes ${nuevas} cartas nuevas de papá! 💌`)
+    : dePapa.length
+      ? 'No hay cartas nuevas por ahora. Puedes releer las que te ha mandado o escribirle tú. 🦀'
+      : 'Aquí llegan las cartas que papá te escribe. Alejandro te avisa apenas llega una. 🦀';
+  const abrir = $('buzonAbrir'); if (abrir) abrir.hidden = !nuevas;
+  const todas = $('buzonTodas'); if (todas) todas.textContent = buzon.length ? `📬 Ver todas las cartas (${buzon.length})` : '📬 Ver todas las cartas';
+  const caja = $('buzonUltima');
+  if (caja) {
+    caja.hidden = !ultima || nuevas > 0;
+    if (ultima) {
+      $('buzonUltimaFecha').textContent = `Última carta · ${fechaCarta(ultima.t)}`;
+      $('buzonUltimaTexto').textContent = ultima.texto;
+      caja.onclick = () => abrirCartaPapa(ultima);
+    }
+  }
+}
+
+function mostrarAvisoCarta() {
+  const aviso = $('cartaAviso'); if (!aviso) return;
+  const n = buzon.filter(c => c.de === 'papa' && !c.leida).length;
+  if (!n) return;
+  $('cartaAvisoTexto').textContent = n === 1 ? '¡Llegó una carta de papá!' : `¡Llegaron ${n} cartas de papá!`;
+  aviso.hidden = false;
+}
+$('cartaAvisoAbrir')?.addEventListener('click', () => { const c = cartaPendiente(); $('cartaAviso').hidden = true; if (c) abrirCartaPapa(c); });
+$('cartaAvisoCerrar')?.addEventListener('click', () => { $('cartaAviso').hidden = true; });
+$('buzonAbrir')?.addEventListener('click', () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
+$('buzonTodas')?.addEventListener('click', abrirBuzon);
+$('buzonEscribir')?.addEventListener('click', abrirParaPapa);
 
 function fechaCarta(t) {
   try { return new Date(t).toLocaleString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }); }
@@ -1850,6 +1892,7 @@ async function revisarCartas() {
 }
 
 function avisarCartaNueva() {
+  mostrarAvisoCarta();
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) return;
   alejandroReacciona('aplaudir', 2000);

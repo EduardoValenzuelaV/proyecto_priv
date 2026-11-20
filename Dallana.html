@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=6.0">
+<link rel="stylesheet" href="Dallana.css?v=6.1">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -178,6 +178,27 @@
     <img class="sticker sticker--br" src="assets/stickers/stikers22.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
   </section>
 
+  <section class="buzon-feature" id="buzonSection" aria-labelledby="buzonTitulo">
+    <div class="buzon-arte">
+      <span class="buzon-pixel" id="buzonPixel" role="img" aria-label="Buzón de papá"></span>
+      <span class="buzon-contador" id="buzonContador" hidden></span>
+    </div>
+    <div class="buzon-info">
+      <span class="chapter-kicker">💌 Correo de papá</span>
+      <h2 id="buzonTitulo">Buzón de papá</h2>
+      <p class="buzon-estado" id="buzonEstado">Aquí llegan las cartas que papá te escribe. Alejandro te avisa apenas llega una. 🦀</p>
+      <button class="buzon-ultima" id="buzonUltima" type="button" hidden>
+        <small id="buzonUltimaFecha"></small>
+        <span id="buzonUltimaTexto"></span>
+      </button>
+      <div class="buzon-acciones">
+        <button class="carta-btn" id="buzonAbrir" type="button" hidden>💌 Abrir carta nueva</button>
+        <button class="carta-btn suave" id="buzonTodas" type="button">📬 Ver todas las cartas</button>
+        <button class="carta-btn suave" id="buzonEscribir" type="button">✍️ Escríbele a papá</button>
+      </div>
+    </div>
+  </section>
+
   <section class="gift-section photo-section" id="photoSection" aria-labelledby="photoTitle">
     <img class="sticker sticker--tl" src="assets/stickers/stikers11.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     <img class="sticker sticker--tr" src="assets/stickers/stikers12.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -287,12 +308,13 @@
     </article>
     <div class="carta-papa-acciones">
       <button type="button" class="carta-btn" id="cartaResponder">💌 Responderle a papá</button>
-      <button type="button" class="carta-btn suave" id="cartaVerBuzon">📬 Ver el buzón</button>
+      <button type="button" class="carta-btn suave" id="cartaVerBuzon">📬 Todas las cartas</button>
     </div>
   </div>
   <div id="buzonVista" hidden>
     <h2>Buzón de papá 📬</h2>
-    <p class="buzon-vacio" id="buzonVacio">Todavía no hay cartas… pero papá siempre está pensando en ti.</p>
+    <p class="buzon-ayuda">Toca una carta para leerla de nuevo.</p>
+    <p class="buzon-vacio" id="buzonVacio">Todavía no hay cartas… pero cuando papá te escriba, Alejandro te la trae y aparece aquí. 🦀</p>
     <ul class="buzon-lista" id="buzonLista"></ul>
     <div class="carta-papa-acciones">
       <button type="button" class="carta-btn" id="buzonParaPapa">💌 Dile algo a papá</button>
@@ -395,6 +417,13 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
+<div class="carta-aviso" id="cartaAviso" role="status" aria-live="polite" hidden>
+  <span class="carta-aviso-icono" aria-hidden="true">📬</span>
+  <span class="carta-aviso-texto" id="cartaAvisoTexto">¡Llegó una carta de papá!</span>
+  <button class="carta-aviso-abrir" id="cartaAvisoAbrir" type="button">Abrir</button>
+  <button class="carta-aviso-cerrar" id="cartaAvisoCerrar" type="button" aria-label="Cerrar aviso">×</button>
+</div>
+
 <aside class="alejandro" id="alejandro" aria-label="Alejandro, tu ayudante" popover="manual">
   <span class="alejandro-sobre" id="alejandroSobre" aria-hidden="true" hidden>💌</span>
   <button class="alejandro-sprite" id="alejandroSprite" type="button" aria-label="Hablar con Alejandro" aria-expanded="false"></button>
@@ -415,6 +444,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.40" defer></script>
+<script src="Dallana.js?v=3.41" defer></script>
 </body>
 </html>
