@@ -37,9 +37,6 @@
   --mesa-veta:#e7cba4;
   --cera:#e8505a;
   --postit:#ffe99a;
-  --madera-mesa:#c8935f;
-  --madera-mesa-oscura:#a87447;
-  --veta:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='300'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .09' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .24 0 0 0 0 .12 0 0 0 .55 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E");
   --fibra:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .15 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --cordon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='38' viewBox='0 0 120 38'%3E%3Cpath d='M6 12Q62 34 120 12' fill='none' stroke='%23b0243a' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M8 11Q62 31 118 11' fill='none' stroke='%23e2576a' stroke-width='1'/%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --poste:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='38' viewBox='0 0 8 38'%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
@@ -196,13 +193,18 @@ main>section:has(>.sticker--bl,>.sticker--br){padding-bottom:calc(var(--st) - va
 .envelope{
   --sw:min(460px,78vw);
   position:fixed;inset:0;z-index:10;isolation:isolate;display:grid;place-items:center;padding:16px;overflow:hidden;
+  --mantel:var(--vino);
   background:
-    radial-gradient(ellipse at 50% 46%,transparent 35%,rgba(60,28,10,.42) 100%),
-    repeating-linear-gradient(180deg,transparent 0 126px,rgba(70,36,16,.3) 126px 128px,rgba(255,226,180,.1) 128px 130px),
-    var(--veta) 0 0/700px 280px,
-    linear-gradient(180deg,var(--madera-mesa),var(--madera-mesa-oscura));
+    radial-gradient(ellipse at 50% 46%,transparent 45%,rgba(120,48,40,.16) 100%),
+    var(--fibra),
+    linear-gradient(90deg,color-mix(in srgb,var(--mantel) 22%,transparent) 50%,transparent 50%) 0 0/56px 56px,
+    linear-gradient(color-mix(in srgb,var(--mantel) 22%,transparent) 50%,transparent 50%) 0 0/56px 56px,
+    var(--papel);
   text-align:center;transition:opacity .6s ease,visibility .6s ease;
+  animation:mantel-colores 24s ease-in-out infinite;
 }
+@property --mantel{syntax:'<color>';inherits:true;initial-value:#d1343f}
+@keyframes mantel-colores{0%,100%{--mantel:var(--vino)}25%{--mantel:var(--azul)}50%{--mantel:var(--verde)}75%{--mantel:var(--oro)}}
 /* Mientras la bienvenida está abierta, los corazones flotan por encima de ella */
 body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .envelope.closed{visibility:hidden;opacity:0;pointer-events:none}
@@ -212,14 +214,16 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
   -webkit-mask:radial-gradient(ellipse at 25% 10%,#000 0,transparent 70%);mask:radial-gradient(ellipse at 25% 10%,#000 0,transparent 70%);
   animation:portada-rayos 14s ease-in-out infinite alternate}
 @keyframes portada-rayos{to{translate:40px 10px;opacity:.7}}
+.envelope.noche .welcome-label,.envelope.noche .portada-pista{color:var(--mantequilla);text-shadow:0 1px 4px rgba(26,20,52,.7)}
+.envelope.noche .welcome-copy{color:var(--tarjeta);text-shadow:0 2px 0 rgba(26,20,52,.5),0 6px 18px rgba(26,20,52,.5)}
 .envelope.noche .portada-luz{inset:0;-webkit-mask:none;mask:none;animation:none;
   background:radial-gradient(circle at 50% 52%,rgba(255,206,130,.32) 0,transparent 55%),linear-gradient(rgba(26,20,52,.45),rgba(26,20,52,.58))}
 
 .portada-escena{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:min(1040px,100%)}
-.welcome-label{color:var(--mantequilla);font:700 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 1px 3px rgba(60,28,10,.5)}
-.welcome-copy{margin:6px 0 0;color:var(--tarjeta);font:600 clamp(40px,9vw,64px)/1.02 var(--firma);text-shadow:0 3px 0 rgba(110,52,22,.4),0 8px 22px rgba(60,28,10,.35)}
+.welcome-label{color:var(--vino);font:700 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 0 6px var(--papel),0 0 2px var(--papel)}
+.welcome-copy{margin:6px 0 0;color:var(--vino-oscuro);font:600 clamp(40px,9vw,64px)/1.02 var(--firma);text-shadow:0 0 14px var(--papel),0 0 4px var(--papel),0 2px 0 var(--tarjeta)}
 .welcome-resalte{position:relative;display:block;width:fit-content;margin:0 auto;isolation:isolate}
-.welcome-resalte::before{content:"";position:absolute;z-index:-1;left:-5%;right:-5%;bottom:.06em;height:.4em;border-radius:3px 12px 4px 10px;background:rgba(209,52,63,.62);rotate:-1.5deg;transform-origin:0 50%;animation:resalte-pinta .8s .5s cubic-bezier(.3,.8,.3,1) both}
+.welcome-resalte::before{content:"";position:absolute;z-index:-1;left:-5%;right:-5%;bottom:.06em;height:.4em;border-radius:3px 12px 4px 10px;background:rgba(247,200,70,.6);rotate:-1.5deg;transform-origin:0 50%;animation:resalte-pinta .8s .5s cubic-bezier(.3,.8,.3,1) both}
 .welcome-resalte::after{content:"♡";position:absolute;top:-.1em;right:-.65em;color:var(--coral);font-size:.5em;rotate:14deg;animation:latido 1.6s ease-in-out infinite}
 @keyframes resalte-pinta{from{scale:0 1}}
 @keyframes latido{50%{scale:1.25}}
@@ -233,7 +237,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .env-button:focus-visible{outline:3px solid var(--azul);outline-offset:8px;border-radius:12px}
 .env{--rx:0deg;--ry:0deg;position:relative;display:block;width:var(--sw);aspect-ratio:3/2;perspective:1000px;
   transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .3s ease-out,translate .3s ease;animation:sobre-flota 4.5s ease-in-out infinite;
-  filter:drop-shadow(0 22px 24px rgba(50,22,8,.45)) drop-shadow(0 4px 5px rgba(50,22,8,.3))}
+  filter:drop-shadow(0 22px 24px rgba(120,48,40,.28)) drop-shadow(0 4px 5px rgba(120,48,40,.2))}
 @keyframes sobre-flota{50%{translate:0 -7px}}
 .env>:where(span){position:absolute;display:block}
 .sobre-fondo{inset:0;border-radius:10px;background:linear-gradient(180deg,var(--kraft-oscuro),var(--kraft))}
@@ -291,7 +295,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .portada-tira img{display:block;width:100%;height:auto}
 .portada-tira::before{content:"";position:absolute;top:-9px;left:24%;width:52%;height:18px;background:rgba(79,154,74,.38);rotate:-5deg}
 /* Tacita pixel con vapor */
-.portada-taza{left:16%;bottom:0;width:124px;height:124px;background:url("assets/pixel/obras.png?v=1") 50% 0/1100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 6px 4px rgba(60,28,10,.35))}
+.portada-taza{left:12%;bottom:0;width:124px;height:124px;background:url("assets/pixel/obras.png?v=1") 50% 0/1100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 6px 4px rgba(60,28,10,.35))}
 .portada-taza i{position:absolute;bottom:62%;left:var(--x,40%);width:7px;height:20px;border-radius:50%;background:rgba(255,255,255,.6);filter:blur(2.5px);opacity:0;animation:vapor 2.8s ease-in infinite}
 .portada-taza i:nth-child(2){--x:52%;animation-delay:.9s}
 .portada-taza i:nth-child(3){--x:30%;animation-delay:1.8s}
@@ -316,7 +320,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .portada-lapiz{position:absolute;z-index:1;right:27%;bottom:16px;width:118px;height:11px;border-radius:2px;rotate:-14deg;pointer-events:none;
   background:linear-gradient(90deg,var(--rosa) 0 12%,var(--linea) 12% 16%,var(--postit) 16% 84%,var(--kraft-claro) 84% 96%,var(--tinta) 96%);
   clip-path:polygon(0 0,84% 0,100% 50%,84% 100%,0 100%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
-.portada-pista{margin-top:2px;color:var(--tarjeta);text-shadow:0 1px 3px rgba(60,28,10,.6);font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;transition:opacity .3s}
+.portada-pista{margin-top:2px;color:var(--tinta-suave);text-shadow:0 0 6px var(--papel),0 0 2px var(--papel);font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;transition:opacity .3s}
 .portada-pista span{display:inline-block;animation:pista-toca 1.4s ease-in-out infinite}
 @keyframes pista-toca{50%{translate:0 -4px}}
 
@@ -338,6 +342,8 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 @keyframes escena-acerca{to{scale:1.08;opacity:0}}
 
 @media (max-width:899px){
+  .envelope{--sw:min(390px,56vw)}
+  .portada-polaroid{width:clamp(86px,15vw,130px)}
   .portada-sticker--2,.portada-lapiz,.portada-flor{display:none}
   .portada-tira{right:2%;top:10px}
   .portada-taza{left:auto;right:30%;bottom:0;width:80px;height:80px}
@@ -348,9 +354,9 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
   .portada-tira{display:none}
   .portada-taza{right:auto;left:calc(50% - 34px);bottom:12px;width:68px;height:68px}
   .portada-alejandro{right:-6px;bottom:calc(100% - 12px)}
-  .portada-alejandro-sprite{width:81px;height:96.75px;margin:0 -14px 0 -10px;background-size:972px 1064.25px}
-  @keyframes portada-ale{to{background-position-x:-972px}}
-  .sobre-zona:hover .portada-alejandro-sprite{background-position-y:-96.75px}
+  .portada-alejandro-sprite{width:72px;height:86px;margin:0 -12px 0 -9px;background-size:864px 946px}
+  @keyframes portada-ale{to{background-position-x:-864px}}
+  .sobre-zona:hover .portada-alejandro-sprite{background-position-y:-86px}
   .portada-globo{max-width:170px;font-size:12.5px}
   .sobre-para{top:76%}
   .sobre-de{top:90.5%}
@@ -364,7 +370,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
   .welcome-copy{font-size:36px}
 }
 @media (prefers-reduced-motion:reduce){
-  .envelope *,.envelope *::before,.envelope *::after{animation:none!important}
+  .envelope,.envelope *,.envelope *::before,.envelope *::after{animation:none!important}
 }
 
 /* ============ PORTADA ============ */
@@ -1064,7 +1070,7 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .buzon-esquina-n[hidden]{display:none}
 @keyframes buzon-salto{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @media (max-width:599px){
-  .buzon-esquina{left:80px;bottom:calc(12px + var(--safe-bottom));width:48px;height:44px;background-size:96px 44px}
+  .buzon-esquina{left:72px;bottom:calc(12px + var(--safe-bottom));width:48px;height:44px;background-size:96px 44px}
   .buzon-esquina.con-carta{background-position:-48px 0}
   .buzon-esquina.escondido{transform:translateY(40px);opacity:.55}
   .buzon-esquina-n{top:-5px;right:-6px;min-width:18px;height:18px;padding:0 4px;font-size:11px;line-height:14px}
@@ -1098,12 +1104,12 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 @media (max-width:599px){
   .alejandro{left:14px;bottom:calc(12px + var(--safe-bottom));transition:transform .35s ease,opacity .35s ease}
   .alejandro.escondido{transform:translateY(40px);opacity:.55}
-  .alejandro-sprite{--alto:96.75px;width:81px;height:96.75px;margin:0 -15.75px;background-size:972px 1064.25px}
-  @keyframes alejandro-salto{from{background-position-x:0}to{background-position-x:-972px}}
-  .alejandro-dice{position:fixed;left:10px;right:10px;width:auto;bottom:calc(98px + var(--safe-bottom));max-width:none}
+  .alejandro-sprite{--alto:86px;width:72px;height:86px;margin:0 -14px;background-size:864px 946px}
+  @keyframes alejandro-salto{from{background-position-x:0}to{background-position-x:-864px}}
+  .alejandro-dice{position:fixed;left:10px;right:10px;width:auto;bottom:calc(90px + var(--safe-bottom));max-width:none}
   .alejandro-dice::after{left:24px}
-  .alejandro-sobre{left:41px;bottom:40px;font-size:16px}
-  .alejandro-globo{position:fixed;left:10px;right:10px;bottom:calc(94px + var(--safe-bottom));width:auto;max-width:420px;margin:0;padding:10px 12px}
+  .alejandro-sobre{left:36px;bottom:35px;font-size:15px}
+  .alejandro-globo{position:fixed;left:10px;right:10px;bottom:calc(88px + var(--safe-bottom));width:auto;max-width:420px;margin:0;padding:10px 12px}
   .alejandro-globo::before{left:24px;bottom:-12px;border:8px solid transparent;border-top:12px solid var(--vino);border-bottom:0}
   .alejandro-globo::after{left:26px;bottom:-7px;border:6px solid transparent;border-top:9px solid #fffefb;border-bottom:0}
   .alejandro-globo p{font-size:14px;margin:2px 0 6px}

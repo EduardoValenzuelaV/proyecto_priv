@@ -1757,8 +1757,9 @@ function alejandroReacciona(tipo, ms) {
    Nunca pasa por encima del texto de una carta abierta. Se mueve con la propiedad CSS «translate»
    (así no choca con el «transform» que lo agacha al hacer scroll en el teléfono). */
 const VEL_PASEO = 70;                // píxeles por segundo
-let alejandroPos = { x: 0, y: 0 }, paseoId = 0, paseoTimer = 0;
-const enCasa = () => Math.abs(alejandroPos.x) < 1 && Math.abs(alejandroPos.y) < 1;
+let alejandroPos = { x: 0, y: 0 }, paseoId = 0, paseoTimer = 0, alejandroMoviendo = false;
+// En casa = llegó a su esquina (no solo que va hacia ella: mientras camina tiene «translate» y los globos fijos del teléfono se angostan)
+const enCasa = () => !alejandroMoviendo && Math.abs(alejandroPos.x) < 1 && Math.abs(alejandroPos.y) < 1;
 
 function zonasCarta() {
   const sel = '#letterDialog[open] .letter-paper, #letterDialog[open] .letter-head, #openWhenDialog[open] .animated-note, '
@@ -1830,8 +1831,11 @@ function caminarA(p, rapido = false, vel = VEL_PASEO) {
   a.style.transition = `translate ${seg}s linear, transform .35s ease, opacity .35s ease`;
   a.style.translate = `${p.x}px ${p.y}px`;
   alejandroPos = { x: p.x, y: p.y };
+  alejandroMoviendo = dist > 1;
+  if (alejandroMoviendo) { const dice = $('alejandroDice'); if (dice) dice.hidden = true; }
   return new Promise(res => setTimeout(() => {
     if (id !== paseoId) return res(false);
+    alejandroMoviendo = false;
     // en su esquina queda sin «translate»: si no, los globos fijos del teléfono toman su ancho
     if (Math.abs(p.x) < 1 && Math.abs(p.y) < 1) { a.style.transition = 'transform .35s ease, opacity .35s ease'; a.style.translate = ''; }
     alejandroCaminando = false;
@@ -1845,15 +1849,18 @@ function detenerAqui() {
   const a = $('alejandro'); if (!a) return;
   const p = alejandroActual();
   a.style.transition = 'transform .35s ease, opacity .35s ease';
-  a.style.translate = `${p.x}px ${p.y}px`;
-  alejandroPos = p;
+  // en su esquina, sin «translate» (aunque sea 0px: igual angostaría los globos fijos del teléfono)
+  const quieto = Math.abs(p.x) < 1 && Math.abs(p.y) < 1;
+  a.style.translate = quieto ? '' : `${p.x}px ${p.y}px`;
+  alejandroPos = quieto ? { x: 0, y: 0 } : p;
+  alejandroMoviendo = false;
   alejandroCaminando = false;
   estadoAlejandro();
 }
 
 function cancelarPaseo() {
   paseoId++;
-  if (alejandroCaminando) detenerAqui();
+  if (alejandroCaminando || alejandroMoviendo) detenerAqui();
 }
 
 function volverACasa(despues, rapido = false) {
@@ -2035,6 +2042,7 @@ function alejandroDice(texto, titulo, accion = null, importante = false) {
     return false;
   }
   if (!enCasa()) { volverACasa(() => alejandroDice(texto, titulo, accion, importante), true); return true; }
+  const aside = $('alejandro'); if (aside && aside.style.translate) aside.style.translate = '';
   alejandroDiceAccion = accion;
   el.replaceChildren();
   const t = document.createElement('strong'); t.textContent = titulo;
@@ -2102,7 +2110,7 @@ function cambiarDisfraz() {
   else if (especial) { ponerDisfraz(especial, false); programarDisfraz(600000); return; }
   else if (document.visibilityState !== 'visible' || (globo && !globo.hidden) || alejandroCaminando || cartaPendiente()) { programarDisfraz(10000); return; }
   else ponerDisfraz(siguienteDisfraz(), true);
-  programarDisfraz(180000 + Math.random() * 180000);   // el próximo, entre 3 y 6 minutos
+  programarDisfraz(120000 + Math.random() * 120000);   // el próximo, entre 2 y 4 minutos
 }
 
 function programarDisfraz(ms) {
@@ -2622,6 +2630,7 @@ $('alejandroSprite')?.addEventListener('pointerdown', () => {
 /* Mantenerlo presionado muestra el mensaje secreto */
 function mostrarSecretoAlejandro() {
   const globo = $('alejandroGlobo'); if (!globo) return;
+  if (!enCasa()) { volverACasa(mostrarSecretoAlejandro, true); return; }
   const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
   if (texto) texto.textContent = MENSAJE_SECRETO;
   if (paso) paso.textContent = '🤫 secreto';
