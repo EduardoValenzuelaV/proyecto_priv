@@ -9,7 +9,7 @@
 
 **Servicios externos**
 
-- ntfy.sh: `NTFY_TEMA` (avisos y mensajes de Dallana para Eduardo) y `NTFY_CARTAS` (cartas de Eduardo para Dallana, lectura con `/json?poll=1`). Títulos con emoji solo vía publicación JSON (los headers HTTP no aceptan emoji).
+- ntfy.sh: `NTFY_TEMA` (avisos y mensajes de Dallana para Eduardo; Eduardo también responde ahí desde la app) y `NTFY_CARTAS` (cartas de Eduardo). La página lee ambos con `/json?poll=1`; en `NTFY_TEMA` las cartas son los mensajes sin un título de `TITULOS_DE_LA_PAGINA`. Si se agrega un título nuevo a `notificar`, sumarlo a esa lista. Títulos con emoji solo vía publicación JSON (los headers HTTP no aceptan emoji).
 
 **Build & test**
 

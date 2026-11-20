@@ -1872,8 +1872,9 @@ function empezarDisfraces() {
 }
 
 /* ---------- Alejandro cartero: cartas de papá (por ntfy) y mensajes de Dallana para papá ----------
-   Para mandarle una carta: en la app ntfy suscríbete al tema NTFY_CARTAS y publica ahí
-   (o entra a https://ntfy.sh/<NTFY_CARTAS> y escribe). El título es opcional.
+   Para mandarle una carta: escribe desde la app ntfy en el tema de avisos (donde te llegan las notificaciones)
+   o en el tema NTFY_CARTAS. El título es opcional (no uses uno de TITULOS_DE_LA_PAGINA).
+   Comandos: /borrar, /borrar 3, /borrar todo, /editar <texto>, /buzon (ver más abajo).
    ntfy.sh guarda los mensajes 12 horas: si Dallana no entra en ese tiempo, no le llega (te aviso cuando la recibe).
    Lo que ella le escribe a papá llega al tema de avisos (NTFY_TEMA), igual que la actividad. */
 const NTFY_CARTAS = 'dallana-cartas-aaf3c4ba15';
@@ -1966,25 +1967,110 @@ function fechaCarta(t) {
   catch { return ''; }
 }
 
+/* Papá puede escribir en cualquiera de los dos temas de ntfy:
+   - NTFY_CARTAS: el tema propio de las cartas (todo lo que llega ahí es de papá).
+   - NTFY_TEMA: el tema de avisos, donde papá recibe las notificaciones y suele responder desde la app.
+     Ahí también publica la página, siempre con alguno de estos títulos; todo lo demás lo escribió papá.
+   Comandos que papá puede escribir desde la app (nunca se le muestran a Dallana):
+     /borrar          borra la última carta          /borrar 3     borra las últimas 3
+     /borrar todo     borra las cartas de las últimas 12 horas
+     /editar <texto>  reemplaza la última carta por <texto>
+     /buzon           la página de Dallana responde qué cartas tiene y cuáles leyó
+   Todo mensaje que empiece con «/» se trata como comando. */
+const TITULOS_DE_LA_PAGINA = ['Actividad en tu pagina', 'Visita en tu pagina', 'Salio de tu pagina', 'Carta leida', 'Mensaje de Dallana 💌', 'Buzon de Dallana'];
+// Las pruebas que papá mandó antes de este momento (20-11-2026 13:34) se ignoran
+const CORTE_PRUEBAS = 1795192450;
+const ultimoIdTema = {};
+let cartasBorradas = new Set(leerJSON('dallanaCartasBorradas', []));
+let comandosHechos = new Set(leerJSON('dallanaComandosHechos', []));
+const guardarSetCorto = (clave, set) => guardarJSON(clave, [...set].slice(-300));
+
+async function leerTema(tema, esDePapa) {
+  const desde = ultimoIdTema[tema] || 'all';
+  const r = await fetch(`https://ntfy.sh/${tema}/json?poll=1&since=${desde}`, { cache: 'no-store' });
+  if (!r.ok) return [];
+  const lista = [];
+  for (const linea of (await r.text()).split('\n')) {
+    if (!linea.trim()) continue;
+    let m; try { m = JSON.parse(linea); } catch { continue; }
+    if (m.event !== 'message') continue;
+    ultimoIdTema[tema] = m.id;
+    const texto = (m.message || '').trim();
+    if (!texto || texto === 'triggered' || (m.time || 0) < CORTE_PRUEBAS || !esDePapa(m)) continue;
+    lista.push({ id: m.id, t: (m.time || Date.now() / 1000) * 1000, titulo: m.title || '', texto });
+  }
+  return lista;
+}
+
+const cartasDePapaAntesDe = t => buzon.filter(c => c.de === 'papa' && c.t <= t).sort((a, b) => a.t - b.t);
+
+function ejecutarComando(m) {
+  if (comandosHechos.has(m.id)) return null;
+  comandosHechos.add(m.id);
+  const [orden, ...resto] = m.texto.slice(1).trim().split(/\s+/);
+  const arg = resto.join(' ').trim();
+  const cmd = (orden || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (cmd === 'borrar') {
+    let quitar;
+    if (arg.toLowerCase() === 'todo') quitar = cartasDePapaAntesDe(m.t).filter(c => c.t >= m.t - 12 * 3600 * 1000);
+    else quitar = cartasDePapaAntesDe(m.t).slice(-Math.max(1, Math.min(50, parseInt(arg, 10) || 1)));
+    if (!quitar.length) return { aviso: 'no tenía cartas tuyas para borrar en el buzón 🧹' };
+    quitar.forEach(c => cartasBorradas.add(c.id));
+    buzon = buzon.filter(c => !cartasBorradas.has(c.id));
+    const dlg = $('cartaPapaDialog');
+    if (dlg?.open && quitar.some(c => $('cartaPapaTexto')?.textContent?.startsWith(c.texto.slice(0, 20)))) dlg.close();
+    return { aviso: `ya no ve ${quitar.length === 1 ? '1 carta tuya' : quitar.length + ' cartas tuyas'}: Alejandro ${quitar.length === 1 ? 'la borró' : 'las borró'} del buzón 🧹` };
+  }
+  if (cmd === 'editar') {
+    const ultima = cartasDePapaAntesDe(m.t).pop();
+    if (!ultima || !arg) return { aviso: 'no tenía una carta tuya para corregir ✏️' };
+    ultima.texto = arg;
+    ultima.editada = true;
+    ultima.leida = false;
+    return { aviso: `tiene tu carta corregida en el buzón ✏️: «${arg.slice(0, 60)}${arg.length > 60 ? '…' : ''}»`, nueva: true };
+  }
+  if (cmd === 'buzon') {
+    const dePapa = buzon.filter(c => c.de === 'papa');
+    const sinLeer = dePapa.filter(c => !c.leida).length;
+    const detalle = dePapa.slice(-8).reverse().map(c => `${c.leida ? '✅' : '💌'} «${c.texto.slice(0, 40)}${c.texto.length > 40 ? '…' : ''}»`).join('\n');
+    return { aviso: `tiene ${dePapa.length === 1 ? '1 carta tuya' : dePapa.length + ' cartas tuyas'} en el buzón (${sinLeer} sin leer)${detalle ? ':\n' + detalle : ''}`, titulo: 'Buzon de Dallana', tags: 'mailbox_with_mail' };
+  }
+  return null;
+}
+
 async function revisarCartas() {
   if (document.visibilityState !== 'visible') return;
   try {
-    const r = await fetch(`https://ntfy.sh/${NTFY_CARTAS}/json?poll=1&since=all`, { cache: 'no-store' });
-    if (!r.ok) return;
-    let nuevas = 0;
-    for (const linea of (await r.text()).split('\n')) {
-      if (!linea.trim()) continue;
-      let m; try { m = JSON.parse(linea); } catch { continue; }
-      if (m.event !== 'message' || !m.message || buzon.some(c => c.id === m.id)) continue;
-      buzon.push({ id: m.id, de: 'papa', t: (m.time || Date.now() / 1000) * 1000, titulo: m.title || '', texto: m.message, leida: false });
-      nuevas++;
+    const [a, b] = await Promise.all([
+      leerTema(NTFY_CARTAS, () => true).catch(() => []),
+      leerTema(NTFY_TEMA, m => !TITULOS_DE_LA_PAGINA.includes(m.title || '')).catch(() => [])
+    ]);
+    const mensajes = [...a, ...b].sort((x, y) => x.t - y.t);
+    const agregadas = [];
+    let cambios = false, hayNueva = false;
+    for (const m of mensajes) {
+      if (m.texto.startsWith('/')) {
+        const res = ejecutarComando(m);
+        if (res) {
+          cambios = true;
+          if (res.nueva) hayNueva = true;
+          notificar(res.aviso, res.tags || 'crab', res.titulo || 'Actividad en tu pagina');
+        }
+        continue;
+      }
+      if (cartasBorradas.has(m.id) || buzon.some(c => c.id === m.id)) continue;
+      buzon.push({ id: m.id, de: 'papa', t: m.t, titulo: m.titulo, texto: m.texto, leida: false });
+      agregadas.push(m.id);
     }
-    if (!nuevas) return;
-    buzon.sort((a, b) => a.t - b.t);
+    // solo cuentan las que siguen en el buzón (un /borrar en la misma revisión pudo quitar alguna)
+    const nuevas = agregadas.filter(id => buzon.some(c => c.id === id)).length;
+    if (cambios) { guardarSetCorto('dallanaCartasBorradas', cartasBorradas); guardarSetCorto('dallanaComandosHechos', comandosHechos); }
+    if (!agregadas.length && !cambios) return;
+    buzon.sort((x, y) => x.t - y.t);
     guardarBuzon();
     pintarSobre();
-    notificar(`recibió ${nuevas === 1 ? 'tu carta' : nuevas + ' cartas tuyas'} en el buzón de Alejandro 📬`, 'mailbox_with_mail');
-    avisarCartaNueva();
+    if (nuevas) notificar(`recibió ${nuevas === 1 ? 'tu carta' : nuevas + ' cartas tuyas'} en el buzón de Alejandro 📬`, 'mailbox_with_mail');
+    if ((nuevas || hayNueva) && cartaPendiente()) avisarCartaNueva();
   } catch {}
 }
 
@@ -2018,7 +2104,7 @@ function mostrarVistaCarta(c) {
   const deMi = c.de === 'yo';
   $('cartaPapaDe').textContent = deMi ? '💌 Lo que le dijiste a papá' : '💌 Alejandro te trajo una carta';
   $('cartaPapaTitulo').textContent = deMi ? 'Para papá' : (c.titulo || 'Carta de papá');
-  $('cartaPapaFecha').textContent = fechaCarta(c.t);
+  $('cartaPapaFecha').textContent = fechaCarta(c.t) + (c.editada ? ' · corregida ✏️' : '');
   escribirCartaSola($('cartaPapaTexto'), c.texto, !deMi);
   $('cartaResponder').hidden = deMi;
 }
