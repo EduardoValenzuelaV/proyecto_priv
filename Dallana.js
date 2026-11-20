@@ -2312,6 +2312,7 @@ function corazonGigante() {
     v.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 },
                { transform: `translate(${cx - r.left - 14}px, ${cy - r.top - 13}px) scale(.6)`, opacity: .9 }],
               { duration: 650, delay: i * 45, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' }).onfinish = () => v.remove();
+    setTimeout(() => v.remove(), 1500);
   });
   setTimeout(() => {
     const g = document.createElement('div');
@@ -2409,11 +2410,10 @@ function entregarMensajeAPapa(desde) {
     const x0 = desde.left + desde.width / 2 - 22, y0 = desde.top + desde.height / 2 - 17;
     const x1 = (caja.left + caja.right) / 2 - 22, y1 = caja.top + 10;
     const mx = (x0 + x1) / 2 + 60, my = Math.min(y0, y1) - 120;
-    av.animate([
-      { transform: `translate(${x0}px, ${y0}px) rotate(-10deg) scale(1.3)` },
-      { transform: `translate(${mx}px, ${my}px) rotate(-35deg) scale(1)`, offset: .45 },
-      { transform: `translate(${x1}px, ${y1}px) rotate(15deg) scale(.6)` }
-    ], { duration: 1300, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => {
+    let llego = false;
+    const alLlegar = () => {
+      if (llego) return;
+      llego = true;
       av.remove();
       const sobre = $('alejandroSobre'); if (sobre) sobre.hidden = false;
       alejandroReacciona('aplaudir', 700);
@@ -2426,6 +2426,12 @@ function entregarMensajeAPapa(desde) {
         }, 1400));
       }, 700);
     };
+    av.animate([
+      { transform: `translate(${x0}px, ${y0}px) rotate(-10deg) scale(1.3)` },
+      { transform: `translate(${mx}px, ${my}px) rotate(-35deg) scale(1)`, offset: .45 },
+      { transform: `translate(${x1}px, ${y1}px) rotate(15deg) scale(.6)` }
+    ], { duration: 1300, easing: 'ease-in-out', fill: 'forwards' }).onfinish = alLlegar;
+    setTimeout(alLlegar, 1700);   // respaldo si la animación se congela
   }, true);
 }
 
