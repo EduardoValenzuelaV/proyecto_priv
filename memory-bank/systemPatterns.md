@@ -19,7 +19,7 @@ _Link to key files or packages when it saves repetition._
 
 - Todo el pixel art se genera con Python + PIL en `propuesta/` (sprites como formas o grillas, contorno con `contorno()`, escalado NEAREST). No editar los PNG a mano.
 - Alejandro: `propuesta/alejandro2.py` → `assets/pixel/alejandro.png` (6 filas: salta, aplaude, baila, duerme, bosteza, camina; celdas 72×86). Disfraces: `propuesta/disfraces2.py --hojas assets/pixel/disfraces`.
-- En CSS el sprite se escala ×2 (escritorio) o ×1,5 (teléfono) con `steps(12)` e `image-rendering:pixelated`.
+- En CSS el sprite se escala ×1,75 (escritorio) o ×1,125 (teléfono) con `steps(12)` e `image-rendering:pixelated`.
 
 ## Alejandro (Dallana.js)
 

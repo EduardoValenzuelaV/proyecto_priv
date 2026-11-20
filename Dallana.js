@@ -100,17 +100,17 @@ const CONTENIDO_LOCAL = {
     {titulo:"Ábreme cuando simplemente quieras sonreír",mensaje:"Ok, cierra los ojos un segundo y acuérdate: tú, súper seria,  Nosotros la noche del 31, muertos de la risa con esa parodia de terror. ¿Ya sonreíste? Si no, aquí va otra: en este mismo momento, en algún lugar, hay un tonto enamorado de ti pensando en lo afortunado que es. Ese soy yo. Tú eres mi Talca y yo soy tu Arauco, para siempre. Te Amo mi Amor. 💙"}
   ],
   museo: [
-    {titulo:'Tu vocación',descripcion:'Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.',mensaje:'Mi geóloga favorita.',foto:''},
-    {titulo:'Tu sonrisa',descripcion:'Tu sonrisa tiene el poder de arreglarme el día, aunque venga malo.',mensaje:'Mi lugar favorito del mundo.',foto:''},
-    {titulo:'Tus gustos',descripcion:'Sushi, pizza , Turrones y esos momentos simples que disfrutamos juntos.',mensaje:'Me gusta aprender qué cosas te hacen feliz.',foto:''},
-    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Conce siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',foto:''},
-    {titulo:"Tu voz",descripcion:"Me encanta escucharte cantar; podría quedarme horas así.",mensaje:"Mi cantante favorita.",foto:''},
-    {titulo:"Tu manera de cuidar",descripcion:"Siempre te preocupas de si llegué bien, de si comí, de cómo amanecí.",mensaje:"Me haces sentir muy querido.",foto:''},
-    {titulo:"Tu carácter",descripcion:"Defiendes lo que piensas con seguridad, y eso me encanta de ti.",mensaje:"Nunca dejes de hacerlo.",foto:''},
-    {titulo:"Tu lado divertido",descripcion:"Pasas de hablar súper en serio a decir una tontera en segundos.",mensaje:"Contigo me río de verdad.",foto:''},
-    {titulo:"Tu estilo",descripcion:"Me encanta tu forma de vestir; tiene algo muy tuyo.",mensaje:"Siempre te ves muy pero muy linda.",foto:''},
-    {titulo:"Tus ojitos hermosos",descripcion:"Podría quedarme mirándolos por horas; dicen todo lo que sientes sin que hables.",mensaje:"Me pierdo en ellos cada vez.",foto:''},
-    {titulo:"La mejor cocinera del mundo",descripcion:"Todo lo que cocinas sabe a cariño, y eso no se aprende en ninguna receta.",mensaje:"Mi chef favorita, sin discusión.",foto:''}
+    {titulo:'Tu vocación',descripcion:'Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.',mensaje:'Mi geóloga favorita.',icono:'geologa',tecnica:'Rocas, fósiles y mucha curiosidad',foto:''},
+    {titulo:'Tu sonrisa',descripcion:'Tu sonrisa tiene el poder de arreglarme el día, aunque venga malo.',mensaje:'Mi lugar favorito del mundo.',icono:'sonrisa',tecnica:'Luz natural sobre un día cualquiera',foto:''},
+    {titulo:'Tus gustos',descripcion:'Sushi, pizza, turrones y esos momentos simples que disfrutamos juntos.',mensaje:'Me gusta aprender qué cosas te hacen feliz.',icono:'gustos',tecnica:'Sushi, pizza y turrones sobre mesa compartida',foto:''},
+    {titulo:'Nuestros paseos',descripcion:'Caminar contigo por Conce siempre es un buen plan.',mensaje:'A tu lado, cualquier camino se vuelve mi favorito.',icono:'paseos',tecnica:'Caminata larga por Conce',foto:''},
+    {titulo:"Tu voz",descripcion:"Me encanta escucharte cantar; podría quedarme horas así.",mensaje:"Mi cantante favorita.",icono:'voz',tecnica:'Canto a capela',foto:''},
+    {titulo:"Tu manera de cuidar",descripcion:"Siempre te preocupas de si llegué bien, de si comí, de cómo amanecí.",mensaje:"Me haces sentir muy querido.",icono:'cuidar',tecnica:'Mensajes de «¿llegaste bien?»',foto:''},
+    {titulo:"Tu carácter",descripcion:"Defiendes lo que piensas con seguridad, y eso me encanta de ti.",mensaje:"Nunca dejes de hacerlo.",icono:'caracter',tecnica:'Convicción al óleo',foto:''},
+    {titulo:"Tu lado divertido",descripcion:"Pasas de hablar súper en serio a decir una tontera en segundos.",mensaje:"Contigo me río de verdad.",icono:'divertida',tecnica:'Tonteras en tiempo récord',foto:''},
+    {titulo:"Tu estilo",descripcion:"Me encanta tu forma de vestir; tiene algo muy tuyo.",mensaje:"Siempre te ves muy pero muy linda.",icono:'estilo',tecnica:'Moda propia, sin copiar a nadie',foto:''},
+    {titulo:"Tus ojitos hermosos",descripcion:"Podría quedarme mirándolos por horas; dicen todo lo que sientes sin que hables.",mensaje:"Me pierdo en ellos cada vez.",icono:'ojitos',tecnica:'Mirada en técnica mixta',foto:''},
+    {titulo:"La mejor cocinera del mundo",descripcion:"Todo lo que cocinas sabe a cariño, y eso no se aprende en ninguna receta.",mensaje:"Mi chef favorita, sin discusión.",icono:'cocinera',tecnica:'Receta secreta con cariño',foto:''}
   ],
   autoestima: [
     {texto:'Eres valiente, incluso en los días difíciles.'},
@@ -639,17 +639,140 @@ function renderMuseo() {
     host.append(empty);
     return;
   }
+  const vistas = obrasVistas();
+  const delDia = obraDelDia(items.length);
+  const total = String(items.length).padStart(2, '0');
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
   items.forEach((item, i) => {
-    const card = document.createElement('article'); card.className = 'museum-card';
-    const icon = document.createElement('span'); icon.className = 'museum-icon';
-    icon.setAttribute('aria-hidden', 'true'); icon.textContent = ['✿', '♡', '✧', '☼'][i % 4];
-    const title = document.createElement('h3'); title.textContent = item.titulo;
-    const desc = document.createElement('p'); desc.textContent = item.descripcion || item.mensaje;
-    card.append(icon, title, desc);
-    if (item.descripcion && item.mensaje) { const s = document.createElement('small'); s.textContent = item.mensaje; card.append(s); }
-    host.append(card);
+    const num = String(i + 1).padStart(2, '0');
+    const icono = OBRAS_ICONOS.indexOf(item.icono);
+    const obra = el('div', 'obra'); obra.dataset.tono = i % 4; obra.dataset.obra = item.titulo;
+    if (i === delDia) obra.dataset.delDia = '';
+    if (!vistas.has(item.titulo)) obra.dataset.nueva = '';
+    const carta = el('button', 'obra-carta'); carta.type = 'button';
+    carta.setAttribute('aria-pressed', 'false');
+    carta.setAttribute('aria-label', `Obra ${num}: ${item.titulo}. Toca para darla vuelta.`);
+
+    const frente = el('span', 'obra-cara obra-frente');
+    const marco = el('span', 'obra-marco');
+    const lienzo = el('span', 'obra-lienzo');
+    const pixel = el('span', 'obra-pixel'); pixel.style.setProperty('--n', icono >= 0 ? icono : i % OBRAS_ICONOS.length);
+    lienzo.append(pixel); marco.append(lienzo, el('span', 'obra-sello', '¡nueva!'));
+    if (i === delDia) marco.append(el('span', 'obra-cinta', 'Obra del día ✦'));
+    const placa = el('span', 'obra-placa');
+    placa.append(el('span', 'obra-num', `N.º ${num} / ${total}`), el('strong', '', item.titulo));
+    frente.append(marco, placa);
+
+    const reverso = el('span', 'obra-cara obra-reverso');
+    reverso.setAttribute('aria-hidden', 'true');
+    const mini = el('span', 'obra-mini'); mini.style.setProperty('--n', pixel.style.getPropertyValue('--n'));
+    const idIcono = OBRAS_ICONOS[pixel.style.getPropertyValue('--n')];
+    const sticker = document.createElement('img');
+    sticker.className = 'obra-sticker'; sticker.alt = ''; sticker.loading = 'lazy'; sticker.decoding = 'async';
+    sticker.src = `assets/stickers/${item.sticker || STICKERS_OBRA[idIcono] || 'stikers2'}.png`;
+    reverso.append(sticker);
+    (ADORNOS_OBRA[idIcono] || [0, 1, 3]).forEach((n, k) => {
+      const a = el('span', `obra-adorno obra-adorno--${k + 1}`); a.style.setProperty('--a', n); reverso.append(a);
+    });
+    reverso.append(el('span', 'obra-timbre', 'En tu colección'), mini,
+      el('span', 'obra-num', `N.º ${num} · Edición única`), el('strong', 'obra-titulo', item.titulo),
+      el('span', 'obra-desc', item.descripcion || item.mensaje));
+    if (item.descripcion && item.mensaje) reverso.append(el('span', 'obra-firma', item.mensaje));
+    reverso.append(el('span', 'obra-tecnica', `Técnica: ${item.tecnica || 'amor sobre lienzo'}`));
+
+    carta.append(frente, reverso);
+    carta.addEventListener('click', () => voltearObra(obra, carta, item.titulo));
+    obra.append(carta);
+    host.append(obra);
   });
+  pintarColeccion(items.length);
 }
+
+/* ---------- Museo de ti: cuadros que se dan vuelta, colección y Alejandro guía ----------
+   Cada obra tiene un ícono pixel (assets/pixel/obras.png, lo genera propuesta/obras.py) elegido por «icono».
+   Las obras que ya dio vuelta quedan en localStorage (dallanaObrasVistas); cada día una es «la obra del día». */
+const OBRAS_ICONOS = ['geologa', 'sonrisa', 'gustos', 'paseos', 'voz', 'cuidar', 'caracter', 'divertida', 'estilo', 'ojitos', 'cocinera'];
+// Sticker pegado en el reverso de cada obra (assets/stickers/<nombre>.png); una obra puede elegir otro con «sticker»
+const STICKERS_OBRA = { geologa: 'stikers3', sonrisa: 'stikers16', gustos: 'stikers8', paseos: 'stikers4', voz: 'stikers12', cuidar: 'stikers5',
+  caracter: 'stikers17', divertida: 'stikers18', estilo: 'stikers22', ojitos: 'stikers20', cocinera: 'stikers2' };
+// Adornitos pixel del reverso (assets/pixel/adornos.png, propuesta/adornos.py):
+// 0 corazón, 1 estrella, 2 flor, 3 chispa, 4 nota, 5 nube, 6 gema, 7 hongo, 8 cangrejito, 9 sobre
+const ADORNOS_OBRA = { geologa: [6, 1, 3], sonrisa: [3, 0, 5], gustos: [7, 0, 3], paseos: [2, 5, 0], voz: [4, 3, 0], cuidar: [9, 0, 2],
+  caracter: [1, 3, 0], divertida: [8, 4, 1], estilo: [2, 3, 0], ojitos: [3, 0, 1], cocinera: [7, 0, 3] };
+const OBRAS_VISTAS = 'dallanaObrasVistas';
+const DISFRAZ_GUIA = { id: 'guia-de-museo', nombre: 'guía de museo', frase: '¡Bienvenida al Museo de ti, mamá! Soy tu guía. 🎟️ Toca un cuadro para darlo vuelta.' };
+const FRASES_GUIA = [
+  'Esta es de mis favoritas, mamá. Papá dice que es idéntica al original. 🖼️',
+  'Shhh… en el museo se habla bajito. Pero esta obra me hace aplaudir. 👏',
+  'Fíjate en los detalles, mamá: papá la pintó mirándote. 🎨',
+  'Esta no tiene precio, mamá. Es edición única… como tú. ✨',
+  'Dicen que el artista se inspiró en una geóloga preciosa. 🦀',
+  'Mamá, esta obra la cuido yo personalmente. Nadie la toca. 🛡️'
+];
+let guiaBolsa = [];
+
+function obrasVistas() {
+  try { return new Set(JSON.parse(localStorage.getItem(OBRAS_VISTAS) || '[]')); } catch { return new Set(); }
+}
+
+function obraDelDia(n) {
+  if (!n) return -1;
+  const dias = Math.floor(new Date(`${hoyLocal()}T12:00:00`).getTime() / 864e5);
+  return ((dias * 7) % n + n) % n;
+}
+
+function pintarColeccion(total) {
+  const host = $('museoColeccion'); if (!host) return;
+  const titulos = [...document.querySelectorAll('#museumGrid .obra')].map(o => o.dataset.obra);
+  const vistas = obrasVistas();
+  const n = titulos.filter(t => vistas.has(t)).length;
+  $('museoCuenta').textContent = `${n} de ${total}`;
+  const puntos = $('museoPuntos'); puntos.replaceChildren();
+  titulos.forEach(t => { const p = document.createElement('i'); if (vistas.has(t)) p.className = 'on'; puntos.append(p); });
+  host.classList.toggle('completa', total > 0 && n === total);
+}
+
+function voltearObra(obra, carta, titulo) {
+  const volteada = obra.classList.toggle('volteada');
+  carta.setAttribute('aria-pressed', String(volteada));
+  carta.querySelector('.obra-frente').setAttribute('aria-hidden', String(volteada));
+  carta.querySelector('.obra-reverso').setAttribute('aria-hidden', String(!volteada));
+  if (!volteada) return;
+  const vistas = obrasVistas();
+  if (vistas.has(titulo)) return;
+  // primera vez que la da vuelta: entra a la colección
+  vistas.add(titulo);
+  try { localStorage.setItem(OBRAS_VISTAS, JSON.stringify([...vistas])); } catch { /* sin almacenamiento */ }
+  delete obra.dataset.nueva;
+  obra.classList.add('timbrando');
+  chispasCorazon(obra.querySelector('.obra-reverso'));
+  const total = document.querySelectorAll('#museumGrid .obra').length;
+  pintarColeccion(total);
+  const completa = $('museoColeccion')?.classList.contains('completa');
+  if (estadoPorHora() === 'dormir') return;
+  if (completa) {
+    alejandroReacciona('aplaudir', 2400);
+    alejandroDice('¡Mamá, viste todas las obras del Museo de ti! Te ganaste el pase dorado. 🎟️✨', 'Alejandro guía de museo 🦀');
+  } else if (disfrazActual === DISFRAZ_GUIA) {
+    if (!guiaBolsa.length) guiaBolsa = [...FRASES_GUIA].sort(() => Math.random() - .5);
+    alejandroReacciona('aplaudir', 1400);
+    alejandroDice(guiaBolsa.pop(), `Obra: ${titulo}`);
+  }
+}
+
+// Al llegar al museo, Alejandro se pone su gorrita de guía (una vez por visita)
+(() => {
+  const sec = $('museumSection');
+  if (!sec || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(entradas => {
+    if (!entradas.some(e => e.isIntersecting)) return;
+    if (!disfracesIniciados || estadoPorHora() === 'dormir' || document.querySelector('dialog[open]')) return;
+    io.disconnect();
+    ponerDisfraz(DISFRAZ_GUIA, true);
+    programarDisfraz(150000);   // sigue de guía un ratito y después vuelve a sus disfraces
+  }, { threshold: .35 });
+  io.observe(sec);
+})();
 
 function renderFrasco() {
   const host = $('frascoNotes'); if (!host) return;

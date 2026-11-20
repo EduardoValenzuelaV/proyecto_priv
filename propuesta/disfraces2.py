@@ -824,6 +824,25 @@ def marinero():
             d.arc([cx - 30 + k * 6, y(36), cx - 24 + k * 6, y(40)], 180, 360, fill=(120, 180, 240))
     return armar(None, adel, det, ojos='abiertos')
 
+def guia_museo():
+    """Guía del «Museo de ti»: gorrita azul con insignia, credencial colgando y banderita con corazón."""
+    AZUL = (50, 90, 180)
+    def adel(d):
+        d.chord([cx - 11, y(-9), cx + 11, y(5)], 180, 360, fill=AZUL)
+        d.rectangle([cx - 11, y(-3), cx + 16, y(0)], fill=tono(AZUL, .8))
+        d.rounded_rectangle([cx - 5, y(25), cx + 5, y(33)], radius=1, fill=BLANCO)
+        bx, by = cx + 19, y(5)
+        d.line([bx, by + 6, bx, by - 16], fill=MADERA, width=1)
+        d.polygon([(bx + 1, by - 16), (bx + 13, by - 13), (bx + 1, by - 9)], fill=(214, 52, 63))
+    def det(d):
+        estrella5(d, cx, y(-5), 3, ORO)
+        d.line([cx - 7, y(19), cx - 3, y(25)], fill=(214, 52, 63)); d.line([cx + 7, y(19), cx + 3, y(25)], fill=(214, 52, 63))
+        d.rectangle([cx - 3, y(27), cx + 3, y(28)], fill=AZUL)
+        d.line([cx - 3, y(30), cx + 2, y(30)], fill=(150, 150, 170))
+        corazon(d, cx + 22, y(-10), BLANCO)
+        chispa(d, cx - 24, y(-8))
+    return armar(None, adel, det, gr=(19, 4), ojos='felices', boca='sonrisa')
+
 CATEGORIAS = [
     ('Magia', [('Aprendiz de mago', aprendiz_mago), ('Sombrero que habla', sombrero_seleccionador),
                ('Buscador en escoba', buscador_escoba), ('Brujita de pociones', bruja_pociones)]),
@@ -837,7 +856,8 @@ CATEGORIAS = [
     ('Fechas especiales', [('San Valentín', san_valentin), ('Pijama', pijama), ('Navidad', navidad), ('Cumpleaños', cumpleanos),
                            ('Fantasmita', fantasmita), ('Año Nuevo', anio_nuevo), ('Conejito de Pascua', conejito)]),
     ('Otros', [('Chef', chef), ('Pirata', pirata), ('Astronauta', astronauta), ('Graduado', graduado),
-               ('Vaquero', vaquero), ('Rey', rey), ('Hada', hada), ('Abejita', abejita), ('Marinero', marinero)]),
+               ('Vaquero', vaquero), ('Rey', rey), ('Hada', hada), ('Abejita', abejita), ('Marinero', marinero),
+               ('Guía de museo', guia_museo)]),
 ]
 
 def ident(nombre):
