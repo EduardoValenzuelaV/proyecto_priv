@@ -1372,8 +1372,8 @@ const NOVEDADES = {
     'Y hay una canción nueva en la lista: «Those Eyes» de New West. 🎶',
     'Tengo vida: aplaudo con tus 10 corazones, bailo con la música y en la mañana bostezo. De noche duermo, pero si estás despierta me despierto para acompañarte.',
     '¡Y me disfrazo! Cada ratito me pongo uno de mis 39 disfraces y te digo algo. 🎭',
-    '¡Ahora también soy cartero! 📬 Cuando papá te mande una carta, te la traigo. Tócame para abrirla.',
-    'Y si quieres decirle algo a papá, tócame y elige «Dile algo a papá». Yo se lo llevo al tiro. 💌',
+    '¡Ahora también soy cartero! 📬 A mi lado está nuestro buzón: ahí llegan las cartas de papá y yo te las traigo.',
+    'Y si quieres decirle algo a papá, toca el buzón y elige «Escríbele a papá». Yo se lo llevo al tiro. 💌',
     'Ahora paseo por toda la pantalla… pero nunca encima de tus cartas, prometido.',
     'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
     '¡Eso es todo por ahora! Tócame cuando quieras.'
@@ -1415,9 +1415,17 @@ function cerrarAlejandro(leido) {
   globo.hidden = true;
   $('alejandroSprite')?.setAttribute('aria-expanded', 'false');
   estadoAlejandro();
+  if (alejandroModo === 'tutorial') {
+    $('buzonEsquina')?.classList.remove('resaltado');
+    try { localStorage.setItem('dallanaTutorialBuzon', '1'); } catch {}
+    alejandroModo = 'novedades';
+    if (cartaPendiente()) setTimeout(avisarCartaNueva, 800);
+    return;
+  }
   if (alejandroModo !== 'novedades') return;
   try { localStorage.setItem('dallanaNovedades', NOVEDADES.version); } catch {}
   if (leido) notificar('leyó las novedades de Alejandro 🦀', 'crab');
+  if (tutorialPendiente()) setTimeout(abrirTutorialBuzon, 700);
 }
 
 function saludoAlejandro() {
@@ -1427,6 +1435,7 @@ function saludoAlejandro() {
   let vista = '';
   try { vista = localStorage.getItem('dallanaNovedades') || ''; } catch {}
   if (vista !== NOVEDADES.version) setTimeout(() => abrirAlejandro(0), 1500);
+  else if (tutorialPendiente()) setTimeout(abrirTutorialBuzon, 2500);
 }
 
 $('alejandroSprite')?.addEventListener('click', () => {
@@ -1446,11 +1455,18 @@ let alejandroTimer = 0;
 addEventListener('scroll', () => {
   const a = $('alejandro'), globo = $('alejandroGlobo');
   if (!a || innerWidth >= 600 || (globo && !globo.hidden) || !enCasa()) return;
-  a.classList.add('escondido');
+  const bz = $('buzonEsquina');
+  a.classList.add('escondido'); bz?.classList.add('escondido');
   clearTimeout(alejandroTimer);
-  alejandroTimer = setTimeout(() => a.classList.remove('escondido'), 1400);
+  alejandroTimer = setTimeout(() => { a.classList.remove('escondido'); bz?.classList.remove('escondido'); }, 1400);
 }, { passive: true });
 $('alejandroSiguiente')?.addEventListener('click', () => {
+  if (alejandroModo === 'tutorial') {
+    if (tutorialPaso >= TUTORIAL_BUZON.length - 1) { cerrarAlejandro(true); return; }
+    tutorialPaso++;
+    pintarTutorial();
+    return;
+  }
   if (alejandroPaso >= NOVEDADES.mensajes.length - 1) { cerrarAlejandro(true); return; }
   alejandroPaso++;
   pintarAlejandro();
@@ -1603,6 +1619,8 @@ function caminarA(p, rapido = false) {
   alejandroPos = { x: p.x, y: p.y };
   return new Promise(res => setTimeout(() => {
     if (id !== paseoId) return res(false);
+    // en su esquina queda sin «translate»: si no, los globos fijos del teléfono toman su ancho
+    if (Math.abs(p.x) < 1 && Math.abs(p.y) < 1) { a.style.transition = 'transform .35s ease, opacity .35s ease'; a.style.translate = ''; }
     alejandroCaminando = false;
     estadoAlejandro();
     res(true);
@@ -1870,7 +1888,12 @@ function pintarSobre() {
   const n = buzon.filter(c => c.de === 'papa' && !c.leida).length;
   const badge = $('menuBuzonN'); if (badge) badge.textContent = n ? String(n) : '';
   pintarSeccionBuzon(n);
-  if (!n) { const aviso = $('cartaAviso'); if (aviso) aviso.hidden = true; }
+  const bz = $('buzonEsquina');
+  if (bz) {
+    bz.classList.toggle('con-carta', n > 0);
+    bz.setAttribute('aria-label', n ? `Buzón de papá: ${n === 1 ? 'una carta nueva' : n + ' cartas nuevas'}` : 'Buzón de papá');
+  }
+  const bn = $('buzonEsquinaN'); if (bn) { bn.hidden = !n; bn.textContent = String(n); }
 }
 
 /* La sección «Buzón de papá» de la página: buzón con bandera, estado, última carta y botones */
@@ -1879,8 +1902,6 @@ function pintarSeccionBuzon(nuevas) {
   const dePapa = buzon.filter(c => c.de === 'papa');
   const ultima = dePapa[dePapa.length - 1];
   sec.classList.toggle('tiene-cartas', nuevas > 0);
-  const cont = $('buzonContador');
-  if (cont) { cont.hidden = !nuevas; cont.textContent = String(nuevas); }
   const estado = $('buzonEstado');
   if (estado) estado.textContent = nuevas
     ? (nuevas === 1 ? '¡Tienes una carta nueva de papá! 💌' : `¡Tienes ${nuevas} cartas nuevas de papá! 💌`)
@@ -1900,15 +1921,39 @@ function pintarSeccionBuzon(nuevas) {
   }
 }
 
-function mostrarAvisoCarta() {
-  const aviso = $('cartaAviso'); if (!aviso) return;
-  const n = buzon.filter(c => c.de === 'papa' && !c.leida).length;
-  if (!n) return;
-  $('cartaAvisoTexto').textContent = n === 1 ? '¡Llegó una carta de papá!' : `¡Llegaron ${n} cartas de papá!`;
-  aviso.hidden = false;
+/* Tutorial: la primera vez Alejandro explica cómo funciona el buzón */
+const TUTORIAL_BUZON = [
+  'Mamá, este es nuestro buzón 📬. Aquí llegan las cartas que papá te escribe.',
+  'Cuando la banderita está arriba, ¡hay una carta nueva! Toca el buzón para leerla. Yo también te aviso. 🦀',
+  'Y si quieres decirle algo a papá, toca el buzón y elige «Escríbele a papá». Yo se lo llevo al tiro. 💌'
+];
+let tutorialPaso = 0;
+const tutorialPendiente = () => { try { return localStorage.getItem('dallanaTutorialBuzon') !== '1'; } catch { return false; } };
+
+function pintarTutorial() {
+  const texto = $('alejandroTexto'), paso = $('alejandroPaso'), sig = $('alejandroSiguiente');
+  if (texto) texto.textContent = TUTORIAL_BUZON[tutorialPaso];
+  if (paso) paso.textContent = `${tutorialPaso + 1} de ${TUTORIAL_BUZON.length}`;
+  if (sig) { sig.hidden = false; sig.textContent = tutorialPaso === TUTORIAL_BUZON.length - 1 ? '¡Entendido!' : 'Siguiente ›'; }
 }
-$('cartaAvisoAbrir')?.addEventListener('click', () => { const c = cartaPendiente(); $('cartaAviso').hidden = true; if (c) abrirCartaPapa(c); });
-$('cartaAvisoCerrar')?.addEventListener('click', () => { $('cartaAviso').hidden = true; });
+
+function abrirTutorialBuzon() {
+  const globo = $('alejandroGlobo'); if (!globo || !globo.hidden) return;
+  if (!enCasa()) { volverACasa(abrirTutorialBuzon, true); return; }
+  tutorialPaso = 0;
+  modoGlobo('tutorial');
+  pintarTutorial();
+  globo.hidden = false;
+  $('alejandroSprite')?.setAttribute('aria-expanded', 'true');
+  $('buzonEsquina')?.classList.add('resaltado');
+  estadoAlejandro();
+}
+
+$('buzonEsquina')?.addEventListener('click', () => {
+  const c = cartaPendiente();
+  if (c) abrirCartaPapa(c); else abrirBuzon();
+});
+$('menuAyudaBuzon')?.addEventListener('click', () => { cerrarAlejandro(false); setTimeout(abrirTutorialBuzon, 50); });
 $('buzonAbrir')?.addEventListener('click', () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
 $('buzonTodas')?.addEventListener('click', abrirBuzon);
 $('buzonEscribir')?.addEventListener('click', abrirParaPapa);
@@ -1940,13 +1985,28 @@ async function revisarCartas() {
   } catch {}
 }
 
+/* Cuando llega una carta: la bandera del buzón sube, Alejandro camina al buzón, saca el sobre y te lo trae */
 function avisarCartaNueva() {
-  mostrarAvisoCarta();
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) return;
-  alejandroReacciona('aplaudir', 2000);
-  alejandroDice('¡Mamá! Papá me pidió que te entregara una carta. ¡Tócame para abrirla! 📬', 'Alejandro cartero 🦀',
-    () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
+  const decir = () => {
+    alejandroReacciona('aplaudir', 2000);
+    alejandroDice('¡Mamá! Llegó una carta de papá y te la traje. 💌 Tócame o toca el buzón para abrirla.', 'Alejandro cartero 🦀',
+      () => { const c = cartaPendiente(); if (c) abrirCartaPapa(c); });
+  };
+  const caja = cajaEnCasa(), bz = $('buzonEsquina');
+  if (sinMovimiento() || !caja || !bz || document.visibilityState !== 'visible' || estadoPorHora() === 'dormir') { decir(); return; }
+  cancelarPaseo();
+  const id = paseoId;
+  const sobre = $('alejandroSobre'); if (sobre) sobre.hidden = true;
+  const r = bz.getBoundingClientRect();
+  volverACasa(() => {
+    caminarA({ x: r.left + r.width * .4 - caja.right, y: 0 }).then(ok => {
+      if (!ok) { pintarSobre(); return; }
+      alejandroReacciona('aplaudir', 900);
+      setTimeout(() => { pintarSobre(); volverACasa(decir); }, 900);
+    });
+  }, true);
 }
 
 function mostrarVistaCarta(c) {

@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=6.1">
+<link rel="stylesheet" href="Dallana.css?v=6.2">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -179,10 +179,6 @@
   </section>
 
   <section class="buzon-feature" id="buzonSection" aria-labelledby="buzonTitulo">
-    <div class="buzon-arte">
-      <span class="buzon-pixel" id="buzonPixel" role="img" aria-label="Buzón de papá"></span>
-      <span class="buzon-contador" id="buzonContador" hidden></span>
-    </div>
     <div class="buzon-info">
       <span class="chapter-kicker">💌 Correo de papá</span>
       <h2 id="buzonTitulo">Buzón de papá</h2>
@@ -417,12 +413,9 @@
   <p class="adminStatus" id="adminStatus" aria-live="polite"></p>
 </dialog>
 
-<div class="carta-aviso" id="cartaAviso" role="status" aria-live="polite" hidden>
-  <span class="carta-aviso-icono" aria-hidden="true">📬</span>
-  <span class="carta-aviso-texto" id="cartaAvisoTexto">¡Llegó una carta de papá!</span>
-  <button class="carta-aviso-abrir" id="cartaAvisoAbrir" type="button">Abrir</button>
-  <button class="carta-aviso-cerrar" id="cartaAvisoCerrar" type="button" aria-label="Cerrar aviso">×</button>
-</div>
+<button class="buzon-esquina" id="buzonEsquina" type="button" aria-label="Buzón de papá">
+  <span class="buzon-esquina-n" id="buzonEsquinaN" hidden></span>
+</button>
 
 <aside class="alejandro" id="alejandro" aria-label="Alejandro, tu ayudante" popover="manual">
   <span class="alejandro-sobre" id="alejandroSobre" aria-hidden="true" hidden>💌</span>
@@ -435,6 +428,7 @@
     <div class="alejandro-menu" id="alejandroMenu" hidden>
       <button type="button" id="menuBuzon">📬 Buzón de papá <span id="menuBuzonN"></span></button>
       <button type="button" id="menuParaPapa">💌 Dile algo a papá</button>
+      <button type="button" id="menuAyudaBuzon">❓ ¿Cómo funciona el buzón?</button>
       <button type="button" id="menuNovedades">✨ Ver novedades</button>
     </div>
     <div class="alejandro-pie">
@@ -444,6 +438,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.42" defer></script>
+<script src="Dallana.js?v=3.43" defer></script>
 </body>
 </html>

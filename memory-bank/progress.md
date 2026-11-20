@@ -17,6 +17,7 @@
 - 2026-11-20: sección «Buzón de papá» con buzón pixel, contador, última carta y aviso superior; `propuesta/` ordenada. CSS v6.1, JS v3.41, caché dallana-v3.50.
 - 2026-11-20: de noche Alejandro se despierta con la actividad de Dallana y vuelve a dormir tras 90 s inactiva. JS v3.42, caché dallana-v3.51.
 - 2026-11-20: canciones a MP3 128 kbps CBR con volumen parejo (loudnorm dos pasadas a −14 LUFS, ffmpeg de winget). 46 → 33 MB. `sw.js` ya no precarga la música y deja pasar las peticiones de audio/Range directo a la red (iPhone). Caché dallana-v3.52.
+- 2026-11-20: buzón pixel en la esquina junto a Alejandro (`#buzonEsquina`, bandera y contador); Alejandro va al buzón a buscar cada carta nueva; tutorial de 3 pasos la primera vez (`TUTORIAL_BUZON`, `dallanaTutorialBuzon`). Sección del buzón simplificada y sin aviso superior. Corregido: Alejandro en reposo queda sin `translate` (si no, los globos fijos del teléfono salían angostos). CSS v6.2, JS v3.43, caché dallana-v3.53.
 
 **Not started / backlog**
 

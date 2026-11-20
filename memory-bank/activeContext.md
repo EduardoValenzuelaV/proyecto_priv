@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Alejandro (cangrejo ayudante) y el sistema de cartas entre Eduardo y Dallana. Última tarea: hacer más visible el «Buzón de papá».
+**Current focus**: Alejandro (cangrejo ayudante) y el sistema de cartas entre Eduardo y Dallana. Última tarea: buzón en la esquina junto a Alejandro, con tutorial.
 
 **In progress**:
 
