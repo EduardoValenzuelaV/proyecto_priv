@@ -1007,6 +1007,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   function colgarLuces() {
     if (!luces || cover.classList.contains('closed')) return;
     const W = innerWidth, chico = W < 600;
+    if (!W) return;
     const tramo = W / (chico ? 2 : W < 1100 ? 3 : 4), hondo = chico ? 34 : 54, sep = chico ? 32 : 44;
     const y = x => 6 + hondo * Math.sin(Math.PI * ((x % tramo) / tramo));
     let d = '';
@@ -3005,30 +3006,41 @@ function entregarMensajeAPapa(desde) {
   }, { passive: true });
 })();
 
-/* 9. Cielo detrás de la página: estrellitas y estrella fugaz de noche, nubecitas de día */
+/* 9. Cielo detrás de la página: un cielo pastel de día (celeste arriba, durazno y rosa abajo) y uno de noche
+   (azul tinta a rosa del atardecer), con nubes pixel en tres capas que pasan lento, estrellas de noche
+   y dragoncitos de colores que cruzan volando de vez en cuando (detrás de las secciones, nunca encima).
+   Noche visual: de 20 a 6 h, igual que la portada y la postal. Dragones: propuesta/dragones.py. */
 const NUBE_PIXEL = ['....oooo........', '..oowwwwoo.oooo..', '.owwwwwwwwowwwwo.', 'owwwwwwwwwwwwwwwo', 'owwwwwwwwwwwwwwwo', '.ooooooooooooooo.'];
-let fugazTimer = 0;
+const NUBES = [
+  NUBE_PIXEL,
+  ['......ooo......', '....oowwwoo....', '..oowwwwwwwoo..', '.owwwwwwwwwwwo.', 'owwwwwwwwwwwwwo', '.ooooooooooooo.'],
+  ['...ooo.....ooo....', '.oowwwoo.oowwwoo..', 'owwwwwwwowwwwwwwo.', 'owwwwwwwwwwwwwwwwo', '.oooooooooooooooo.']
+];
+let fugazTimer = 0, cieloEraNoche = null;
+const nocheVisual = () => { const h = new Date().getHours(); return h >= 20 || h < 6; };
+
 function pintarCielo() {
   const cielo = $('cielo'); if (!cielo) return;
-  const noche = esDeNoche();
-  cielo.replaceChildren();
+  const noche = nocheVisual();
+  cieloEraNoche = noche;
+  document.body.classList.toggle('noche-visual', noche);
   cielo.classList.toggle('noche', noche);
+  cielo.querySelectorAll('.nube,.estrella,.fugaz').forEach(e => e.remove());   // los dragones que van volando siguen
   clearInterval(fugazTimer);
-  if (!animarMucho()) return;
+  const chico = innerWidth < 600;
   if (noche) {
-    const cols = ['#f2c14e', '#f2c14e', '#ff9aa2', '#8fb3ee'];
-    const n = innerWidth < 600 ? 22 : 38;
-    for (let k = 0; k < n; k++) {
+    const cols = ['#ffe7a3', '#ffe7a3', '#ffc2cc', '#bcd3ff'];
+    for (let k = 0, n = chico ? 24 : 44; k < n; k++) {
       const e = document.createElement('i');
       e.className = 'estrella';
-      e.style.left = `${Math.random() * 100}%`; e.style.top = `${Math.random() * 100}%`;
+      e.style.left = `${Math.random() * 100}%`; e.style.top = `${Math.random() * 78}%`;
       e.style.setProperty('--t', `${Math.random() < .2 ? 4 : 3}px`);
       e.style.setProperty('--c', cols[k % cols.length]);
       e.style.setProperty('--d', `${2 + Math.random() * 3}s`);
       e.style.setProperty('--r', `${-Math.random() * 4}s`);
       cielo.append(e);
     }
-    fugazTimer = setInterval(() => {
+    if (animarMucho()) fugazTimer = setInterval(() => {
       if (document.visibilityState !== 'visible') return;
       const f = document.createElement('i');
       f.className = 'fugaz';
@@ -3036,21 +3048,59 @@ function pintarCielo() {
       cielo.append(f);
       setTimeout(() => f.remove(), 1400);
     }, 14000);
-  } else {
-    const n = innerWidth < 600 ? 3 : 5;
+  }
+  // nubes en tres capas: lejos (chicas, lentas y suaves), al medio y cerca (grandes y más rápidas)
+  const capas = [['lejos', chico ? 2 : 3, 60, 90, 170], ['medio', chico ? 2 : 3, 100, 140, 120], ['cerca', chico ? 1 : 2, 150, 210, 85]];
+  const colores = noche ? { o: '#6a64a8', w: '#9a92d0' } : { o: '#c9d9f0', w: '#ffffff' };
+  capas.forEach(([capa, n, wMin, wMax, dur]) => {
     for (let k = 0; k < n; k++) {
+      const forma = NUBES[Math.floor(Math.random() * NUBES.length)];
+      const largo = Math.max(...forma.map(f => f.length));
       const nb = document.createElement('i');
-      nb.className = 'nube';
-      nb.innerHTML = pixelSVG(NUBE_PIXEL.map(f => f.padEnd(17, '.')), { o: '#c9d9f0', w: '#f4f8ff' });
-      nb.style.setProperty('--y', `${5 + k * (85 / n) + Math.random() * 8}%`);
-      nb.style.setProperty('--w', `${90 + Math.random() * 80}px`);
-      const d = 90 + Math.random() * 70;
+      nb.className = `nube nube--${capa}`;
+      nb.innerHTML = pixelSVG(forma.map(f => f.padEnd(largo, '.')), colores);
+      nb.style.setProperty('--y', `${3 + Math.random() * 82}%`);
+      const w = wMin + Math.random() * (wMax - wMin);
+      nb.style.setProperty('--w', `${chico ? w * .7 : w}px`);
+      nb.style.setProperty('--h', `${(forma.length / largo).toFixed(3)}`);
+      const d = dur * (.85 + Math.random() * .3);
       nb.style.setProperty('--d', `${d}s`);
       nb.style.setProperty('--r', `${-Math.random() * d}s`);
       cielo.append(nb);
     }
-  }
+  });
 }
+// a las 20 y a las 6 cambia el cielo
+setInterval(() => { if (nocheVisual() !== cieloEraNoche) pintarCielo(); }, 60000);
+
+/* Dragoncitos que cruzan el cielo: 10 formas y colores, a distintas distancias (los lejanos más chicos y lentos) */
+const DRAGONES_TOTAL = 10;   // columnas de assets/pixel/dragones.png
+let dragonesVolando = 0;
+function soltarDragon() {
+  const cielo = $('cielo');
+  if (cielo && animarMucho() && document.visibilityState === 'visible' && dragonesVolando < 2) {
+    const r = Math.random();
+    const [capa, escala, dur] = r < .35 ? ['lejos', 1.1, 36] : r < .75 ? ['medio', 1.6, 27] : ['cerca', 2.2, 20];
+    const chico = innerWidth < 600;
+    const el = document.createElement('i');
+    el.className = `dragon dragon--${capa}${Math.random() < .5 ? ' al-reves' : ''}`;
+    el.style.setProperty('--n', Math.floor(Math.random() * DRAGONES_TOTAL));
+    el.style.setProperty('--e', chico ? escala * .7 : escala);
+    el.style.setProperty('--dur', `${dur * (.9 + Math.random() * .2)}s`);
+    el.style.top = `${6 + Math.random() * 74}%`;
+    const cuerpo = document.createElement('span');
+    cuerpo.className = 'dragon-cuerpo';
+    el.append(cuerpo);
+    cielo.append(el);
+    dragonesVolando++;
+    let fuera = false;
+    const quitar = () => { if (fuera) return; fuera = true; el.remove(); dragonesVolando--; };
+    el.addEventListener('animationend', e => { if (e.target === el) quitar(); });
+    setTimeout(quitar, dur * 1300 + 1000);   // respaldo si la animación se congela
+  }
+  setTimeout(soltarDragon, 12000 + Math.random() * 22000);
+}
+setTimeout(soltarDragon, 3500);
 
 /* 10. Las secciones entran como páginas de álbum que se pegan con cinta */
 (() => {

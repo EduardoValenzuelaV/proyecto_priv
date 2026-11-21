@@ -17,7 +17,7 @@ _Link to key files or packages when it saves repetition._
 
 ## Coherencia entre secciones
 
-- Cada sección de `main`: kicker numerado «NN · Nombre» (01–08), título h2 Fraunces 600 `clamp(28px,5vw,40px)` color tinta, subtítulo en cursiva serif 17 px, dos stickers arriba y cinta de álbum. Fondo: degradado crema → `--tinte`, que sigue una escalera cálida `--tono-1`…`--tono-7` (crema → rosa, más tibia en cada capítulo) hasta el rojo de la carta 08. Azul, verde y mantequilla son solo acentos de objetos, nunca fondos de sección. Fondo de página: crema con brillo durazno arriba y rosado abajo. Únicas excepciones deliberadas: museo (pared con puntitos) y 08 «La carta» (rojo cereza, cierre).
+- Cada sección de `main`: kicker numerado «NN · Nombre» (01–08), título h2 Fraunces 600 `clamp(28px,5vw,40px)` color tinta, subtítulo en cursiva serif 17 px, dos stickers arriba y cinta de álbum. Fondo: degradado crema → `--tinte`, que sigue una escalera cálida `--tono-1`…`--tono-7` (crema → rosa, más tibia en cada capítulo) hasta el rojo de la carta 08. Azul, verde y mantequilla son solo acentos de objetos, nunca fondos de sección. Fondo de página: cielo pastel (celeste → durazno → rosa) de día y azul tinta → rosa de atardecer de noche (20–6), con nubes pixel en capas y dragoncitos que cruzan por detrás (`#cielo`, z -1; nunca encima del contenido como Alejandro). Únicas excepciones deliberadas: museo (pared con puntitos) y 08 «La carta» (rojo cereza, cierre).
 - Portada (`#welcome`): mantel de cuadrillé según la hora, letra Caveat, mismos tokens.
 
 ## Pixel art

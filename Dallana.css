@@ -40,6 +40,14 @@
   --noche:#232a55;
   /* Fondos de sección: una sola escalera cálida, un poco más tibia en cada capítulo hasta la carta (08, rojo cereza).
      Azul, verde y mantequilla se usan solo como acentos de los objetos (sobres, cuadros, cintas, botones). */
+  /* Cielo de fondo: de día celeste pastel arriba que baja a durazno y rosa; de noche azul tinta a rosa de atardecer */
+  --cielo-1:#d9e7fb;
+  --cielo-2:#eeeaf6;
+  --cielo-3:#fdeee4;
+  --cielo-4:#f9d6d1;
+  --noche-2:#3a3a77;
+  --noche-3:#694f8b;
+  --noche-4:#b07a95;
   --tono-1:#fff4ea;
   --tono-2:#ffefe4;
   --tono-3:#ffeadf;
@@ -88,15 +96,21 @@ body{
   margin:0;min-height:100svh;overflow-x:hidden;
   padding:20px 14px calc(40px + var(--safe-bottom));
   background:
-    radial-gradient(1000px 680px at 50% 0%,var(--tono-2) 0,transparent 65%),
-    radial-gradient(1100px 760px at 50% 100%,var(--tono-6) 0,transparent 62%),
-    var(--papel);
+    radial-gradient(620px 440px at 86% 4%,rgba(255,243,212,.95) 0,transparent 70%),
+    linear-gradient(180deg,var(--cielo-1) 0%,var(--cielo-2) 36%,var(--cielo-3) 68%,var(--cielo-4) 100%);
   background-attachment:fixed;
   color:var(--tinta);
   font:400 16px/1.6 var(--sans);
   -webkit-font-smoothing:antialiased;
 }
 @media (max-width:599px){body{background-attachment:scroll}}
+/* de noche (20–6) el cielo se oscurece: azul tinta arriba y el rosa del atardecer abajo; las secciones siguen claras */
+body.noche-visual{background:
+    radial-gradient(520px 380px at 84% 6%,rgba(255,236,190,.28) 0,transparent 70%),
+    linear-gradient(180deg,var(--noche) 0%,var(--noche-2) 38%,var(--noche-3) 72%,var(--noche-4) 100%);
+  background-attachment:fixed}
+@media (max-width:599px){body.noche-visual{background-attachment:scroll}}
+body.noche-visual .page-footer,body.noche-visual .page-footer .reset-link{color:var(--mantequilla)}
 button,input,textarea,select{font:inherit;color:inherit}
 button{touch-action:manipulation}
 img{max-width:100%}
@@ -1248,7 +1262,6 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 
 /* 9. Cielo de día y de noche detrás de la página */
 .cielo{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.cielo.noche{background:linear-gradient(180deg,rgba(80,90,170,.13),rgba(80,90,170,0) 70%)}
 .estrella{position:absolute;width:var(--t,4px);height:var(--t,4px);background:var(--c,#f2c14e);box-shadow:0 0 6px var(--c,#f2c14e);animation:titila var(--d,3s) ease-in-out var(--r,0s) infinite}
 .estrella::before,.estrella::after{content:"";position:absolute;background:inherit}
 .estrella::before{left:calc(var(--t,4px) * -1);top:0;width:calc(var(--t,4px) * 3);height:var(--t,4px);opacity:.45}
@@ -1256,9 +1269,31 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 @keyframes titila{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
 .fugaz{position:absolute;width:90px;height:2px;background:linear-gradient(90deg,rgba(242,193,78,0),#f2c14e);transform:rotate(-24deg);animation:fugaz 1.3s ease-out forwards}
 @keyframes fugaz{0%{opacity:0;translate:0 0}15%{opacity:1}100%{opacity:0;translate:-260px 115px}}
-.nube{position:absolute;left:-180px;top:var(--y,10%);width:var(--w,120px);height:calc(var(--w,120px) * .36);image-rendering:pixelated;opacity:.85;animation:nube-pasa var(--d,110s) linear var(--r,0s) infinite}
+.nube{position:absolute;left:-240px;top:var(--y,10%);width:var(--w,120px);height:calc(var(--w,120px) * var(--h,.36));image-rendering:pixelated;opacity:.85;animation:nube-pasa var(--d,110s) linear var(--r,0s) infinite}
 .nube svg{width:100%;height:100%}
-@keyframes nube-pasa{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 380px))}}
+@keyframes nube-pasa{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 480px))}}
+.nube--lejos{opacity:.5}
+.nube--medio{opacity:.72}
+.nube--cerca{opacity:.9;filter:drop-shadow(0 6px 0 rgba(160,180,220,.18))}
+.cielo.noche .nube--lejos{opacity:.35}
+.cielo.noche .nube--medio{opacity:.5}
+.cielo.noche .nube--cerca{opacity:.62;filter:none}
+
+/* Dragoncitos que cruzan el cielo, detrás de las secciones */
+.dragon{position:absolute;left:0;width:calc(68px * var(--e,1.6));height:calc(48px * var(--e,1.6));animation:dragon-vuela var(--dur,26s) linear forwards}
+.dragon.al-reves{animation-name:dragon-vuela-izq}
+@keyframes dragon-vuela{from{translate:-180px 0}to{translate:calc(100vw + 180px) 0}}
+@keyframes dragon-vuela-izq{from{translate:calc(100vw + 180px) 0}to{translate:-180px 0}}
+.dragon-cuerpo{display:block;width:100%;height:100%;background:url("assets/pixel/dragones.png?v=3") calc(var(--n,0) * 100% / 9) 0/1000% 300% no-repeat;image-rendering:pixelated;
+  animation:dragon-aletea .6s step-end infinite,dragon-flota 2.4s ease-in-out infinite alternate}
+.dragon.al-reves .dragon-cuerpo{scale:-1 1}
+/* aleteo en 3 posiciones: arriba, medio, abajo, medio */
+@keyframes dragon-aletea{0%,100%{background-position-y:0}25%,75%{background-position-y:50%}50%{background-position-y:100%}}
+@keyframes dragon-flota{to{translate:0 -16px}}
+.dragon--lejos{opacity:.55}
+.dragon--medio{opacity:.8}
+.dragon--cerca{opacity:.95}
+.cielo.noche .dragon-cuerpo{filter:drop-shadow(0 0 6px rgba(255,226,170,.45))}
 
 /* 10. Secciones que se pegan como páginas de álbum */
 /* en el teléfono, sin giro: una sección alta girada se sale de la pantalla y la desplaza hacia el lado */
@@ -1280,6 +1315,7 @@ main>.pegada>.cinta-album{animation:cinta-pega .45s .35s ease-out forwards}
 
 @media (prefers-reduced-motion:reduce){
   .alejandro-sprite.sale-sobre,.nota-musica,.ph-chispa,.corazon-gigante,.pixel-marco.revelando .pixel-img,.pixel-marco.revelando::after,
+  .dragon{display:none}
   .sello-trozo,.sello-destello,.carta-papa-texto .pluma,.estrella,.fugaz,.nube,main>.pegada,main>.pegada>.cinta-album,.toque-corazon{animation:none!important}
   main>section.por-pegar,main>header.por-pegar{opacity:1;transform:none}
   .photo-card{rotate:0deg}
