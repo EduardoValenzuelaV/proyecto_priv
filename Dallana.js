@@ -269,16 +269,42 @@ if (heartDrift && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
 /* ============================================================
    FECHA / CONTADOR
    ============================================================ */
+/* Contador vivo (días, horas y minutos desde el inicio) y el próximo cumplemes */
 function actualizarContador() {
   const [anio, mes, dia] = FECHA_INICIO.split('-').map(Number);
   const ahora = new Date();
-  const inicio = Date.UTC(anio, mes - 1, dia);
-  const hoy = Date.UTC(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
-  const diferencia = Math.round((hoy - inicio) / 864e5);
+  const inicio = new Date(anio, mes - 1, dia);
   const el = $('counter'); if (!el) return;
-  el.textContent = diferencia < 0
-    ? `Faltan ${Math.abs(diferencia)} días para comenzar 💕`
-    : `${diferencia + 1} ${diferencia === 0 ? 'día' : 'días'} juntos 💕`;
+  const ms = ahora - inicio;
+  if (ms < 0) { el.textContent = `Faltan ${Math.ceil(-ms / 864e5)} días para comenzar 💕`; return; }
+  const dias = Math.floor(ms / 864e5) + 1, horas = ahora.getHours(), min = ahora.getMinutes();
+  el.textContent = `${dias} ${dias === 1 ? 'día' : 'días'} · ${horas} h · ${String(min).padStart(2, '0')} min juntos`;
+  // próximo cumplemes (cada día FECHA_INICIO.dia)
+  const hito = $('coverHito'); if (!hito) return;
+  const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+  let prox = new Date(hoy.getFullYear(), hoy.getMonth(), dia);
+  if (prox < hoy) prox = new Date(hoy.getFullYear(), hoy.getMonth() + 1, dia);
+  const meses = (prox.getFullYear() - anio) * 12 + prox.getMonth() - (mes - 1);
+  const faltan = Math.round((prox - hoy) / 864e5);
+  const nombreMeses = `${meses} ${meses === 1 ? 'mes' : 'meses'}`;
+  hito.textContent = meses <= 0 ? '' : faltan === 0 ? `¡Hoy cumplimos ${nombreMeses}! 🎉` : `faltan ${faltan} ${faltan === 1 ? 'día' : 'días'} para los ${nombreMeses} 💗`;
+}
+
+/* La postal de Conce cambia con la hora: mañana, tarde o noche */
+function pintarPostal() {
+  const img = $('postalImg'); if (!img) return;
+  const h = new Date().getHours();
+  const momento = h >= 6 && h < 12 ? 'manana' : h >= 12 && h < 20 ? 'tarde' : 'noche';
+  const src = `assets/pixel/postal-${momento}.png?v=1`;
+  if (!img.getAttribute('src').endsWith(src)) img.src = src;
+}
+
+/* Su nombre se escribe solo cuando se ve el encabezado por primera vez */
+const coverEl = document.querySelector('.cover');
+if (coverEl && !matchMedia('(prefers-reduced-motion: reduce)').matches) coverEl.classList.add('por-escribir');
+function escribirNombre() {
+  if (!coverEl || !coverEl.classList.contains('por-escribir') || coverEl.classList.contains('escribe')) return;
+  coverEl.classList.add('escribe');
 }
 
 /* ============================================================
@@ -932,6 +958,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
     // «opening» se queda hasta que termina de desvanecerse (si no, el sobre se vuelve a armar mientras se va)
     if (cover) { cover.classList.add('closed'); setTimeout(() => cover.classList.remove('opening'), 900); }
     pedir(`${URL_BACKEND}/api/momento`, 'Un mensaje para ti');
+    setTimeout(escribirNombre, 500);
     entradaAlejandro(rectSobre).then(saludoAlejandro);
   }, lento ? 1950 : 0);
 };
@@ -3147,7 +3174,10 @@ programarPaseo();
 actualizarBotonFavoritos();
 renderContenido();
 cargarContenido();
-setInterval(actualizarContador, 60000);
+setInterval(actualizarContador, 30000);
+pintarPostal();
+setInterval(pintarPostal, 600000);
+if (!$('welcome')) setTimeout(escribirNombre, 400);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', () => {

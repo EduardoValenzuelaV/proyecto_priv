@@ -1,9 +1,9 @@
-const CACHE_NAME = 'dallana-v3.76';
+const CACHE_NAME = 'dallana-v3.78';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=7.8',
-  './Dallana.js?v=3.62',
+  './Dallana.css?v=8.0',
+  './Dallana.js?v=3.63',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/fotos/migeo.jpg',
@@ -14,6 +14,9 @@ const ASSETS_TO_CACHE = [
   './assets/pixel/buzon.png?v=1',
   './assets/pixel/obras.png?v=1',
   './assets/pixel/adornos.png?v=1',
+  './assets/pixel/postal-manana.png?v=1',
+  './assets/pixel/postal-tarde.png?v=1',
+  './assets/pixel/postal-noche.png?v=1',
   './assets/pixel/disfraces/cartero.png?v=2',
   './assets/fotos/portada-polaroid.jpg?v=2',
   './assets/fotos/portada-tira.jpg?v=1',
