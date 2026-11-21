@@ -1,6 +1,6 @@
 # Active context
 
-**Current focus**: Cierre publicado: portada con mantel de cuadrillé, Alejandro más chico en teléfono y verificación PC/móvil. Sin tarea abierta. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
+**Current focus**: Portada rediseñada y publicada (mantel por hora, Caveat, escena simplificada). Sin tarea abierta. Pendientes a futuro: cofre del día, cartas programadas, más recuerdos pixel, cumplemes automático.
 
 **In progress**:
 

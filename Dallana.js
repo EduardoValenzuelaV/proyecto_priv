@@ -931,7 +931,9 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   const h = new Date().getHours();
   const saludo = h >= 6 && h < 12 ? 'Buenos días' : h >= 12 && h < 20 ? 'Buenas tardes' : 'Buenas noches';
   const elSaludo = $('portadaSaludo'); if (elSaludo) elSaludo.textContent = `${saludo}, mi Dallana ♥`;
+  // el mantel cambia con la hora: mantequilla en la mañana, cereza en la tarde y azul tinta de noche
   cover.classList.toggle('noche', h >= 20 || h < 6);
+  cover.classList.toggle('manana', h >= 6 && h < 12);
 
   // Post-it: día de nosotros (y cumplemes los 17)
   const [anio, mes, dia] = FECHA_INICIO.split('-').map(Number);
