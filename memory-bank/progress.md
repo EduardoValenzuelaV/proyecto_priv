@@ -41,6 +41,8 @@
 - 2026-11-21: mini-juego «Atrapa corazones» (`#juegoDialog`, canvas 320×400): Alejandro con su disfraz atrapa corazones (+1), dorados (+5) y esquiva nubes (3 vidas); récord en `dallanaRecordJuego` con aviso a papá; con 20+ llena un corazón del día. Se abre desde la sección 02 y el menú de Alejandro. Stickers que reaccionan (`FRASES_STICKERS`): saltan y muestran una frase. Los globos de Alejandro (tutorial, novedades) esperan si hay un diálogo abierto.
 - 2026-11-21: servidor opcional en Cloudflare (`rincon-servidor/`, guía en `rincon-servidor/GUIA.md`): temas de ntfy ocultos como secretos, PIN de Dallana (`#claveDialog`, `dallanaToken`), cartas guardadas para siempre (cron cada 15 min) y `/programar AAAA-MM-DD`, respaldo del progreso (`/api/progreso`, sube cada minuto si cambió y restaura lo que falte al entrar en otro teléfono). Se activa poniendo la dirección en `URL_RINCON` (vacío = igual que antes). Probado contra un servidor de prueba local. `sw.js` ya no intercepta peticiones a otros sitios (rompía los GET al servidor). Lista para probar en el teléfono: `PRUEBA-TELEFONO.md`. CSS v8.6, JS v3.68, caché dallana-v3.85.
 
+- 2026-11-21: Recuerdo 6 «Los patitos de la pasarela» (`assets/pixel/pasarela.gif`, 403 KB, `propuesta/escena_pasarela.py`): perspectiva de la foto de la pasarela, ellos de espaldas tomados de la mano, Dallana apunta a la laguna con patitos (izquierda), Eduardo con polerón crema y mochila con llavero de Alejandro. GIF con paleta común de 128 colores.
+
 **Not started / backlog**
 
 - Configurar `URL_BACKEND` y las variables del servidor cuando se publique la API.
