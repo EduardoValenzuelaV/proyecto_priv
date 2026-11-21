@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=8.3">
+<link rel="stylesheet" href="Dallana.css?v=8.4">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -99,17 +99,20 @@
     <div class="cover-content">
       <div class="cover-copy">
         <p class="cover-nota">un detallito hecho solo para ti ♥</p>
-        <h1>Para <span class="cover-nombre"><span class="cover-nombre-texto">Dallana</span><svg class="cover-subrayado" viewBox="0 0 320 34" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M6 22C70 10 130 28 196 16S270 10 282 18c-6-10-19-5-13 4l11 9 10-9c6-9-7-14-13-4"/></svg></span></h1>
+        <h1><span class="cover-para">Para<span class="cover-doodle cover-doodle--estrella" aria-hidden="true"></span></span> <span class="cover-nombre"><span class="cover-doodle cover-doodle--flor" aria-hidden="true"></span><span class="cover-nombre-texto">Dallana</span><svg class="cover-subrayado" viewBox="0 0 320 34" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M6 22C70 10 130 28 196 16S270 10 282 18c-6-10-19-5-13 4l11 9 10-9c6-9-7-14-13-4"/></svg></span></h1>
         <p class="sub">Un pedacito de todo lo bonito que eres</p>
         <p class="counter" id="counter">Nuestra historia sigue escribiéndose</p>
         <p class="cover-hito" id="coverHito"></p>
       </div>
-      <figure class="cover-postal" aria-hidden="true">
+      <div class="postal-pila" aria-hidden="true">
+      <span class="postal-atras" id="postalAtras"></span>
+      <figure class="cover-postal">
         <img class="postal-img" id="postalImg" src="assets/pixel/postal-tarde.png?v=1" alt="" decoding="async">
         <figcaption>Conce, donde empezó lo nuestro</figcaption>
         <span class="postal-matasellos"><small>Concepción</small><b>17·10·26</b></span>
         <img class="postal-sticker" src="assets/stickers/stikers3.png" alt="" loading="lazy" decoding="async">
       </figure>
+      </div>
     </div>
   </header>
 
@@ -491,6 +494,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.65" defer></script>
+<script src="Dallana.js?v=3.66" defer></script>
 </body>
 </html>

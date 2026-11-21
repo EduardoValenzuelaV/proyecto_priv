@@ -297,6 +297,10 @@ function pintarPostal() {
   const momento = h >= 6 && h < 12 ? 'manana' : h >= 12 && h < 20 ? 'tarde' : 'noche';
   const src = `assets/pixel/postal-${momento}.png?v=1`;
   if (!img.getAttribute('src').endsWith(src)) img.src = src;
+  // detrás asoma la postal de la hora que viene
+  const atras = $('postalAtras');
+  const siguiente = { manana: 'tarde', tarde: 'noche', noche: 'manana' }[momento];
+  if (atras) atras.style.setProperty('--img', `url("assets/pixel/postal-${siguiente}.png?v=1")`);
 }
 
 /* Su nombre se escribe solo cuando se ve el encabezado por primera vez */

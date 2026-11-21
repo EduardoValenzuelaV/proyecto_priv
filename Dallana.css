@@ -379,12 +379,20 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
    Encabezado escrito a mano: nota, su nombre que se escribe solo con un subrayado de corazón,
    contador vivo y una postal pixel de Conce (puente sobre el Biobío) que cambia con la hora. */
 .cover{overflow:hidden}
+/* papel de libreta con puntitos */
+main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,transparent 1.6px) 0 0/18px 18px,linear-gradient(165deg,var(--tarjeta) 0%,var(--tinte) 100%)}
 .cover-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);align-items:center;gap:28px;padding:6px 0}
 .cover-copy{min-width:0}
 .cover-nota{margin:0;color:var(--vino);font:600 clamp(20px,4.4vw,24px)/1.2 var(--firma)}
 .cover h1{margin:2px 0 12px;font-size:clamp(28px,7vw,44px);font-weight:400;line-height:1}
+.cover-para{position:relative;display:inline-block}
 .cover-nombre{position:relative;display:block;width:fit-content}
-.cover-nombre-texto{display:block;color:var(--vino);font-size:clamp(52px,14.5vw,112px);font-style:italic;font-weight:500;letter-spacing:-.04em;line-height:.95;padding-right:.08em}
+/* estrellita y florcita dibujadas a mano junto a su nombre */
+.cover-doodle{position:absolute;pointer-events:none;background:center/contain no-repeat}
+.cover-doodle--estrella{top:-10px;right:-46px;width:38px;height:38px;background-image:var(--doodle-estrella);rotate:12deg;animation:doodle-brilla 3.2s ease-in-out infinite}
+.cover-doodle--flor{top:-6px;right:-30px;width:30px;height:30px;background-image:var(--doodle-flor);rotate:-14deg;animation:doodle-brilla 3.2s ease-in-out 1.6s infinite}
+@keyframes doodle-brilla{50%{scale:1.12;rotate:0deg}}
+.cover-nombre-texto{display:block;color:var(--vino);font-size:clamp(52px,9.5vw,112px);font-style:italic;font-weight:500;letter-spacing:-.04em;line-height:.95;padding-right:.08em}
 .cover-subrayado{position:absolute;left:-2%;right:-6%;bottom:-.32em;width:108%;height:.42em;overflow:visible;pointer-events:none}
 .cover-subrayado path{fill:none;stroke:var(--coral);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
 /* Su nombre se escribe solo (una vez, al ver el encabezado) */
@@ -405,7 +413,11 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .cover-hito:empty{display:none}
 
 /* La postal */
-.cover-postal{position:relative;justify-self:end;width:min(100%,420px);margin:10px 10px 18px 0;padding:10px 10px 0;background:var(--tarjeta);rotate:2.5deg;
+.postal-pila{position:relative;justify-self:end;width:min(100%,420px);margin:14px 12px 22px 0}
+/* otra postal (de otra hora del día) asoma detrás, girada */
+.postal-atras{position:absolute;inset:0;background:var(--tarjeta) var(--img,none) 10px 10px/calc(100% - 20px) auto no-repeat;image-rendering:pixelated;rotate:-8deg;translate:-26px 12px;
+  box-shadow:0 1px 2px rgba(120,48,40,.1),0 14px 24px -14px rgba(120,48,40,.35);filter:saturate(.85) brightness(.98)}
+.cover-postal{position:relative;width:100%;margin:0;padding:10px 10px 0;background:var(--tarjeta);rotate:2.5deg;
   box-shadow:0 1px 2px rgba(120,48,40,.1),0 18px 30px -14px rgba(120,48,40,.4)}
 .postal-img{display:block;width:100%;height:auto;aspect-ratio:160/104;image-rendering:pixelated;border-radius:2px}
 .cover-postal figcaption{padding:8px 4px 10px;color:var(--tinta);font:600 clamp(17px,3.6vw,21px)/1.2 var(--firma);text-align:center}
@@ -416,13 +428,17 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 .postal-matasellos b{font:700 11px/1.2 var(--sans);letter-spacing:.04em}
 .postal-sticker{position:absolute;left:-30px;bottom:-24px;width:clamp(70px,12vw,104px);height:auto;rotate:-8deg;filter:drop-shadow(0 6px 8px rgba(120,48,40,.28));pointer-events:none}
 
-@media (max-width:699px){
+@media (max-width:599px){
   .cover-content{grid-template-columns:1fr;gap:22px}
-  .cover-postal{justify-self:center;width:min(100%,360px);margin:8px 8px 22px}
+  .cover-nombre-texto{font-size:clamp(52px,16vw,84px)}
+  .postal-pila{justify-self:center;width:min(92%,340px);margin:10px auto 24px}
+  .postal-atras{translate:-16px 10px}
+  .cover-doodle--estrella{right:-40px;width:32px;height:32px}
   .postal-matasellos{width:72px;right:-10px}
   .postal-sticker{left:-12px;bottom:-20px}
 }
 @media (prefers-reduced-motion:reduce){
+  .cover-doodle{animation:none}
   .cover.por-escribir .cover-nombre-texto{clip-path:none}
   .cover.por-escribir .cover-subrayado path{stroke-dashoffset:0}
   .cover.escribe .cover-nombre-texto,.cover.escribe .cover-subrayado path{animation:none}
