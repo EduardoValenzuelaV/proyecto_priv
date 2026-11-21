@@ -711,6 +711,16 @@ const FRASES_GUIA = [
   'Mamá, esta obra la cuido yo personalmente. Nadie la toca. 🛡️'
 ];
 let guiaBolsa = [];
+const GUIA_MAX = 120000;
+
+// Si a los 2 minutos sigue de guía (por ejemplo, porque estaba hablando o caminando), se cambia igual
+function quitarGuia() {
+  if (disfrazActual !== DISFRAZ_GUIA) return;
+  const pijama = DISFRACES.find(d => d.id === 'pijama');
+  if (estadoPorHora() === 'dormir') ponerDisfraz(pijama, false);
+  else ponerDisfraz(disfrazDelDia() || siguienteDisfraz(), true);
+  programarDisfraz(120000 + Math.random() * 120000);
+}
 
 function obrasVistas() {
   try { return new Set(JSON.parse(localStorage.getItem(OBRAS_VISTAS) || '[]')); } catch { return new Set(); }
@@ -770,7 +780,9 @@ function voltearObra(obra, carta, titulo) {
     if (!disfracesIniciados || estadoPorHora() === 'dormir' || document.querySelector('dialog[open]')) return;
     io.disconnect();
     ponerDisfraz(DISFRAZ_GUIA, true);
-    programarDisfraz(150000);   // sigue de guía un ratito y después vuelve a sus disfraces
+    // de guía dura 2 minutos como máximo: después vuelve sí o sí a sus otros disfraces
+    programarDisfraz(GUIA_MAX);
+    setTimeout(quitarGuia, GUIA_MAX + 1000);
   }, { threshold: .35 });
   io.observe(sec);
 })();
