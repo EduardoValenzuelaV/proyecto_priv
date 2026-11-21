@@ -15,6 +15,11 @@ _Link to key files or packages when it saves repetition._
 - Stickers: `<img class="sticker sticker--tl|tr">` como hijo directo de la sección; la sección reserva la franja superior con `:has(>.sticker)`. Máximo dos por sección.
 - Al cambiar CSS/JS, subir `?v=` en `Dallana.html` y `CACHE_NAME` en `sw.js`.
 
+## Coherencia entre secciones
+
+- Cada sección de `main`: kicker numerado «NN · Nombre» (01–08), título h2 Fraunces 600 `clamp(28px,5vw,40px)` color tinta, subtítulo en cursiva serif 17 px, dos stickers arriba y cinta de álbum. Fondo: degradado crema → `--tinte` de la sección. Únicas excepciones deliberadas: museo (pared con puntitos) y 08 «La carta» (rojo cereza, cierre).
+- Portada (`#welcome`): mantel de cuadrillé según la hora, letra Caveat, mismos tokens.
+
 ## Pixel art
 
 - Todo el pixel art se genera con Python + PIL en `propuesta/` (sprites como formas o grillas, contorno con `contorno()`, escalado NEAREST). No editar los PNG a mano.

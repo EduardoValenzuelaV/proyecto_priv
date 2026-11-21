@@ -42,6 +42,7 @@
   --cordon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='38' viewBox='0 0 120 38'%3E%3Cpath d='M6 12Q62 34 120 12' fill='none' stroke='%23b0243a' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M8 11Q62 31 118 11' fill='none' stroke='%23e2576a' stroke-width='1'/%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --poste:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='38' viewBox='0 0 8 38'%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --corazones:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 38c-6-5-10-8-10-12a4.5 4.5 0 0 1 10-2 4.5 4.5 0 0 1 10 2c0 4-4 7-10 12z' fill='%23d1343f' fill-opacity='.08'/%3E%3C/svg%3E");
+  --corazones-crema:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 38c-6-5-10-8-10-12a4.5 4.5 0 0 1 10-2 4.5 4.5 0 0 1 10 2c0 4-4 7-10 12z' fill='%23fff3d4' fill-opacity='.09'/%3E%3C/svg%3E");
   /* Tipografía */
   --serif:'Fraunces',Georgia,serif;
   --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
@@ -460,9 +461,10 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 
 /* ============ 02 · UN RECUERDO A LA VEZ ============ */
 .progress-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.progress-heading h3{font-size:clamp(22px,4vw,28px)}
+.progress-heading h3{font-size:clamp(28px,5vw,40px)}
 .progress-heading>span{flex:none;color:var(--vino);font:600 26px/1 var(--firma);font-variant-numeric:tabular-nums}
 .progress-label{margin:10px 0;color:var(--tinta-suave);font-size:15px}
+#progressLabel{font:italic 17px/1.5 var(--serif)}
 .progress-hearts{display:flex;justify-content:space-between;gap:4px;max-width:520px}
 .ph-corazon{flex:1 1 0;max-width:40px;aspect-ratio:24/22;display:block}
 .ph-corazon svg{display:block;width:100%;height:100%;overflow:visible}
@@ -544,6 +546,8 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 /* ============ SECCIONES DE REGALO (comunes) ============ */
 .gift-head{max-width:620px;margin-bottom:22px}
 .gift-head h2{font-size:clamp(28px,5vw,40px)}
+/* Todas las secciones usan el mismo título (tamaño, peso y color); la 08 lo cambia a crema por su fondo */
+.memory-feature>.memory-titulo{margin:0 0 20px;font-size:clamp(28px,5vw,40px)}
 .gift-head p{margin-top:8px;color:var(--tinta-suave);font:italic 17px/1.5 var(--serif)}
 .gift-head::after{content:"♡";display:flex;align-items:center;gap:10px;width:min(180px,60%);margin-top:14px;color:var(--coral);font-size:13px;line-height:1;background:linear-gradient(90deg,var(--rosa),var(--rosa)) left center/calc(50% - 14px) 1px no-repeat,linear-gradient(90deg,var(--rosa),var(--rosa)) right center/calc(50% - 14px) 1px no-repeat;justify-content:center}
 
@@ -789,12 +793,73 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 }
 @media (prefers-reduced-motion:reduce){.obra,.obra-carta{transition:none}.obra.timbrando .obra-timbre,.obra .obra-adorno{animation:none!important}.obra[data-del-dia] .obra-lienzo::after{animation:none;background-position:50% 0}}
 
-/* ============ 07 · LA CARTA ============ */
-.letter-feature{text-align:center;background:var(--corazones),linear-gradient(160deg,#fff4ea 0,#f9dccf 60%,var(--durazno) 100%)}
-.letter-feature h2{margin:4px 0 10px;font-size:clamp(30px,6vw,46px);font-weight:400}
-.letter-feature h2 em{color:var(--vino);font-weight:500}
-.letter-feature>p{margin-bottom:18px;color:var(--tinta-suave);font:italic 17px var(--serif)}
-.letter-feature .btn{min-width:min(100%,260px)}
+/* ============ 07 · LA CARTA ============
+   El cierre del regalo: la única sección rojo cereza, con la carta atada con cordel y sellada.
+   La carta es el botón: al tocarla se suelta el cordel, salta el sello y se abre. */
+main>section.letter-feature{
+  --cs-w:min(420px,84vw);
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  border-color:var(--vino-oscuro);
+  background:var(--corazones-crema),radial-gradient(ellipse at 50% 30%,var(--vino) 0,var(--vino-oscuro) 100%);
+  box-shadow:0 2px 4px rgba(120,48,40,.12),0 30px 60px -24px rgba(120,30,40,.55);
+}
+.letter-feature .chapter-kicker{color:var(--mantequilla)}
+.letter-feature h2{margin:4px 0 30px;color:var(--tarjeta);font-size:clamp(28px,5vw,40px);text-shadow:0 2px 0 rgba(90,16,24,.35)}
+.letter-feature h2 em{color:var(--tarjeta)}
+
+.carta-sellada{position:relative;display:block;width:var(--cs-w);aspect-ratio:3/2;padding:0;border:0;background:none;cursor:pointer;rotate:-2deg;
+  transition:translate .35s cubic-bezier(.2,1.4,.4,1),rotate .35s ease;filter:drop-shadow(0 22px 22px rgba(60,8,16,.45)) drop-shadow(0 3px 4px rgba(60,8,16,.3));-webkit-tap-highlight-color:transparent}
+@media (hover:hover){.carta-sellada:hover{translate:0 -8px;rotate:0deg}.carta-sellada:hover .cs-sello{scale:1.08}}
+.carta-sellada:active{translate:0 -2px;rotate:-1deg}
+.carta-sellada:focus-visible{outline:3px solid var(--mantequilla);outline-offset:10px;border-radius:12px}
+.carta-sellada>span{position:absolute}
+
+/* Papel marfil con la dirección escrita a mano */
+.cs-papel{inset:0;border-radius:8px;overflow:hidden;text-align:left;background:var(--fibra),linear-gradient(170deg,var(--kraft-claro),var(--kraft) 85%);
+  box-shadow:inset 0 0 0 1px rgba(165,120,70,.35),inset 0 0 0 7px transparent,inset 0 0 0 8px rgba(165,34,46,.18)}
+.cs-para{position:absolute;left:9%;top:42%;color:var(--vino-oscuro);font:700 clamp(28px,7vw,40px)/1 var(--firma)}
+.cs-de{position:absolute;left:10%;top:61%;max-width:56%;color:var(--tinta-suave);font:600 clamp(15px,3.6vw,19px)/1.15 var(--firma)}
+.cs-lineas{position:absolute;left:9%;right:36%;top:74%;height:17%;background:repeating-linear-gradient(180deg,transparent 0 17px,rgba(165,120,70,.28) 17px 18px)}
+/* Estampilla con un corazón pixel */
+.cs-estampilla{position:absolute;top:9%;left:8%;width:13%;aspect-ratio:5/6;padding:4px;background:var(--tarjeta);rotate:-6deg;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,radial-gradient(circle,transparent 2px,#000 2.5px) 50% 50%/7px 7px;-webkit-mask-composite:source-over;
+  mask:linear-gradient(#000 0 0) content-box,radial-gradient(circle,transparent 2px,#000 2.5px) 50% 50%/7px 7px;mask-composite:add}
+.cs-estampilla i{display:block;width:100%;height:100%;background:url("assets/pixel/adornos.png?v=1") 0 50%/1000% auto no-repeat var(--rosado);image-rendering:pixelated}
+
+/* Cordel cruzado que se anuda sobre el sello */
+.cs-cordel{z-index:2;background:repeating-linear-gradient(45deg,var(--kraft-oscuro) 0 3px,var(--kraft-claro) 3px 5px,var(--kraft-oscuro) 5px 7px);box-shadow:0 1px 2px rgba(60,30,10,.35);transition:scale .45s cubic-bezier(.5,0,.75,0),opacity .3s .25s}
+.cs-cordel--h{left:-2%;right:-2%;top:calc(34% - 3px);height:6px;transform-origin:72% 50%}
+.cs-cordel--v{top:-2%;bottom:-2%;left:calc(72% - 3px);width:6px;transform-origin:50% 34%}
+.cs-lazo{z-index:2;left:72%;top:34%;width:76px;height:34px;translate:-50% -50%;transition:scale .4s ease,opacity .3s;
+  background:radial-gradient(ellipse 50% 50% at 25% 50%,transparent 42%,var(--kraft-oscuro) 44% 62%,transparent 64%),radial-gradient(ellipse 50% 50% at 75% 50%,transparent 42%,var(--kraft-oscuro) 44% 62%,transparent 64%)}
+.cs-sello{z-index:3;left:72%;top:34%;display:grid;place-items:center;width:clamp(46px,12vw,60px);aspect-ratio:1;translate:-50% -50%;
+  border-radius:48% 52% 46% 54%/52% 46% 54% 48%;color:rgba(255,226,226,.92);font:600 clamp(20px,5vw,26px)/1 var(--serif);text-shadow:0 -1px 0 rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.25);
+  background:radial-gradient(circle,transparent 50%,rgba(0,0,0,.16) 53%,transparent 59%),radial-gradient(circle at 35% 30%,var(--cera),var(--vino) 45%,var(--vino-oscuro));
+  box-shadow:inset 0 -3px 5px rgba(0,0,0,.25),inset 0 2px 3px rgba(255,255,255,.3),0 4px 7px rgba(60,20,20,.35);transition:scale .25s ease}
+/* Etiqueta de papel colgando del nudo */
+.cs-etiqueta{z-index:2;left:calc(72% + 14px);top:calc(34% + 26px);padding:7px 12px 7px 18px;background:var(--postit);color:var(--vino-oscuro);font:700 clamp(14px,3.4vw,17px)/1.1 var(--firma);white-space:nowrap;rotate:9deg;transform-origin:0 0;
+  clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,0 50%);box-shadow:0 3px 6px rgba(60,20,10,.25);transition:translate .5s ease-in,rotate .5s ease-in,opacity .4s .1s}
+.cs-etiqueta::before{content:"";position:absolute;left:6px;top:calc(50% - 2px);width:4px;height:4px;border-radius:50%;background:var(--kraft-oscuro)}
+.carta-pista{margin-top:28px;color:var(--mantequilla);font:600 clamp(19px,4.4vw,23px)/1.2 var(--firma)}
+
+/* Al abrir: el cordel se suelta, el sello salta y la etiqueta cae */
+.letter-feature.abriendo .cs-cordel--h{scale:0 1;opacity:0}
+.letter-feature.abriendo .cs-cordel--v{scale:1 0;opacity:0}
+.letter-feature.abriendo .cs-lazo{scale:.2;opacity:0}
+.letter-feature.abriendo .cs-sello{animation:cs-sello-salta .5s cubic-bezier(.3,1.5,.5,1) forwards}
+.letter-feature.abriendo .cs-etiqueta{translate:10px 40px;rotate:40deg;opacity:0}
+.letter-feature.abriendo .carta-sellada{translate:0 -10px;rotate:0deg}
+@keyframes cs-sello-salta{40%{scale:1.3}100%{scale:0;opacity:0}}
+
+@media (max-width:599px){
+  .letter-feature h2{margin-bottom:24px}
+  .cs-etiqueta{left:57%;top:calc(34% + 12px);padding:5px 9px 5px 15px;font-size:13px;rotate:8deg}
+  .cs-lazo{width:60px;height:28px}
+}
+@media (prefers-reduced-motion:reduce){
+  .carta-sellada,.cs-cordel,.cs-lazo,.cs-etiqueta{transition:none}
+  .letter-feature.abriendo .cs-sello{animation:none}
+}
 
 /* ============ PIE ============ */
 .page-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px;color:var(--tinta-suave);font:500 12px var(--sans);letter-spacing:.12em;text-transform:uppercase}
@@ -1024,8 +1089,8 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .buzon-vacio[hidden]{display:none}
 /* sección «Buzón de papá» */
 .buzon-feature{display:block}
-.buzon-info h2{margin:2px 0 6px;color:var(--vino);font:600 clamp(28px,6vw,38px)/1.1 var(--serif)}
-.buzon-estado{margin:0 0 12px;color:var(--tinta-suave);font-size:15px}
+.buzon-info h2{margin:2px 0 8px;font-size:clamp(28px,5vw,40px)}
+.buzon-estado{margin:0 0 14px;color:var(--tinta-suave);font:italic 17px/1.5 var(--serif)}
 .buzon-feature.tiene-cartas .buzon-estado{color:var(--vino);font-weight:700}
 .buzon-ultima{display:block;width:100%;margin:0 0 14px;padding:12px 16px;border:1px dashed var(--rosa);border-radius:14px;background:#fffdf8;color:var(--tinta);text-align:left;cursor:pointer}
 .buzon-ultima[hidden]{display:none}
@@ -1036,7 +1101,6 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .buzon-acciones [hidden]{display:none}
 .buzon-ayuda{margin:-6px 0 8px;font-size:13px}
 @media (max-width:599px){
-  .buzon-feature{text-align:center}
   .buzon-acciones{justify-content:center}
   .buzon-acciones .carta-btn{flex:1 1 100%}
 }

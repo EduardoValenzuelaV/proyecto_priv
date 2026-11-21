@@ -1130,10 +1130,21 @@ if (viewFavoritesBtn) viewFavoritesBtn.onclick = () => {
 
 const openLetterBtn = $('openLetter');
 if (openLetterBtn) openLetterBtn.onclick = () => {
-  lanzarCelebracion();
+  const sec = openLetterBtn.closest('.letter-feature');
+  if (sec?.classList.contains('abriendo')) return;
   cargarCarta();
-  const dlg = $('letterDialog'); if (dlg) dlg.showModal();
   notificar('abrió tu carta principal 💌', 'love_letter');
+  const abrir = () => {
+    lanzarCelebracion();
+    const dlg = $('letterDialog'); if (dlg && !dlg.open) dlg.showModal();
+    // al cerrarla, la carta vuelve a quedar atada y sellada
+    setTimeout(() => sec?.classList.remove('abriendo'), 900);
+  };
+  if (!sec || matchMedia('(prefers-reduced-motion: reduce)').matches) { abrir(); return; }
+  // se suelta el cordel, salta el sello y después se abre la carta
+  sec.classList.add('abriendo');
+  vibrar();
+  setTimeout(abrir, 650);
 };
 
 
@@ -3017,7 +3028,8 @@ function pintarCielo() {
 /* 10. Las secciones entran como páginas de álbum que se pegan con cinta */
 (() => {
   if (!animarMucho() || !('IntersectionObserver' in window)) return;
-  const paginas = document.querySelectorAll('main>section:not([hidden]),main>header');
+  // incluye las que todavía están ocultas (el museo aparece después de cargar el contenido) para que también lleven su cinta
+  const paginas = document.querySelectorAll('main>section,main>header');
   const pegar = el => {
     if (!el.classList.contains('por-pegar')) return;
     obs.unobserve(el);
