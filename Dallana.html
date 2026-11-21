@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=8.4">
+<link rel="stylesheet" href="Dallana.css?v=8.6">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -168,6 +168,7 @@
     <div class="progress-hearts" id="progressHearts" role="img" aria-label="Corazones de hoy"></div>
     <p id="hitoLabel" class="progress-label hito-label">Cada 5 sonrisas se desbloquea un recuerdo pixel</p>
     <div class="pixel-hitos" id="pixelHitos" aria-label="Recuerdos pixel"></div>
+    <button class="juego-abrir" id="juegoAbrir" type="button">🎮 Atrapa corazones con Alejandro <span id="juegoRecordTxt"></span></button>
   </section>
 
   <section class="memory-feature" aria-label="Un recuerdo para ti">
@@ -388,6 +389,35 @@
   </form>
 </dialog>
 
+<dialog id="claveDialog" class="clave-dialog" aria-labelledby="claveTitulo">
+  <button class="close" data-close="claveDialog" aria-label="Más tarde">×</button>
+  <h2 id="claveTitulo">Nuestra clave secreta 🔐</h2>
+  <p>Para abrir tu buzón y guardar tus cosas (aunque cambies de teléfono), escribe la clave que te dio papá.</p>
+  <form id="claveForm" autocomplete="off">
+    <input id="claveInput" type="password" inputmode="numeric" maxlength="40" required aria-label="Clave secreta" placeholder="••••">
+    <button class="btn" id="claveEntrar" type="submit">Entrar 💗</button>
+  </form>
+  <p class="clave-estado" id="claveEstado" role="status" aria-live="polite"></p>
+</dialog>
+
+<dialog id="juegoDialog" class="juego-dialog" aria-labelledby="juegoTitulo">
+  <button class="close" data-close="juegoDialog" aria-label="Salir del juego">×</button>
+  <h2 id="juegoTitulo">Atrapa corazones</h2>
+  <div class="juego-marcador" aria-live="polite">
+    <span>💗 <b id="juegoPuntos">0</b></span>
+    <span id="juegoVidas" aria-label="Vidas">❤️❤️❤️</span>
+    <span>Récord <b id="juegoRecord">0</b></span>
+  </div>
+  <div class="juego-escena">
+    <canvas id="juegoCanvas" width="320" height="400" aria-label="Juego: mueve a Alejandro para atrapar los corazones que caen"></canvas>
+    <div class="juego-pantalla" id="juegoPantalla">
+      <p class="juego-mensaje" id="juegoMensaje">Mueve a Alejandro con el dedo (o con las flechas) y atrapa los corazones. ¡Ojo con las nubecitas de lluvia!</p>
+      <button class="btn" id="juegoEmpezar" type="button">¡Jugar!</button>
+    </div>
+  </div>
+  <p class="juego-ayuda">💛 corazón dorado: +5 · 🌧️ nube: pierdes una vida</p>
+</dialog>
+
 <dialog id="pixelDialog" class="pixel-dialog" aria-labelledby="pixelTitulo">
   <button class="close" data-close="pixelDialog" aria-label="Cerrar">×</button>
   <span class="chapter-kicker">Recuerdo pixel</span>
@@ -484,6 +514,7 @@
     <div class="alejandro-menu" id="alejandroMenu" hidden>
       <button type="button" id="menuBuzon">📬 Buzón de papá <span id="menuBuzonN"></span></button>
       <button type="button" id="menuParaPapa">💌 Dile algo a papá</button>
+      <button type="button" id="menuJuego">🎮 Jugar a atrapar corazones</button>
       <button type="button" id="menuAyudaBuzon">❓ ¿Cómo funciona el buzón?</button>
       <button type="button" id="menuNovedades">✨ Ver novedades</button>
     </div>
@@ -494,6 +525,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.66" defer></script>
+<script src="Dallana.js?v=3.68" defer></script>
 </body>
 </html>

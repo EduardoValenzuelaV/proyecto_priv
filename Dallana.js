@@ -3,6 +3,9 @@
    ============================================================ */
 const URL_BACKEND = '';
 const FECHA_INICIO = '2026-10-17';
+// Servidor del rincón en Cloudflare (ver rincon-servidor/GUIA.md). Vacío = funciona como antes, directo con ntfy.
+// Con servidor: los temas de ntfy quedan ocultos, el buzón pide la clave de Dallana, las cartas no se pierden y su progreso se respalda.
+const URL_RINCON = '';
 // Aviso de visitas por ntfy.sh: suscríbete a este tema en la app ntfy. Vacío = sin aviso.
 const NTFY_TEMA = 'dallana-aviso-0232a591a0';
 
@@ -205,7 +208,7 @@ const $ = id => document.getElementById(id);
 const leerJSON = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; } catch { return fallback; } };
 const leerSet = key => { try { return new Set(JSON.parse(localStorage.getItem(key) || '[]').map(String)); } catch { return new Set(); } };
 const guardarSet = (key, set) => { try { localStorage.setItem(key, JSON.stringify([...set])); } catch {} };
-const guardarJSON = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+const guardarJSON = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); marcarRespaldo(); } catch {} };
 // Los saludos de mañana/noche no son recuerdos: no cuentan para desbloquear la carta.
 const esSaludo = id => String(id).startsWith('saludo-');
 const vibrar = () => { if (navigator.vibrate) navigator.vibrate([30, 20, 42]); };
@@ -352,7 +355,8 @@ const HITOS_PIXEL = [
   { titulo: 'Nuestro almuerzo de nuestro cumplemes', imagen: 'assets/pixel/cena.gif', frase: 'El Eduardo se llenó con las papas y no pudo comer más carne :(' },
   { titulo: 'Nuestra tarde en la laguna', imagen: 'assets/pixel/laguna.gif', frase: '' },
   { titulo: 'Dormiditos abrazados', imagen: 'assets/pixel/dormir.gif', frase: 'Tuvimos que dormir porque el Eduardo estaba muy cansadito por sus vecinos JSJSJS' },
-  { titulo: 'Estudiando juntos', imagen: 'assets/pixel/estudio.gif', frase: 'Dallana tratando de explicarme la materia y no estoy entendiendo nada' }
+  { titulo: 'Estudiando juntos', imagen: 'assets/pixel/estudio.gif', frase: 'Dallana tratando de explicarme la materia y no estoy entendiendo nada' },
+  { titulo: 'Los patitos de la pasarela', imagen: 'assets/pixel/pasarela.gif', frase: '' }
 ].map((h, i) => ({ ...h, sonrisas: (i + 1) * SONRISAS_POR_RECUERDO }));
 const txtSonrisas = n => n === 1 ? '1 sonrisa' : `${n} sonrisas`;
 const hoyLocal = () => new Date().toLocaleDateString('en-CA');
@@ -1560,6 +1564,10 @@ const actividad = { recuerdos: 0, ultimaCancion: '' };
 function notificar(texto, tags = 'heart', titulo = 'Actividad en tu pagina') {
   try {
     if (!avisosActivos) return;
+    if (URL_RINCON) {
+      if (tokenRincon) rincon('/api/aviso', { method: 'POST', keepalive: true, body: JSON.stringify({ titulo, texto: `${quienVisita} ${texto}`, tags }) }).catch(() => {});
+      return;
+    }
     fetch(`https://ntfy.sh/${NTFY_TEMA}`, {
       method: 'POST',
       body: `${quienVisita} ${texto}`,
@@ -1662,6 +1670,7 @@ function pintarAlejandro() {
 
 function abrirAlejandro(desde = 0) {
   const globo = $('alejandroGlobo'); if (!globo) return;
+  if (document.querySelector('dialog[open]')) { setTimeout(() => abrirAlejandro(desde), 3000); return; }
   if (!enCasa()) { volverACasa(() => abrirAlejandro(desde), true); return; }
   alejandroPaso = desde;
   pintarAlejandro();
@@ -2255,6 +2264,8 @@ function pintarTutorial() {
 
 function abrirTutorialBuzon() {
   const globo = $('alejandroGlobo'); if (!globo || !globo.hidden) return;
+  // con una carta o el juego abiertos, espera a que se cierren
+  if (document.querySelector('dialog[open]')) { setTimeout(abrirTutorialBuzon, 3000); return; }
   if (!enCasa()) { volverACasa(abrirTutorialBuzon, true); return; }
   tutorialPaso = 0;
   modoGlobo('tutorial');
@@ -2372,11 +2383,19 @@ function ejecutarComando(m) {
 async function revisarCartas() {
   if (document.visibilityState !== 'visible') return;
   try {
-    const [a, b] = await Promise.all([
-      leerTema(NTFY_CARTAS, () => true).catch(() => []),
-      leerTema(NTFY_TEMA, m => !TITULOS_DE_LA_PAGINA.includes(m.title || '')).catch(() => [])
-    ]);
-    const mensajes = [...a, ...b].sort((x, y) => x.t - y.t);
+    let mensajes;
+    if (URL_RINCON) {
+      if (!tokenRincon) return;
+      const { cartas = [] } = await rincon('/api/cartas');
+      mensajes = cartas.filter(m => m.t / 1000 >= CORTE_PRUEBAS);
+    } else {
+      const [a, b] = await Promise.all([
+        leerTema(NTFY_CARTAS, () => true).catch(() => []),
+        leerTema(NTFY_TEMA, m => !TITULOS_DE_LA_PAGINA.includes(m.title || '')).catch(() => [])
+      ]);
+      mensajes = [...a, ...b];
+    }
+    mensajes.sort((x, y) => x.t - y.t);
     const agregadas = [];
     let cambios = false, hayNueva = false;
     for (const m of mensajes) {
@@ -2502,11 +2521,15 @@ $('paraPapaForm')?.addEventListener('submit', async e => {
   btn.disabled = true;
   estado.textContent = 'Alejandro va corriendo donde papá… 🦀💨';
   try {
-    const r = await fetch('https://ntfy.sh/', {
-      method: 'POST',
-      body: JSON.stringify({ topic: NTFY_TEMA, title: 'Mensaje de Dallana 💌', message: texto, tags: ['love_letter', 'crab'], priority: 4 })
-    });
-    if (!r.ok) throw new Error(String(r.status));
+    if (URL_RINCON) {
+      await rincon('/api/aviso', { method: 'POST', body: JSON.stringify({ titulo: 'Mensaje de Dallana 💌', texto, tags: 'love_letter,crab' }) });
+    } else {
+      const r = await fetch('https://ntfy.sh/', {
+        method: 'POST',
+        body: JSON.stringify({ topic: NTFY_TEMA, title: 'Mensaje de Dallana 💌', message: texto, tags: ['love_letter', 'crab'], priority: 4 })
+      });
+      if (!r.ok) throw new Error(String(r.status));
+    }
     buzon.push({ id: `yo-${Date.now()}`, de: 'yo', t: Date.now(), texto, leida: true });
     guardarBuzon();
     ta.value = '';
@@ -2541,6 +2564,7 @@ $('buzonParaPapa')?.addEventListener('click', abrirParaPapa);
 function empezarCartero() {
   if (carteroIniciado) return;
   carteroIniciado = true;
+  if (URL_RINCON && !tokenRincon) setTimeout(pedirClave, 1800);
   pintarSobre();
   if (cartaPendiente()) setTimeout(avisarCartaNueva, 4000);
   setTimeout(revisarCartas, 2500);
@@ -3165,6 +3189,300 @@ setTimeout(soltarDragon, 3500);
 })();
 
 pintarCielo();
+
+/* ============================================================
+   MINI-JUEGO: Alejandro atrapa corazones (con el disfraz que tenga puesto)
+   Corazones +1, dorados +5, nubecitas de lluvia quitan una vida. 3 vidas; se acelera de a poco.
+   Récord en dallanaRecordJuego (si lo supera, papá recibe el aviso). Con 20+ puntos llena un corazón del día (una vez al día).
+   ============================================================ */
+(() => {
+  const dlg = $('juegoDialog'), cv = $('juegoCanvas');
+  if (!dlg || !cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const CEL = 72, ALTO = 86;                 // celdas de la hoja de Alejandro
+  const ESC = .9;                            // tamaño de Alejandro en el juego
+  const CORAZON = ['.oo.oo.', 'orrorro', 'orrrrro', '.orrro.', '..oro..', '...o...'];
+  const NUBE = ['..oooo....', '.owwwwo.oo', 'owwwwwwowwo', 'owwwwwwwwwo', '.ooooooooo.'];
+  let hoja = null, estado = 'menu', puntos = 0, vidas = 3, cosas = [], ultimo = 0, proxima = 0, velocidad = 1, quadro = 0;
+  let ale = { x: W / 2, destino: W / 2, atrapa: 0 };
+  const leerRecord = () => Number(leerJSON('dallanaRecordJuego', 0)) || 0;
+
+  function pintarRecord() {
+    const r = leerRecord();
+    $('juegoRecord').textContent = r;
+    const t = $('juegoRecordTxt'); if (t) t.textContent = r ? `· récord ${r}` : '';
+  }
+
+  function dibujarPixel(filas, colores, x, y, t) {
+    filas.forEach((f, j) => [...f].forEach((ch, i) => {
+      if (ch === '.') return;
+      ctx.fillStyle = colores[ch];
+      ctx.fillRect(Math.round(x + i * t), Math.round(y + j * t), Math.ceil(t), Math.ceil(t));
+    }));
+  }
+
+  function soltar(ahora) {
+    const r = Math.random();
+    const tipo = r < .12 ? 'oro' : r < .27 + Math.min(.15, puntos / 400) ? 'nube' : 'corazon';
+    cosas.push({ tipo, x: 20 + Math.random() * (W - 40), y: -20, v: (1.6 + Math.random() * 1.2) * velocidad, giro: Math.random() * 6 });
+    proxima = ahora + Math.max(380, 900 - puntos * 6) * (.7 + Math.random() * .6);
+  }
+
+  function dibujar(ahora) {
+    ctx.clearRect(0, 0, W, H);
+    // pasto pixel
+    ctx.fillStyle = '#bfe3b0'; ctx.fillRect(0, H - 18, W, 18);
+    ctx.fillStyle = '#9ccd8c';
+    for (let x = 0; x < W; x += 8) ctx.fillRect(x, H - 18 + ((x / 8) % 2) * 2, 4, 2);
+    // cosas que caen
+    cosas.forEach(c => {
+      const bam = Math.sin(ahora / 300 + c.giro) * 2;
+      if (c.tipo === 'nube') {
+        dibujarPixel(NUBE, { o: '#7d86b8', w: '#c9d3f2' }, c.x - 16 + bam, c.y - 8, 3);
+        ctx.fillStyle = '#6fa0e8';
+        for (let k = 0; k < 3; k++) ctx.fillRect(c.x - 9 + k * 9 + bam, c.y + 9 + ((ahora / 90 + k * 5) % 10), 2, 4);
+      } else {
+        const oro = c.tipo === 'oro';
+        dibujarPixel(CORAZON, { o: oro ? '#a8781f' : '#8d1f2e', r: oro ? '#f7c948' : '#e0303f' }, c.x - 10 + bam, c.y - 9, 3);
+        if (oro) { ctx.fillStyle = '#fff6c8'; ctx.fillRect(c.x - 4 + bam, c.y - 6, 3, 3); }
+      }
+    });
+    // Alejandro
+    if (hoja) {
+      const fila = ale.atrapa > ahora ? 1 : Math.abs(ale.destino - ale.x) > 2 ? 5 : 0;
+      const f = Math.floor(ahora / 85) % 12;
+      const w = CEL * ESC * 1.4, h = ALTO * ESC * 1.4;
+      ctx.save();
+      if (ale.destino < ale.x - 2) { ctx.translate(ale.x, 0); ctx.scale(-1, 1); ctx.translate(-ale.x, 0); }
+      ctx.drawImage(hoja, f * CEL, fila * ALTO, CEL, ALTO, ale.x - w / 2, H - h - 4, w, h);
+      ctx.restore();
+    }
+  }
+
+  function paso(ahora) {
+    if (estado !== 'jugando') return;
+    const dt = Math.min(50, ahora - (ultimo || ahora)); ultimo = ahora;
+    velocidad = 1 + puntos / 60;
+    if (ahora >= proxima) soltar(ahora);
+    ale.x += (ale.destino - ale.x) * Math.min(1, dt / 90);
+    const boca = H - 70;                                   // altura donde Alejandro atrapa
+    cosas = cosas.filter(c => {
+      c.y += c.v * dt / 16;
+      if (c.y > boca - 10 && c.y < boca + 26 && Math.abs(c.x - ale.x) < 34) {
+        if (c.tipo === 'nube') {
+          vidas--; vibrar(); pintarVidas();
+          if (vidas <= 0) terminar();
+        } else {
+          puntos += c.tipo === 'oro' ? 5 : 1;
+          ale.atrapa = ahora + 260;
+          $('juegoPuntos').textContent = puntos;
+        }
+        return false;
+      }
+      if (c.y > H + 20) {
+        if (c.tipo === 'corazon' && puntos > 0 && Math.random() < .25) { /* se escapó: sin castigo, es un juego tierno */ }
+        return false;
+      }
+      return true;
+    });
+    dibujar(ahora);
+    if (estado === 'jugando') requestAnimationFrame(paso);
+  }
+
+  function pintarVidas() { $('juegoVidas').textContent = '❤️'.repeat(Math.max(0, vidas)) + '🤍'.repeat(3 - Math.max(0, vidas)); }
+
+  function empezar() {
+    hoja = new Image();
+    hoja.src = urlDisfraz(disfrazActual);
+    puntos = 0; vidas = 3; cosas = []; ultimo = 0; proxima = 0; velocidad = 1;
+    ale = { x: W / 2, destino: W / 2, atrapa: 0 };
+    $('juegoPuntos').textContent = '0'; pintarVidas();
+    $('juegoPantalla').hidden = true;
+    estado = 'jugando';
+    requestAnimationFrame(paso);
+  }
+
+  function terminar() {
+    estado = 'fin';
+    const record = leerRecord();
+    const nuevo = puntos > record;
+    if (nuevo) { guardarJSON('dallanaRecordJuego', puntos); pintarRecord(); }
+    let msg = `¡Atrapaste ${puntos} ${puntos === 1 ? 'corazón' : 'corazones'}!`;
+    if (nuevo && record) msg += ' 🎉 ¡Nuevo récord!';
+    if (puntos >= 20 && leerJSON('dallanaJuegoCorazon', '') !== hoyLocal()) {
+      guardarJSON('dallanaJuegoCorazon', hoyLocal());
+      sumarCorazon();
+      msg += ' Ganaste un corazón del día 💗';
+    }
+    $('juegoMensaje').textContent = msg;
+    $('juegoEmpezar').textContent = 'Jugar otra vez';
+    $('juegoPantalla').hidden = false;
+    if (nuevo) {
+      notificar(`hizo un nuevo récord en el juego de Alejandro: ${puntos} corazones 🎮`, 'video_game');
+      lanzarCelebracion();
+    }
+  }
+
+  function abrirJuego() {
+    cerrarAlejandro(false);
+    estado = 'menu';
+    $('juegoMensaje').textContent = 'Mueve a Alejandro con el dedo (o con las flechas) y atrapa los corazones. ¡Ojo con las nubecitas de lluvia!';
+    $('juegoEmpezar').textContent = '¡Jugar!';
+    $('juegoPantalla').hidden = false;
+    pintarRecord(); pintarVidas(); $('juegoPuntos').textContent = '0';
+    hoja = new Image(); hoja.onload = () => dibujar(performance.now()); hoja.src = urlDisfraz(disfrazActual);
+    if (!dlg.open) dlg.showModal();
+    notificar('abrió el juego de atrapar corazones 🎮', 'video_game');
+  }
+
+  // mover con el dedo o el mouse (en el lienzo) y con las flechas
+  const mover = e => {
+    const r = cv.getBoundingClientRect();
+    ale.destino = Math.max(24, Math.min(W - 24, (e.clientX - r.left) * W / r.width));
+  };
+  cv.addEventListener('pointerdown', e => { mover(e); cv.setPointerCapture?.(e.pointerId); });
+  cv.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.buttons || e.pressure) mover(e); });
+  dlg.addEventListener('keydown', e => {
+    if (estado !== 'jugando') return;
+    if (e.key === 'ArrowLeft') { ale.destino = Math.max(24, ale.destino - 40); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { ale.destino = Math.min(W - 24, ale.destino + 40); e.preventDefault(); }
+  });
+  dlg.addEventListener('close', () => { estado = 'menu'; });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible' && estado === 'jugando') terminar(); });
+  $('juegoEmpezar').addEventListener('click', empezar);
+  $('juegoAbrir')?.addEventListener('click', abrirJuego);
+  $('menuJuego')?.addEventListener('click', abrirJuego);
+  pintarRecord();
+})();
+
+/* ============================================================
+   STICKERS QUE REACCIONAN: al tocarlos saltan, sueltan corazones y dicen algo
+   ============================================================ */
+const FRASES_STICKERS = {
+  'stikers': '¡Flores para ti! 🌹', 'stikers1': 'Te quiero un montón 💕', 'stikers2': '¡Abrazo de Snoopy! 🤗',
+  'stikers3': '¡Erupción de amor! 🌋', 'stikers4': '¿Vamos de excursión? 🎒', 'stikers5': 'Te llegó correo 💌',
+  'stikers6': '¡Guau guau! 🐾', 'stikers7': '¡Guau! Más mimos, por favor 🐶', 'stikers8': '¡Guau! 💗',
+  'stikers9': 'Tranquila, tú eres la más fuerte ✨', 'stikers10': '¡Hola desde aquí arriba! 👋', 'stikers11': 'Con esta venda igual veo que eres la más linda 😎',
+  'stikers12': '¡Eres increíble! 💪', 'stikers13': 'Hora de descansar, ya trabajaste mucho ☕', 'stikers14': 'Estas flores son para ti 💐',
+  'stikers15': '¡Mira mi gatito! 🐱', 'stikers16': 'Jajaja, eres lo máximo 🪭', 'stikers17': '¡Rawr! (de cariño) 🔥',
+  'stikers18': '¡Soy un dinosaurio de verdad! 🦖', 'stikers19': 'Globos para la mejor 🎈', 'stikers20': 'Así de enamorados 💞',
+  'stikers21': 'Un corazón para ti 💚', 'stikers22': 'Floreciendo contigo 🌸'
+};
+(() => {
+  const selector = '.sticker, .letter-sticker, .postal-sticker, .nota-sticker';
+  document.addEventListener('click', e => {
+    const st = e.target.closest?.(selector); if (!st) return;
+    const nombre = (st.getAttribute('src') || '').split('/').pop().replace(/\.(png|jpe?g)$/, '');
+    st.classList.remove('sticker-salta'); void st.offsetWidth; st.classList.add('sticker-salta');
+    setTimeout(() => st.classList.remove('sticker-salta'), 700);
+    // globito con su frase, sobre el sticker
+    document.querySelectorAll('.sticker-globo').forEach(g => g.remove());
+    const g = document.createElement('span');
+    g.className = 'sticker-globo';
+    g.textContent = FRASES_STICKERS[nombre] || '💗';
+    document.body.append(g);
+    const r = st.getBoundingClientRect();
+    const x = Math.max(8, Math.min(innerWidth - 8 - g.offsetWidth, r.left + r.width / 2 - g.offsetWidth / 2));
+    g.style.left = `${x + scrollX}px`;
+    g.style.top = `${r.top + scrollY - g.offsetHeight - 6}px`;
+    setTimeout(() => g.classList.add('fuera'), 2200);
+    setTimeout(() => g.remove(), 2700);
+  });
+})();
+
+/* ============================================================
+   SERVIDOR DEL RINCÓN (Cloudflare): clave de Dallana y respaldo de su progreso
+   Solo se usa si URL_RINCON tiene la dirección del servidor (rincon-servidor/GUIA.md).
+   ============================================================ */
+var tokenRincon = (() => { try { return localStorage.getItem('dallanaToken') || ''; } catch { return ''; } })();
+var respaldoPendiente = false;   // var: guardarJSON la usa desde el comienzo de la página
+function marcarRespaldo() { respaldoPendiente = true; }
+
+async function rincon(ruta, opciones = {}) {
+  if (!tokenRincon) throw new Error('sin clave');
+  const r = await fetch(`${URL_RINCON}${ruta}`, {
+    ...opciones,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tokenRincon}`, ...(opciones.headers || {}) }
+  });
+  if (r.status === 401) {
+    tokenRincon = '';
+    try { localStorage.removeItem('dallanaToken'); } catch {}
+    pedirClave();
+    throw new Error('sin clave');
+  }
+  if (!r.ok) throw new Error(String(r.status));
+  return r.json();
+}
+
+function pedirClave() {
+  const dlg = $('claveDialog');
+  if (!URL_RINCON || !dlg || dlg.open) return;
+  if (document.querySelector('dialog[open]') || $('welcome')?.matches(':not(.closed)')) { setTimeout(pedirClave, 3000); return; }
+  $('claveEstado').textContent = '';
+  dlg.showModal();
+  setTimeout(() => $('claveInput')?.focus(), 60);
+}
+
+$('claveForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const pin = ($('claveInput')?.value || '').trim(); if (!pin) return;
+  const estado = $('claveEstado'), btn = $('claveEntrar');
+  btn.disabled = true; estado.textContent = 'Alejandro está revisando la clave… 🦀';
+  try {
+    const r = await fetch(`${URL_RINCON}/api/entrar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.token) { estado.textContent = d.error || 'Esa no es nuestra clave. Prueba otra vez 💗'; return; }
+    tokenRincon = d.token;
+    try { localStorage.setItem('dallanaToken', d.token); } catch {}
+    $('claveInput').value = '';
+    $('claveDialog').close();
+    alejandroReacciona('aplaudir', 1600);
+    alejandroDice('¡Listo, mamá! Ahora tu buzón y tus cosas están guardados y protegidos. 🔐💗', 'Alejandro 🦀', null, true);
+    await restaurarProgreso();
+    revisarCartas();
+  } catch {
+    estado.textContent = 'No pude conectarme. Revisa tu internet y prueba otra vez.';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* Respaldo: todo lo que la página guarda (dallana…) se sube al servidor cada minuto si cambió */
+const SIN_RESPALDO = ['dallanaToken', 'dallanaYo'];
+function progresoLocal() {
+  const datos = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('dallana') && !SIN_RESPALDO.includes(k)) datos[k] = localStorage.getItem(k);
+    }
+  } catch {}
+  return datos;
+}
+function subirRespaldo(keepalive = false) {
+  if (!URL_RINCON || !tokenRincon || !respaldoPendiente) return;
+  respaldoPendiente = false;
+  rincon('/api/progreso', { method: 'PUT', keepalive, body: JSON.stringify({ guardado: Date.now(), datos: progresoLocal() }) })
+    .catch(() => { respaldoPendiente = true; });
+}
+// En un teléfono nuevo (o con los datos borrados) recupera lo que falte
+async function restaurarProgreso() {
+  try {
+    const { datos = {} } = await rincon('/api/progreso');
+    let recuperados = 0;
+    for (const [k, v] of Object.entries(datos)) {
+      if (SIN_RESPALDO.includes(k)) continue;
+      try { if (localStorage.getItem(k) === null) { localStorage.setItem(k, v); recuperados++; } } catch {}
+    }
+    if (recuperados) location.reload();
+    else marcarRespaldo();
+  } catch {}
+}
+if (URL_RINCON) {
+  setInterval(() => subirRespaldo(), 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') subirRespaldo(true); });
+}
 
 /* ============================================================
    PANTALLA DE CARGA: los corazones se llenan según lo que va cargando

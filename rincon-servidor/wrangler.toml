@@ -1,0 +1,14 @@
+name = "rincon-dallana"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# Copia las cartas nuevas de ntfy cada 15 minutos (ntfy solo las guarda 12 horas)
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Almacenamiento para las cartas y el respaldo del progreso.
+# Crea el espacio con:  npx wrangler kv namespace create RINCON
+# y pega aquí el id que te devuelve.
+[[kv_namespaces]]
+binding = "RINCON"
+id = "PEGA_AQUI_EL_ID_DEL_KV"

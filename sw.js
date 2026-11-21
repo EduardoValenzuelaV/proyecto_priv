@@ -1,9 +1,9 @@
-const CACHE_NAME = 'dallana-v3.82';
+const CACHE_NAME = 'dallana-v3.85';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=8.4',
-  './Dallana.js?v=3.66',
+  './Dallana.css?v=8.6',
+  './Dallana.js?v=3.68',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/fotos/migeo.jpg',
@@ -26,7 +26,8 @@ const ASSETS_TO_CACHE = [
   './assets/pixel/cena.gif',
   './assets/pixel/laguna.gif',
   './assets/pixel/dormir.gif',
-  './assets/pixel/estudio.gif'
+  './assets/pixel/estudio.gif',
+  './assets/pixel/pasarela.gif'
 ];
 
 self.addEventListener('install', event => {
@@ -50,6 +51,8 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   const mismoOrigen = url.origin === self.location.origin;
+  // lo que va a otros sitios (ntfy, el servidor del rincón) no pasa por aquí: va directo a la red
+  if (!mismoOrigen) return;
   // La música va directo a la red (y al caché normal del navegador): así funcionan las peticiones
   // por partes (Range) que usa el iPhone para reproducir y adelantar, y no se descargan 33 MB de una vez.
   if (request.headers.has('range') || url.pathname.includes('/assets/musica/')) return;
