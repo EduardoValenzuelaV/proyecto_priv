@@ -38,6 +38,15 @@
   --cera:#e8505a;
   --postit:#ffe99a;
   --noche:#232a55;
+  /* Fondos de sección: una sola escalera cálida, un poco más tibia en cada capítulo hasta la carta (08, rojo cereza).
+     Azul, verde y mantequilla se usan solo como acentos de los objetos (sobres, cuadros, cintas, botones). */
+  --tono-1:#fff4ea;
+  --tono-2:#ffefe4;
+  --tono-3:#ffeadf;
+  --tono-4:#fee5dc;
+  --tono-5:#fde0d9;
+  --tono-6:#fcdbd6;
+  --tono-7:#fad5d2;
   --fibra:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .15 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --cordon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='38' viewBox='0 0 120 38'%3E%3Cpath d='M6 12Q62 34 120 12' fill='none' stroke='%23b0243a' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M8 11Q62 31 118 11' fill='none' stroke='%23e2576a' stroke-width='1'/%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
   --poste:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='38' viewBox='0 0 8 38'%3E%3Crect x='2.5' y='8' width='3' height='26' fill='%23c8962f'/%3E%3Crect x='0' y='33' width='8' height='5' rx='1' fill='%239c6d22'/%3E%3Ccircle cx='4' cy='6' r='3.5' fill='%23e2b04a' stroke='%239c6d22'/%3E%3C/svg%3E");
@@ -79,9 +88,8 @@ body{
   margin:0;min-height:100svh;overflow-x:hidden;
   padding:20px 14px calc(40px + var(--safe-bottom));
   background:
-    radial-gradient(900px 640px at 0% 0%,#fde1d2 0,transparent 62%),
-    radial-gradient(700px 560px at 100% 40%,#dde9fb 0,transparent 60%),
-    radial-gradient(800px 600px at 10% 100%,#e2f1da 0,transparent 60%),
+    radial-gradient(1000px 680px at 50% 0%,var(--tono-2) 0,transparent 65%),
+    radial-gradient(1100px 760px at 50% 100%,var(--tono-6) 0,transparent 62%),
     var(--papel);
   background-attachment:fixed;
   color:var(--tinta);
@@ -117,14 +125,14 @@ main>header,main>section{
   border:1px solid var(--linea);border-radius:var(--r-seccion);
   background:linear-gradient(165deg,var(--tarjeta) 0%,var(--tinte,#fff6ee) 100%);box-shadow:var(--sombra);
 }
-.cover{--tinte:#fff0e2}
-.music-player{--tinte:var(--azul-claro)}
-.discovery{--tinte:var(--verde-claro)}
-.memory-feature{--tinte:var(--mantequilla)}
-#lettersWhenSection{--tinte:#fdece6}
-.buzon-feature{--tinte:#ffe9ec}
-.photo-section{--tinte:var(--azul-claro)}
-#museumSection{--tinte:var(--verde-claro)}
+.cover{--tinte:var(--tono-1)}
+.music-player{--tinte:var(--tono-1)}
+.discovery{--tinte:var(--tono-2)}
+.memory-feature{--tinte:var(--tono-3)}
+#lettersWhenSection{--tinte:var(--tono-4)}
+.buzon-feature{--tinte:var(--tono-5)}
+.photo-section{--tinte:var(--tono-6)}
+#museumSection{--tinte:var(--tono-7)}
 /* Las secciones con stickers reservan una franja superior para ellos */
 main>section:has(>.sticker){padding-top:calc(var(--st) - var(--st-asoma) + 16px)}
 
@@ -634,7 +642,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 @media (prefers-reduced-motion:reduce){.open-card{transform:none}}
 
 /* ============ 05 · MI GEÓLOGA FAVORITA ============ */
-.photo-section{background:var(--corazones),linear-gradient(165deg,var(--tarjeta) 0%,#fdeee6 100%)}
+.photo-section{background:var(--corazones),linear-gradient(165deg,var(--tarjeta) 0%,var(--tinte) 100%)}
 .portrait-memory{
   position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:16px;
   padding:22px 16px;border:1px solid var(--linea);border-radius:var(--r-tarjeta);
@@ -689,7 +697,7 @@ body:has(#welcome:not(.closed)) .heart-drift{z-index:11}
 /* ============ 06 · LO QUE ADMIRO DE TI ============ */
 /* Pared de galería: rayitas suaves y una moldura donde cuelgan los cuadros.
    Cada obra es un cuadro con marco dorado y placa; al tocarla se da vuelta como un cromo. */
-#museumSection{background:radial-gradient(circle at 12px 12px,rgba(79,154,74,.09) 0 2px,transparent 2.5px) 0 0/24px 24px,linear-gradient(165deg,var(--tarjeta) 0%,var(--verde-claro) 100%)}
+#museumSection{background:radial-gradient(circle at 12px 12px,rgba(209,52,63,.08) 0 2px,transparent 2.5px) 0 0/24px 24px,linear-gradient(165deg,var(--tarjeta) 0%,var(--tinte) 100%)}
 /* Contador: boleto de entrada con muescas a los lados y talón punteado */
 .museo-coleccion{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:-6px 0 26px;padding:10px 22px;
   background:radial-gradient(circle at 0 50%,transparent 9px,var(--mantequilla) 9.5px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 9px,var(--mantequilla) 9.5px) right/51% 100% no-repeat;
