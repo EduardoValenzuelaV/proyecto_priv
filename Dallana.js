@@ -3105,18 +3105,46 @@ setInterval(() => { if (nocheVisual() !== cieloEraNoche) pintarCielo(); }, 60000
 /* Dragoncitos que cruzan el cielo: 10 formas y colores, a distintas distancias (los lejanos más chicos y lentos) */
 const DRAGONES_TOTAL = 10;   // columnas de assets/pixel/dragones.png
 let dragonesVolando = 0;
+/* En el teléfono las secciones tapan casi todo el cielo: busca un hueco libre entre dos secciones
+   que esté en pantalla (al menos 40 px de alto) para que el dragón pase justo por ahí. */
+function huecoDeCielo() {
+  const bloques = [...document.querySelectorAll('main>section,main>header,.page-footer')]
+    .map(e => e.getBoundingClientRect()).filter(r => r.height && r.bottom > 0 && r.top < innerHeight)
+    .sort((x, y) => x.top - y.top);
+  const huecos = [];
+  let desde = 0;
+  bloques.forEach(r => { if (r.top - desde >= 40) huecos.push([desde, r.top]); desde = Math.max(desde, r.bottom); });
+  if (innerHeight - desde >= 40) huecos.push([desde, innerHeight]);
+  const buenos = huecos.map(([a, b]) => [Math.max(a, 8), Math.min(b, innerHeight - 8)]).filter(([a, b]) => b - a >= 40);
+  return buenos.length ? buenos[Math.floor(Math.random() * buenos.length)] : null;
+}
 function soltarDragon() {
   const cielo = $('cielo');
+  const chico = innerWidth < 600;
+  let reintento = false;
   if (cielo && animarMucho() && document.visibilityState === 'visible' && dragonesVolando < 2) {
     const r = Math.random();
-    const [capa, escala, dur] = r < .35 ? ['lejos', 1.1, 36] : r < .75 ? ['medio', 1.6, 27] : ['cerca', 2.2, 20];
-    const chico = innerWidth < 600;
+    let [capa, escala, dur] = r < .35 ? ['lejos', 1.1, 36] : r < .75 ? ['medio', 1.6, 27] : ['cerca', 2.2, 20];
+    let top = `${6 + Math.random() * 74}%`;
+    if (chico) {
+      const hueco = huecoDeCielo();
+      if (!hueco) reintento = true;
+      else {
+        // tan grande como quepa en el hueco, nítido y rápido para que alcance a verse entero
+        const alto = hueco[1] - hueco[0];
+        // las alas pueden asomar detrás de las tarjetas, como si pasara entre dos páginas
+        escala = Math.max(1, Math.min(1.7, alto * 1.15 / 48));
+        capa = 'cerca'; dur = 6 + Math.random() * 2;
+        top = `${Math.round(hueco[0] + (alto - 48 * escala) / 2)}px`;
+      }
+    }
+    if (!reintento) {
     const el = document.createElement('i');
-    el.className = `dragon dragon--${capa}${Math.random() < .5 ? ' al-reves' : ''}`;
+    el.className = `dragon dragon--${capa}${Math.random() < .5 ? ' al-reves' : ''}${chico ? ' en-hueco' : ''}`;
     el.style.setProperty('--n', Math.floor(Math.random() * DRAGONES_TOTAL));
-    el.style.setProperty('--e', chico ? escala * .7 : escala);
-    el.style.setProperty('--dur', `${dur * (.9 + Math.random() * .2)}s`);
-    el.style.top = `${6 + Math.random() * 74}%`;
+    el.style.setProperty('--e', escala);
+    el.style.setProperty('--dur', `${chico ? dur : dur * (.9 + Math.random() * .2)}s`);
+    el.style.top = top;
     const cuerpo = document.createElement('span');
     cuerpo.className = 'dragon-cuerpo';
     el.append(cuerpo);
@@ -3126,8 +3154,10 @@ function soltarDragon() {
     const quitar = () => { if (fuera) return; fuera = true; el.remove(); dragonesVolando--; };
     el.addEventListener('animationend', e => { if (e.target === el) quitar(); });
     setTimeout(quitar, dur * 1300 + 1000);   // respaldo si la animación se congela
+    }
   }
-  setTimeout(soltarDragon, 12000 + Math.random() * 22000);
+  // en el teléfono salen más seguido (y si no había hueco, vuelve a mirar en un ratito)
+  setTimeout(soltarDragon, reintento ? 2500 : chico ? 7000 + Math.random() * 9000 : 12000 + Math.random() * 22000);
 }
 setTimeout(soltarDragon, 3500);
 
@@ -3625,8 +3655,28 @@ const FRASES_STICKERS = {
   'stikers19': ['Globos para la mejor 🎈', '¡Que no se vuelen! 🎈'],
   'stikers20': ['Así de enamorados 💞', 'Tú y yo 💞'],
   'stikers21': ['Un corazón para ti 💚', 'Corazón verde, de esperanza 💚'],
-  'stikers22': ['Floreciendo contigo 🌸', 'Contigo todo florece 🌸']
+  'stikers22': ['Floreciendo contigo 🌸', 'Contigo todo florece 🌸'],
+  // perritos pastor alemán (los 12 se turnan: cada visita aparecen 6 distintos)
+  'perrito1': ['Esperándote echadito 🐾', 'Modo siesta activado 💤'],
+  'perrito2': ['¿Me das un premio? 🦴', 'Soy un buen chico 🐶'],
+  'perrito3': ['Te traje mi juguete favorito 🐰', '¡Lo cuidé para ti! 🐰'],
+  'perrito4': ['¿Me veo linda con mi rosita? 🎀', 'Me puse elegante para ti 🎀'],
+  'perrito5': ['¡Asomándome! 👀', '¿Hay alguien ahí? 👀'],
+  'perrito6': ['Te extraño cuando no estás 🥺', 'Un abrazo y se me pasa 🥺'],
+  'perrito7': ['¡Llegaste! ¡Llegaste! 🐕', '¡Qué felicidad verte! 💛'],
+  'perrito8': ['Grrr… (es de mentira) 😤', 'Hoy ando gruñón, pero te quiero 😤'],
+  'perrito9': ['¡Hola, mamá! 👋✨', '¡Choca esa patita! 🐾'],
+  'perrito10': ['¡Voy corriendo a verte! 💨', '¡Espérame! 💨'],
+  'perrito11': ['Glu glu glu… ¡toma agüita tú también! 💧', 'Hidratándome para jugar contigo 💧'],
+  'perrito12': ['¿Jugamos a la pelota? 🎾', '¡Tírala otra vez! 🎾']
 };
+const PERRITOS = Array.from({ length: 12 }, (_, i) => `perrito${i + 1}`);
+// cada visita pone 6 perritos distintos en las esquinas de abajo (antes de que carguen: son lazy)
+(() => {
+  const lugares = [...document.querySelectorAll('img.perrito')];
+  const mezcla = [...PERRITOS].sort(() => Math.random() - .5);
+  lugares.forEach((img, i) => { img.src = `assets/stickers/${mezcla[i % mezcla.length]}.png`; });
+})();
 (() => {
   const selector = '.sticker, .letter-sticker, .postal-sticker, .nota-sticker';
   const ANIMACIONES = ['sticker-salta', 'sticker-gira', 'sticker-baila', 'sticker-late'];
@@ -3635,7 +3685,8 @@ const FRASES_STICKERS = {
   const vistos = leerSet('dallanaStickers');
   const toques = {};
   const nombreDe = st => (st.getAttribute('src') || '').split('/').pop().replace(/\.(png|jpe?g|gif|webp)(\?.*)?$/, '');
-  const totalStickers = () => new Set([...document.querySelectorAll(selector)].map(nombreDe).filter(n => FRASES_STICKERS[n])).size;
+  // cuentan los que están en la página más los 12 perritos (aunque hoy solo se vean 6)
+  const totalStickers = () => new Set([...document.querySelectorAll(selector)].map(nombreDe).filter(n => FRASES_STICKERS[n]).concat(PERRITOS)).size;
   const suave = matchMedia('(prefers-reduced-motion: reduce)');
 
   function corazoncitos(r) {

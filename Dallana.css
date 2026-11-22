@@ -1213,8 +1213,11 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .alejandro-cerrar{position:absolute;top:4px;right:6px;width:32px;height:32px;border:0;background:transparent;color:var(--vino);font-size:20px;line-height:1;cursor:pointer}
 @keyframes alejandro-globo-in{from{opacity:0;transform:translateY(8px) scale(.9)}}
 @media (max-width:599px){
-  .alejandro{left:14px;bottom:calc(12px + var(--safe-bottom));transition:transform .35s ease,opacity .35s ease}
-  .alejandro.escondido{transform:translateY(40px);opacity:.55}
+  .alejandro{left:14px;bottom:calc(12px + var(--safe-bottom));transition:opacity .35s ease}
+  /* al desplazarse se agacha el dibujo, no la caja: un transform en la caja encogía su globito (que es fixed) */
+  .alejandro .alejandro-sprite{transition:translate .35s ease,scale .2s ease}
+  .alejandro.escondido{opacity:.55}
+  .alejandro.escondido .alejandro-sprite{translate:0 40px}
   .alejandro-sprite{--alto:86px;width:72px;height:86px;margin:0 -14px;background-size:864px 946px}
   @keyframes alejandro-salto{from{background-position-x:0}to{background-position-x:-864px}}
   .alejandro-dice{position:fixed;left:10px;right:10px;width:auto;bottom:calc(90px + var(--safe-bottom));max-width:none}
@@ -1313,6 +1316,10 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .dragon--lejos{opacity:.55}
 .dragon--medio{opacity:.8}
 .dragon--cerca{opacity:.95}
+/* en el teléfono pasa por el hueco entre dos secciones: sin subir y bajar, para que no se esconda */
+.dragon.en-hueco .dragon-cuerpo{animation:dragon-aletea .5s step-end infinite}
+/* y en el teléfono las secciones se separan un poco más (64 px), para que se vean pasar */
+@media (max-width:599px){main{gap:calc(var(--st-asoma) + 40px)}}
 .cielo.noche .dragon-cuerpo{filter:drop-shadow(0 0 6px rgba(255,226,170,.45))}
 
 /* 10. Secciones que se pegan como páginas de álbum */
