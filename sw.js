@@ -1,18 +1,15 @@
-const CACHE_NAME = 'dallana-v3.88';
+const CACHE_NAME = 'dallana-v3.89';
+// Solo lo básico para abrir sin internet. Lo demás (fotos, GIF de recuerdos, stickers) se guarda
+// en la caché cuando ella lo ve, así cada actualización no vuelve a bajar varios MB por adelantado.
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=8.8',
+  './Dallana.css?v=8.9',
   './Dallana.js?v=3.71',
   './manifest.json',
-  './assets/fotos/portada-musica.png',
-  './assets/fotos/migeo.jpg',
-  './assets/stickers/stikers3.png',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
   './assets/pixel/alejandro.png?v=5',
   './assets/pixel/buzon.png?v=1',
-  './assets/pixel/obras.png?v=1',
   './assets/pixel/adornos.png?v=1',
   './assets/pixel/postal-manana.png?v=1',
   './assets/pixel/postal-tarde.png?v=1',
@@ -20,15 +17,7 @@ const ASSETS_TO_CACHE = [
   './assets/pixel/dragones.png?v=3',
   './assets/pixel/disfraces/cartero.png?v=2',
   './assets/fotos/portada-polaroid.jpg?v=2',
-  './assets/fotos/portada-tira.jpg?v=1',
-  './assets/pixel/disfraces/guia-de-museo.png?v=2',
-  './assets/pixel/lluvia.gif',
-  './assets/pixel/cena.gif',
-  './assets/pixel/laguna.gif',
-  './assets/pixel/dormir.gif',
-  './assets/pixel/estudio.gif',
-  './assets/pixel/pasarela.gif',
-  './assets/pixel/pasarela2.gif'
+  './assets/fotos/portada-tira.jpg?v=1'
 ];
 
 self.addEventListener('install', event => {

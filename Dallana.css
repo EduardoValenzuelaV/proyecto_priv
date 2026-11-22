@@ -511,6 +511,10 @@ main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,tr
 @keyframes latir{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.07)}}
 .music-volume{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--tinta-suave);font-size:13px}
 .music-volume svg{width:20px;height:20px}
+.music-volume input[type=range]{height:32px;cursor:pointer}
+/* la × de los diálogos se ve igual, pero se puede tocar en un área de 48–52 px */
+.close::after,.alejandro-cerrar::after{content:"";position:absolute;inset:-6px;border-radius:50%}
+.alejandro-siguiente::after{content:"";position:absolute;inset:-4px -2px}
 .music-volume input{width:96px;accent-color:var(--vino);cursor:pointer}
 .music-volume output{min-width:36px;font-variant-numeric:tabular-nums;text-align:right}
 .music-hint{color:var(--tinta-suave);font:600 19px/1.3 var(--firma)}
@@ -538,7 +542,7 @@ main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,tr
 .progress-hearts.completo .ph-corazon{animation:ph-latido 1.6s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
 .hito-label{margin:18px 0 0}
 .pixel-hitos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.pixel-hito{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 12px;border:2px dashed var(--linea);border-radius:10px;background:var(--tarjeta);color:var(--tinta-suave);font-weight:600;font-size:14px;cursor:pointer}
+.pixel-hito{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 12px;border:2px dashed var(--linea);border-radius:10px;background:var(--tarjeta);color:var(--tinta-suave);font-weight:600;font-size:14px;cursor:pointer}
 .pixel-hito.abierto{border-style:solid;border-color:var(--vino);color:var(--vino);box-shadow:3px 3px 0 var(--vino)}
 .pixel-hito.abierto:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--vino)}
 .pixel-hito-icono{font-size:13px}
@@ -587,7 +591,7 @@ main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,tr
 @media (prefers-reduced-motion:reduce){.paper .resalte,.paper.new .paper-sello,#random::after{animation:none}}
 .paper.new{animation:paper-in .6s cubic-bezier(.3,1.4,.5,1)}
 @keyframes paper-in{from{transform:rotate(2deg) translateY(12px) scale(.96);opacity:.3}}
-.paper-label{display:block;margin:0 0 12px;color:#8a8494;font:700 11px var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.paper-label{display:block;margin:0 0 12px;color:var(--tinta-suave);font:700 11px var(--sans);letter-spacing:.18em;text-transform:uppercase}
 .paper #message{max-width:560px;margin:0 auto;overflow-wrap:anywhere;color:#2b2a33;font:600 clamp(25px,6.4vw,36px)/1.32 var(--firma);text-wrap:balance}
 .memory{display:none;width:100%;max-height:380px;aspect-ratio:4/3;margin-top:20px;object-fit:cover;border:8px solid #fff;border-radius:4px;box-shadow:var(--sombra)}
 .memory.show{display:block}
@@ -599,7 +603,7 @@ main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,tr
 .action-row .icon-btn{width:52px;height:52px;border:2px solid var(--vino);background:#fff;font-size:22px;box-shadow:0 6px 14px -8px rgba(209,52,63,.6)}
 .action-row .icon-btn.favorite{background:var(--vino);color:#fff}
 .secondary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
-.memory-feature #daily{background:var(--azul-claro);border-color:rgba(61,114,196,.35);color:var(--azul)}
+.memory-feature #daily{background:var(--azul-claro);border-color:rgba(61,114,196,.35);color:#2c5ca8}
 .memory-feature #daily:hover{background:#d6e4f8}
 .memory-feature #viewFavorites{border:1px solid rgba(79,154,74,.35);background:var(--verde-claro);color:var(--verde);font-weight:600}
 .memory-feature #viewFavorites:hover{background:#d8ecce}
@@ -759,7 +763,7 @@ main>header.cover{background:radial-gradient(circle,rgba(209,52,63,.08) 0 1px,tr
   background:radial-gradient(circle at 0 50%,transparent 9px,var(--mantequilla) 9.5px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 9px,var(--mantequilla) 9.5px) right/51% 100% no-repeat;
   filter:drop-shadow(0 2px 0 var(--oro)) drop-shadow(0 6px 10px rgba(120,48,40,.12));color:var(--tinta-suave);font:500 14px/1.3 var(--sans)}
 .museo-coleccion b{color:var(--vino);font-weight:700}
-.museo-boleto{padding:2px 14px 2px 0;border-right:2px dashed var(--oro);color:var(--oro-oscuro);font:700 12px/1.25 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.museo-boleto{padding:2px 14px 2px 0;border-right:2px dashed var(--oro);color:#7a5316;font:700 12px/1.25 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .museo-boleto small{display:block;color:var(--tinta-suave);font:600 15px/1.1 var(--firma);letter-spacing:0;text-transform:none}
 .museo-puntos{display:flex;flex-wrap:wrap;gap:4px}
 .museo-puntos i{width:10px;height:10px;border:1px solid var(--oro);border-radius:2px;background:var(--tarjeta)}
@@ -1129,7 +1133,7 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 /* menú de Alejandro */
 .alejandro-menu{display:grid;gap:6px;margin:2px 0 4px}
 .alejandro-menu[hidden]{display:none}
-.alejandro-menu button{min-height:36px;padding:6px 12px;border:2px solid var(--vino);border-radius:12px;background:#fff6f2;color:var(--vino);font:inherit;font-size:14px;font-weight:600;text-align:left;cursor:pointer}
+.alejandro-menu button{min-height:44px;padding:8px 12px;border:2px solid var(--vino);border-radius:12px;background:#fff6f2;color:var(--vino);font:inherit;font-size:14px;font-weight:600;text-align:left;cursor:pointer}
 .alejandro-menu button:hover{background:#ffe9e2}
 #menuBuzonN:not(:empty){display:inline-block;min-width:20px;margin-left:4px;padding:0 6px;border-radius:999px;background:var(--vino);color:#fff;font-size:12px;text-align:center}
 /* carta de papá y buzón */
@@ -1140,7 +1144,7 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .carta-papa-fecha{margin:2px 0 12px;font-size:13px;color:var(--tinta-suave)}
 .carta-papa-texto{margin:0;color:var(--tinta);font:500 clamp(22px,5vw,26px)/1.45 var(--firma);white-space:pre-wrap;overflow-wrap:anywhere}
 .carta-papa-acciones{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
-.carta-btn{min-height:42px;padding:8px 16px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.carta-btn{min-height:44px;padding:8px 16px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
 .carta-btn.suave{background:#fff;color:var(--vino)}
 .carta-btn:disabled{opacity:.6;cursor:progress}
 .buzon-lista{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none}
@@ -1205,8 +1209,8 @@ dialog#letterDialog[open]{animation:letter-dialog-in .6s cubic-bezier(.18,.8,.25
 .alejandro-nombre{display:block;margin-right:24px;color:var(--vino);font-size:13px;letter-spacing:.3px}
 .alejandro-globo p{margin:4px 0 8px;font-size:14px;line-height:1.45}
 .alejandro-pie{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--tinta-suave)}
-.alejandro-siguiente{min-height:32px;padding:4px 12px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.alejandro-cerrar{position:absolute;top:4px;right:6px;width:28px;height:28px;border:0;background:transparent;color:var(--vino);font-size:20px;line-height:1;cursor:pointer}
+.alejandro-siguiente{position:relative;min-height:38px;padding:6px 14px;border:2px solid var(--vino);border-radius:999px;background:var(--vino);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.alejandro-cerrar{position:absolute;top:4px;right:6px;width:32px;height:32px;border:0;background:transparent;color:var(--vino);font-size:20px;line-height:1;cursor:pointer}
 @keyframes alejandro-globo-in{from{opacity:0;transform:translateY(8px) scale(.9)}}
 @media (max-width:599px){
   .alejandro{left:14px;bottom:calc(12px + var(--safe-bottom));transition:transform .35s ease,opacity .35s ease}
