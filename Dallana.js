@@ -3193,26 +3193,72 @@ pintarCielo();
 
 /* ============================================================
    MINI-JUEGO: Alejandro atrapa corazones (con el disfraz que tenga puesto)
-   Corazones +1, dorados +5, nubecitas de lluvia quitan una vida. 3 vidas; se acelera de a poco.
-   Récord en dallanaRecordJuego (si lo supera, papá recibe el aviso). Con 20+ puntos llena un corazón del día (una vez al día).
+   - Corazón +1 · dorado +5 · carta +3 (y una frase) · estrella = imán 6 s · burbuja = escudo contra una nube
+   - Nubecitas de lluvia quitan una vida (3). Racha: x2 desde 10 seguidos, x3 desde 25.
+   - Cada 30 puntos sube de nivel (más rápido). Cielo según la hora. Se pausa si sale de la pestaña.
+   - Récord en dallanaRecordJuego (si lo supera, papá recibe el aviso). Con 20+ puntos llena un corazón del día (una vez al día).
    ============================================================ */
 (() => {
   const dlg = $('juegoDialog'), cv = $('juegoCanvas');
   if (!dlg || !cv) return;
   const ctx = cv.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
   const W = cv.width, H = cv.height;
-  const CEL = 72, ALTO = 86;                 // celdas de la hoja de Alejandro
-  const ESC = .9;                            // tamaño de Alejandro en el juego
-  const CORAZON = ['.oo.oo.', 'orrorro', 'orrrrro', '.orrro.', '..oro..', '...o...'];
-  const NUBE = ['..oooo....', '.owwwwo.oo', 'owwwwwwowwo', 'owwwwwwwwwo', '.ooooooooo.'];
-  let hoja = null, estado = 'menu', puntos = 0, vidas = 3, cosas = [], ultimo = 0, proxima = 0, velocidad = 1, quadro = 0;
+  const CEL = 72, ALTO = 86, ESC = 1.26;      // celdas de la hoja de Alejandro y su tamaño en el juego
+  const FILA = { quieto: 0, aplaudir: 1, bailar: 2, caminar: 5, enamorado: 8, mareado: 10 };
+  const BOCA = H - 70;                         // altura donde Alejandro atrapa
+  const PIXEL = {
+    corazon: ['.oo.oo.', 'orrorro', 'orrrrro', '.orrro.', '..oro..', '...o...'],
+    nube: ['..oooo....', '.owwwwo.oo', 'owwwwwwowwo', 'owwwwwwwwwo', '.ooooooooo.'],
+    carta: ['oooooooo', 'owwwwwwo', 'oowwwwoo', 'owowwowo', 'owwrrwwo', 'oooooooo'],
+    estrella: ['...o...', '..oyo..', 'ooyyyoo', 'oyyyyyo', '.oyyyo.', '.oyoyo.', 'oo...oo']
+  };
+  const FRASES_CARTA = ['Te quiero mucho 💗', 'Eres mi lugar favorito', 'Te elijo siempre', '¡Qué linda eres!', 'Mi persona favorita', 'Gracias por existir', 'Contigo todo es mejor'];
+  const MEDALLAS = [[100, '💎', 'diamante'], [60, '🥇', 'oro'], [30, '🥈', 'plata'], [10, '🥉', 'bronce']];
+  const fuente = (getComputedStyle(document.documentElement).getPropertyValue('--firma') || 'cursive').trim();
+
+  let hoja = null, estado = 'menu', puntos = 0, vidas = 3, cosas = [], chispas = [], textos = [];
+  let ultimo = 0, proxima = 0, racha = 0, mejorRacha = 0, nivel = 1, atrapados = 0;
+  let iman = 0, escudo = false, invulnerable = 0, mareo = 0, baile = 0, sacudida = 0, banner = null, cuentaHasta = 0;
   let ale = { x: W / 2, destino: W / 2, atrapa: 0 };
+  let nubesFondo = [];
   const leerRecord = () => Number(leerJSON('dallanaRecordJuego', 0)) || 0;
+  const multiplicador = () => racha >= 25 ? 3 : racha >= 10 ? 2 : 1;
+
+  /* --- sonidos chiquitos (WebAudio), se pueden apagar --- */
+  let audio = null;
+  let sonido = leerJSON('dallanaJuegoSonido', true) !== false;
+  function tono(f, dur = .07, tipo = 'square', vol = .035, f2 = null) {
+    if (!sonido) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+      o.type = tipo; o.frequency.setValueAtTime(f, t);
+      if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + .02);
+    } catch {}
+  }
+  const arpegio = (notas, sep = 70) => notas.forEach((n, i) => setTimeout(() => tono(n, .09), i * sep));
+  function pintarSonido() {
+    const b = $('juegoSonido'); if (!b) return;
+    b.textContent = sonido ? '🔊' : '🔇';
+    b.setAttribute('aria-label', sonido ? 'Silenciar sonidos del juego' : 'Activar sonidos del juego');
+  }
 
   function pintarRecord() {
     const r = leerRecord();
     $('juegoRecord').textContent = r;
     const t = $('juegoRecordTxt'); if (t) t.textContent = r ? `· récord ${r}` : '';
+  }
+  function pintarVidas() {
+    const v = Math.max(0, vidas);
+    $('juegoVidas').textContent = '❤️'.repeat(v) + '🤍'.repeat(3 - v) + (escudo ? ' 🫧' : '');
+  }
+  function pintarPuntos() {
+    $('juegoPuntos').textContent = puntos;
+    const m = multiplicador(), c = $('juegoRacha');
+    if (c) { c.textContent = m > 1 ? `x${m}` : ''; c.hidden = m === 1; }
   }
 
   function dibujarPixel(filas, colores, x, y, t) {
@@ -3223,84 +3269,268 @@ pintarCielo();
     }));
   }
 
-  function soltar(ahora) {
-    const r = Math.random();
-    const tipo = r < .12 ? 'oro' : r < .27 + Math.min(.15, puntos / 400) ? 'nube' : 'corazon';
-    cosas.push({ tipo, x: 20 + Math.random() * (W - 40), y: -20, v: (1.6 + Math.random() * 1.2) * velocidad, giro: Math.random() * 6 });
-    proxima = ahora + Math.max(380, 900 - puntos * 6) * (.7 + Math.random() * .6);
+  /* --- cielo según la hora, cerros y nubes lejanas --- */
+  function momento() {
+    const h = new Date().getHours();
+    return h >= 20 || h < 7 ? 'noche' : h < 12 ? 'manana' : 'tarde';
   }
-
-  function dibujar(ahora) {
-    ctx.clearRect(0, 0, W, H);
-    // pasto pixel
-    ctx.fillStyle = '#bfe3b0'; ctx.fillRect(0, H - 18, W, 18);
-    ctx.fillStyle = '#9ccd8c';
-    for (let x = 0; x < W; x += 8) ctx.fillRect(x, H - 18 + ((x / 8) % 2) * 2, 4, 2);
-    // cosas que caen
-    cosas.forEach(c => {
-      const bam = Math.sin(ahora / 300 + c.giro) * 2;
-      if (c.tipo === 'nube') {
-        dibujarPixel(NUBE, { o: '#7d86b8', w: '#c9d3f2' }, c.x - 16 + bam, c.y - 8, 3);
-        ctx.fillStyle = '#6fa0e8';
-        for (let k = 0; k < 3; k++) ctx.fillRect(c.x - 9 + k * 9 + bam, c.y + 9 + ((ahora / 90 + k * 5) % 10), 2, 4);
-      } else {
-        const oro = c.tipo === 'oro';
-        dibujarPixel(CORAZON, { o: oro ? '#a8781f' : '#8d1f2e', r: oro ? '#f7c948' : '#e0303f' }, c.x - 10 + bam, c.y - 9, 3);
-        if (oro) { ctx.fillStyle = '#fff6c8'; ctx.fillRect(c.x - 4 + bam, c.y - 6, 3, 3); }
+  const CIELOS = {
+    manana: { cielo: ['#cfe8ff', '#fde7ef'], cerro: ['#b5dcae', '#97cb8e'], pasto: ['#bfe3b0', '#9ccd8c'], nube: '#ffffff' },
+    tarde: { cielo: ['#ffd3b5', '#fff1d6'], cerro: ['#b9d79c', '#9cc581'], pasto: ['#c4e2a4', '#a3cd87'], nube: '#fff6ee' },
+    noche: { cielo: ['#2b3a6b', '#6a6fa8'], cerro: ['#3f5a6e', '#33495c'], pasto: ['#4d6b62', '#3e5a52'], nube: '#9aa6d6' }
+  };
+  const ESTRELLAS_FONDO = Array.from({ length: 26 }, () => ({ x: Math.random() * W, y: Math.random() * H * .55, f: Math.random() * 6 }));
+  function dibujarFondo(ahora) {
+    const p = CIELOS[momento()];
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, p.cielo[0]); g.addColorStop(1, p.cielo[1]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    if (momento() === 'noche') {
+      ESTRELLAS_FONDO.forEach(s => {
+        ctx.globalAlpha = .45 + .55 * Math.abs(Math.sin(ahora / 700 + s.f));
+        ctx.fillStyle = '#fff6c8'; ctx.fillRect(Math.round(s.x), Math.round(s.y), 2, 2);
+      });
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#fff6c8'; ctx.beginPath(); ctx.arc(W - 46, 46, 15, 0, 7); ctx.fill();
+      ctx.fillStyle = p.cielo[0]; ctx.beginPath(); ctx.arc(W - 39, 41, 13, 0, 7); ctx.fill();
+    } else {
+      ctx.fillStyle = momento() === 'manana' ? '#ffe7a3' : '#ffc28a';
+      ctx.beginPath(); ctx.arc(W - 48, 50, 16, 0, 7); ctx.fill();
+    }
+    // nubes lejanas que pasan lento
+    ctx.globalAlpha = .75;
+    nubesFondo.forEach(n => {
+      n.x += n.v; if (n.x > W + 40) n.x = -60;
+      dibujarPixel(PIXEL.nube, { o: p.nube, w: p.nube }, n.x, n.y, n.t);
+    });
+    ctx.globalAlpha = 1;
+    // dos capas de cerros (Conce) en pixel
+    [[0, H - 92, 54, .012], [1, H - 62, 38, .02]].forEach(([i, base, alto, frec]) => {
+      ctx.fillStyle = p.cerro[i];
+      for (let x = 0; x < W; x += 4) {
+        const y = base - Math.round((Math.sin(x * frec + i * 2) * .5 + .5) * alto / 4) * 4;
+        ctx.fillRect(x, y, 4, H - y);
       }
     });
-    // Alejandro
-    if (hoja) {
-      const fila = ale.atrapa > ahora ? 1 : Math.abs(ale.destino - ale.x) > 2 ? 5 : 0;
-      const f = Math.floor(ahora / 85) % 12;
-      const w = CEL * ESC * 1.4, h = ALTO * ESC * 1.4;
-      ctx.save();
-      if (ale.destino < ale.x - 2) { ctx.translate(ale.x, 0); ctx.scale(-1, 1); ctx.translate(-ale.x, 0); }
-      ctx.drawImage(hoja, f * CEL, fila * ALTO, CEL, ALTO, ale.x - w / 2, H - h - 4, w, h);
+    ctx.fillStyle = p.pasto[0]; ctx.fillRect(0, H - 18, W, 18);
+    ctx.fillStyle = p.pasto[1];
+    for (let x = 0; x < W; x += 8) ctx.fillRect(x, H - 18 + ((x / 8) % 2) * 2, 4, 2);
+  }
+
+  /* --- cosas que caen --- */
+  function soltar(ahora) {
+    const r = Math.random();
+    const pNube = .2 + Math.min(.16, puntos / 380);
+    const tipo = r < .02 ? 'estrella'
+      : r < .045 && !escudo ? 'burbuja'
+      : r < .09 ? 'carta'
+      : r < .19 ? 'oro'
+      : r < .19 + pNube ? 'nube' : 'corazon';
+    const vel = 1 + (nivel - 1) * .22;
+    cosas.push({ tipo, x: 22 + Math.random() * (W - 44), y: -20, v: (1.6 + Math.random() * 1.2) * vel, giro: Math.random() * 6 });
+    proxima = ahora + Math.max(330, 880 - puntos * 5) * (.7 + Math.random() * .6);
+  }
+
+  function dibujarCosa(c, ahora) {
+    const bam = Math.sin(ahora / 300 + c.giro) * 2;
+    if (c.tipo === 'nube') {
+      dibujarPixel(PIXEL.nube, { o: '#7d86b8', w: '#c9d3f2' }, c.x - 16 + bam, c.y - 8, 3);
+      ctx.fillStyle = '#6fa0e8';
+      for (let k = 0; k < 3; k++) ctx.fillRect(c.x - 9 + k * 9 + bam, c.y + 9 + ((ahora / 90 + k * 5) % 10), 2, 4);
+    } else if (c.tipo === 'carta') {
+      dibujarPixel(PIXEL.carta, { o: '#8d1f2e', w: '#fff6ea', r: '#e0303f' }, c.x - 12 + bam, c.y - 9, 3);
+    } else if (c.tipo === 'estrella') {
+      ctx.save(); ctx.translate(c.x + bam, c.y); ctx.rotate(Math.sin(ahora / 200) * .25);
+      dibujarPixel(PIXEL.estrella, { o: '#a8781f', y: '#ffd84a' }, -10.5, -10.5, 3);
       ctx.restore();
+    } else if (c.tipo === 'burbuja') {
+      ctx.strokeStyle = '#6fa0e8'; ctx.lineWidth = 3; ctx.fillStyle = 'rgba(160,200,255,.35)';
+      ctx.beginPath(); ctx.arc(c.x + bam, c.y, 12, 0, 7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.fillRect(c.x + bam - 6, c.y - 7, 4, 4);
+    } else {
+      const oro = c.tipo === 'oro';
+      dibujarPixel(PIXEL.corazon, { o: oro ? '#a8781f' : '#8d1f2e', r: oro ? '#f7c948' : '#e0303f' }, c.x - 10 + bam, c.y - 9, 3);
+      if (oro) { ctx.fillStyle = '#fff6c8'; ctx.fillRect(c.x - 4 + bam, c.y - 6, 3, 3); }
     }
   }
 
-  function paso(ahora) {
-    if (estado !== 'jugando') return;
-    const dt = Math.min(50, ahora - (ultimo || ahora)); ultimo = ahora;
-    velocidad = 1 + puntos / 60;
-    if (ahora >= proxima) soltar(ahora);
-    ale.x += (ale.destino - ale.x) * Math.min(1, dt / 90);
-    const boca = H - 70;                                   // altura donde Alejandro atrapa
-    cosas = cosas.filter(c => {
-      c.y += c.v * dt / 16;
-      if (c.y > boca - 10 && c.y < boca + 26 && Math.abs(c.x - ale.x) < 34) {
-        if (c.tipo === 'nube') {
-          vidas--; vibrar(); pintarVidas();
-          if (vidas <= 0) terminar();
-        } else {
-          puntos += c.tipo === 'oro' ? 5 : 1;
-          ale.atrapa = ahora + 260;
-          $('juegoPuntos').textContent = puntos;
-        }
-        return false;
+  function chispazo(x, y, colores, n = 8) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 2.6;
+      chispas.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1.5, vida: 1, color: colores[i % colores.length] });
+    }
+  }
+  function flotar(x, y, txt, color = '#8d1f2e', tam = 18) { textos.push({ x, y, txt, color, tam, vida: 1 }); }
+
+  function dibujar(ahora) {
+    ctx.save();
+    if (sacudida > ahora) ctx.translate((Math.random() - .5) * 8, (Math.random() - .5) * 6);
+    dibujarFondo(ahora);
+    cosas.forEach(c => dibujarCosa(c, ahora));
+    // Alejandro
+    if (hoja?.complete && hoja.naturalWidth) {
+      const fila = mareo > ahora ? FILA.mareado
+        : baile > ahora ? FILA.bailar
+        : iman > ahora ? FILA.enamorado
+        : ale.atrapa > ahora ? FILA.aplaudir
+        : Math.abs(ale.destino - ale.x) > 2 ? FILA.caminar : FILA.quieto;
+      const f = Math.floor(ahora / 85) % 12;
+      const w = CEL * ESC, h = ALTO * ESC;
+      const parpadeo = invulnerable > ahora && Math.floor(ahora / 90) % 2;
+      ctx.save();
+      if (parpadeo) ctx.globalAlpha = .35;
+      if (ale.destino < ale.x - 2) { ctx.translate(ale.x, 0); ctx.scale(-1, 1); ctx.translate(-ale.x, 0); }
+      ctx.drawImage(hoja, f * CEL, fila * ALTO, CEL, ALTO, ale.x - w / 2, H - h - 4, w, h);
+      ctx.restore();
+      if (escudo) {
+        ctx.strokeStyle = 'rgba(111,160,232,.8)'; ctx.lineWidth = 3; ctx.fillStyle = 'rgba(160,200,255,.18)';
+        ctx.beginPath(); ctx.ellipse(ale.x, H - h / 2 - 6, w * .42, h * .5, 0, 0, 7); ctx.fill(); ctx.stroke();
       }
-      if (c.y > H + 20) {
-        if (c.tipo === 'corazon' && puntos > 0 && Math.random() < .25) { /* se escapó: sin castigo, es un juego tierno */ }
-        return false;
+      if (iman > ahora) {
+        ctx.strokeStyle = `rgba(247,201,72,${.35 + .25 * Math.sin(ahora / 120)})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(ale.x, BOCA, 46 + (ahora / 20) % 24, 0, 7); ctx.stroke();
       }
-      return true;
+    }
+    // chispas y textos
+    chispas.forEach(p => { ctx.globalAlpha = Math.max(0, p.vida); ctx.fillStyle = p.color; ctx.fillRect(Math.round(p.x), Math.round(p.y), 3, 3); });
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'center';
+    textos.forEach(t => {
+      ctx.globalAlpha = Math.max(0, Math.min(1, t.vida * 1.6));
+      ctx.font = `700 ${t.tam}px ${fuente}`;
+      ctx.lineWidth = 4; ctx.strokeStyle = '#fffdf8'; ctx.strokeText(t.txt, t.x, t.y);
+      ctx.fillStyle = t.color; ctx.fillText(t.txt, t.x, t.y);
     });
-    dibujar(ahora);
-    if (estado === 'jugando') requestAnimationFrame(paso);
+    ctx.globalAlpha = 1;
+    // barra del imán
+    if (iman > ahora) {
+      const r = (iman - ahora) / 6000;
+      ctx.fillStyle = 'rgba(255,253,248,.8)'; ctx.fillRect(10, 10, 84, 10);
+      ctx.fillStyle = '#f7c948'; ctx.fillRect(12, 12, 80 * r, 6);
+    }
+    // cartel de nivel o cuenta regresiva
+    const cartel = estado === 'cuenta' ? String(Math.max(1, Math.ceil((cuentaHasta - ahora) / 700))) : banner && banner.hasta > ahora ? banner.txt : '';
+    if (cartel) {
+      const tam = estado === 'cuenta' ? 64 : 34;
+      ctx.font = `700 ${tam}px ${fuente}`;
+      ctx.lineWidth = 6; ctx.strokeStyle = '#fffdf8'; ctx.strokeText(cartel, W / 2, H / 2 - 20);
+      ctx.fillStyle = '#8d1f2e'; ctx.fillText(cartel, W / 2, H / 2 - 20);
+    }
+    ctx.restore();
   }
 
-  function pintarVidas() { $('juegoVidas').textContent = '❤️'.repeat(Math.max(0, vidas)) + '🤍'.repeat(3 - Math.max(0, vidas)); }
+  function atrapar(c, ahora) {
+    if (c.tipo === 'nube') {
+      if (invulnerable > ahora) return;
+      if (escudo) {
+        escudo = false; pintarVidas();
+        chispazo(c.x, c.y, ['#6fa0e8', '#c9d3f2', '#ffffff'], 12);
+        flotar(c.x, c.y - 10, '¡Plop! 🫧', '#3d72c4');
+        tono(520, .12, 'triangle', .05, 260);
+        return;
+      }
+      vidas--; racha = 0; pintarVidas(); pintarPuntos(); vibrar();
+      mareo = ahora + 900; invulnerable = ahora + 1100; sacudida = ahora + 260;
+      chispazo(c.x, c.y, ['#6fa0e8', '#7d86b8'], 10);
+      tono(190, .25, 'sawtooth', .04, 90);
+      if (vidas <= 0) terminar();
+      return;
+    }
+    if (c.tipo === 'estrella') {
+      iman = ahora + 6000; baile = 0;
+      flotar(c.x, c.y - 10, '¡Imán de corazones! ⭐', '#a8781f', 17);
+      chispazo(c.x, c.y, ['#ffd84a', '#fff6c8', '#f7c948'], 14);
+      arpegio([660, 880, 1100, 1320], 60);
+      return;
+    }
+    if (c.tipo === 'burbuja') {
+      escudo = true; pintarVidas();
+      flotar(c.x, c.y - 10, '¡Escudo! 🫧', '#3d72c4');
+      arpegio([520, 780], 80);
+      return;
+    }
+    racha++; mejorRacha = Math.max(mejorRacha, racha); atrapados++;
+    const m = multiplicador();
+    const base = c.tipo === 'oro' ? 5 : c.tipo === 'carta' ? 3 : 1;
+    puntos += base * m;
+    ale.atrapa = ahora + 260;
+    if (c.tipo === 'carta') {
+      flotar(W / 2, BOCA - 90, FRASES_CARTA[Math.floor(Math.random() * FRASES_CARTA.length)], '#8d1f2e', 20);
+      arpegio([784, 988, 1175], 70);
+    } else tono(c.tipo === 'oro' ? 1175 : 740 + Math.min(racha, 30) * 12, .07);
+    flotar(c.x, c.y - 8, `+${base * m}`, c.tipo === 'oro' ? '#a8781f' : '#e0303f', c.tipo === 'oro' ? 22 : 18);
+    chispazo(c.x, c.y, c.tipo === 'oro' ? ['#f7c948', '#fff6c8'] : ['#e0303f', '#ff8a8f', '#ffd3d6']);
+    if (racha === 10 || racha === 25) {
+      banner = { txt: `¡Racha x${m}! 🔥`, hasta: ahora + 1200 };
+      arpegio([880, 1100, 1320, 1760], 55);
+    }
+    const nuevoNivel = 1 + Math.floor(puntos / 30);
+    if (nuevoNivel > nivel) {
+      nivel = nuevoNivel; baile = ahora + 1300;
+      banner = { txt: `¡Nivel ${nivel}! ✨`, hasta: ahora + 1400 };
+      arpegio([523, 659, 784, 1047], 80);
+    }
+    pintarPuntos();
+  }
+
+  function paso(ahora) {
+    if (estado !== 'jugando' && estado !== 'cuenta') return;
+    const dt = Math.min(50, ahora - (ultimo || ahora)); ultimo = ahora;
+    ale.x += (ale.destino - ale.x) * Math.min(1, dt / 90);
+    if (estado === 'cuenta') {
+      if (ahora >= cuentaHasta) { estado = 'jugando'; proxima = ahora + 300; tono(1047, .12); }
+    } else {
+      if (ahora >= proxima) soltar(ahora);
+      cosas = cosas.filter(c => {
+        c.y += c.v * dt / 16;
+        // con el imán, los corazones, cartas y dorados vuelan hacia Alejandro
+        if (iman > ahora && c.tipo !== 'nube' && c.y > 40) c.x += (ale.x - c.x) * Math.min(1, dt / 220);
+        if (c.y > BOCA - 10 && c.y < BOCA + 26 && Math.abs(c.x - ale.x) < 34) { atrapar(c, ahora); return false; }
+        if (c.y > H + 20) {
+          if (c.tipo === 'corazon' || c.tipo === 'oro') racha = 0, pintarPuntos();   // se escapó: solo se corta la racha
+          return false;
+        }
+        return true;
+      });
+    }
+    chispas = chispas.filter(p => { p.x += p.vx * dt / 16; p.y += p.vy * dt / 16; p.vy += .15 * dt / 16; p.vida -= dt / 600; return p.vida > 0; });
+    textos = textos.filter(t => { t.y -= .6 * dt / 16; t.vida -= dt / 1100; return t.vida > 0; });
+    dibujar(ahora);
+    if (estado === 'jugando' || estado === 'cuenta') requestAnimationFrame(paso);
+  }
+
+  function prepararFondo() {
+    nubesFondo = [0, 1, 2].map(i => ({ x: Math.random() * W, y: 30 + i * 46, v: .12 + i * .06, t: 3 + i * .6 }));
+  }
 
   function empezar() {
+    if (estado === 'pausa') { reanudar(); return; }
     hoja = new Image();
     hoja.src = urlDisfraz(disfrazActual);
-    puntos = 0; vidas = 3; cosas = []; ultimo = 0; proxima = 0; velocidad = 1;
+    puntos = 0; vidas = 3; cosas = []; chispas = []; textos = []; ultimo = 0; proxima = 0;
+    racha = 0; mejorRacha = 0; nivel = 1; atrapados = 0;
+    iman = 0; escudo = false; invulnerable = 0; mareo = 0; baile = 0; sacudida = 0; banner = null;
     ale = { x: W / 2, destino: W / 2, atrapa: 0 };
-    $('juegoPuntos').textContent = '0'; pintarVidas();
+    prepararFondo(); pintarPuntos(); pintarVidas();
     $('juegoPantalla').hidden = true;
-    estado = 'jugando';
+    estado = 'cuenta'; cuentaHasta = performance.now() + 2100;
+    arpegio([523, 523, 523], 700);
+    requestAnimationFrame(paso);
+  }
+
+  function pausar() {
+    if (estado !== 'jugando' && estado !== 'cuenta') return;
+    estado = 'pausa';
+    $('juegoMensaje').textContent = 'Pausa ⏸️ Alejandro te espera.';
+    $('juegoEmpezar').textContent = 'Seguir jugando';
+    $('juegoPantalla').hidden = false;
+  }
+  function reanudar() {
+    $('juegoPantalla').hidden = true;
+    estado = 'cuenta'; ultimo = 0;
+    const ahora = performance.now(), corrimiento = 2100;
+    cuentaHasta = ahora + corrimiento;
+    if (iman > 0) iman += corrimiento;
     requestAnimationFrame(paso);
   }
 
@@ -3309,18 +3539,21 @@ pintarCielo();
     const record = leerRecord();
     const nuevo = puntos > record;
     if (nuevo) { guardarJSON('dallanaRecordJuego', puntos); pintarRecord(); }
-    let msg = `¡Atrapaste ${puntos} ${puntos === 1 ? 'corazón' : 'corazones'}!`;
+    const medalla = MEDALLAS.find(([min]) => puntos >= min);
+    let msg = `${medalla ? medalla[1] + ' ' : ''}¡Atrapaste ${puntos} ${puntos === 1 ? 'punto' : 'puntos'}!`;
     if (nuevo && record) msg += ' 🎉 ¡Nuevo récord!';
+    msg += `\nMejor racha: ${mejorRacha} · Nivel ${nivel}`;
     if (puntos >= 20 && leerJSON('dallanaJuegoCorazon', '') !== hoyLocal()) {
       guardarJSON('dallanaJuegoCorazon', hoyLocal());
       sumarCorazon();
-      msg += ' Ganaste un corazón del día 💗';
-    }
+      msg += '\nGanaste un corazón del día 💗';
+    } else if (!medalla) msg += '\nCon 10 puntos ganas tu primera medalla 🥉';
     $('juegoMensaje').textContent = msg;
     $('juegoEmpezar').textContent = 'Jugar otra vez';
     $('juegoPantalla').hidden = false;
+    arpegio(nuevo ? [523, 659, 784, 1047, 1319] : [659, 523, 392], 110);
     if (nuevo) {
-      notificar(`hizo un nuevo récord en el juego de Alejandro: ${puntos} corazones 🎮`, 'video_game');
+      notificar(`hizo un nuevo récord en el juego de Alejandro: ${puntos} puntos${medalla ? ' ' + medalla[1] : ''} 🎮`, 'video_game');
       lanzarCelebracion();
     }
   }
@@ -3331,8 +3564,10 @@ pintarCielo();
     $('juegoMensaje').textContent = 'Mueve a Alejandro con el dedo (o con las flechas) y atrapa los corazones. ¡Ojo con las nubecitas de lluvia!';
     $('juegoEmpezar').textContent = '¡Jugar!';
     $('juegoPantalla').hidden = false;
-    pintarRecord(); pintarVidas(); $('juegoPuntos').textContent = '0';
+    pintarRecord(); vidas = 3; escudo = false; puntos = 0; racha = 0; pintarVidas(); pintarPuntos(); pintarSonido();
+    prepararFondo();
     hoja = new Image(); hoja.onload = () => dibujar(performance.now()); hoja.src = urlDisfraz(disfrazActual);
+    dibujar(performance.now());
     if (!dlg.open) dlg.showModal();
     notificar('abrió el juego de atrapar corazones 🎮', 'video_game');
   }
@@ -3345,50 +3580,129 @@ pintarCielo();
   cv.addEventListener('pointerdown', e => { mover(e); cv.setPointerCapture?.(e.pointerId); });
   cv.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.buttons || e.pressure) mover(e); });
   dlg.addEventListener('keydown', e => {
-    if (estado !== 'jugando') return;
+    if (estado !== 'jugando' && estado !== 'cuenta') return;
     if (e.key === 'ArrowLeft') { ale.destino = Math.max(24, ale.destino - 40); e.preventDefault(); }
     if (e.key === 'ArrowRight') { ale.destino = Math.min(W - 24, ale.destino + 40); e.preventDefault(); }
+    if (e.key === 'p' || e.key === 'P') pausar();
   });
   dlg.addEventListener('close', () => { estado = 'menu'; });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible' && estado === 'jugando') terminar(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') pausar(); });
   $('juegoEmpezar').addEventListener('click', empezar);
+  $('juegoSonido')?.addEventListener('click', () => {
+    sonido = !sonido; guardarJSON('dallanaJuegoSonido', sonido); pintarSonido();
+    if (sonido) tono(880, .08);
+  });
   $('juegoAbrir')?.addEventListener('click', abrirJuego);
   $('menuJuego')?.addEventListener('click', abrirJuego);
   pintarRecord();
 })();
 
 /* ============================================================
-   STICKERS QUE REACCIONAN: al tocarlos saltan, sueltan corazones y dicen algo
+   STICKERS QUE REACCIONAN: al tocarlos saltan (o giran, bailan, laten), sueltan corazoncitos
+   y dicen algo distinto cada vez. Los que va descubriendo quedan en dallanaStickers;
+   al descubrirlos todos, Alejandro la felicita.
    ============================================================ */
 const FRASES_STICKERS = {
-  'stikers': '¡Flores para ti! 🌹', 'stikers1': 'Te quiero un montón 💕', 'stikers2': '¡Abrazo de Snoopy! 🤗',
-  'stikers3': '¡Erupción de amor! 🌋', 'stikers4': '¿Vamos de excursión? 🎒', 'stikers5': 'Te llegó correo 💌',
-  'stikers6': '¡Guau guau! 🐾', 'stikers7': '¡Guau! Más mimos, por favor 🐶', 'stikers8': '¡Guau! 💗',
-  'stikers9': 'Tranquila, tú eres la más fuerte ✨', 'stikers10': '¡Hola desde aquí arriba! 👋', 'stikers11': 'Con esta venda igual veo que eres la más linda 😎',
-  'stikers12': '¡Eres increíble! 💪', 'stikers13': 'Hora de descansar, ya trabajaste mucho ☕', 'stikers14': 'Estas flores son para ti 💐',
-  'stikers15': '¡Mira mi gatito! 🐱', 'stikers16': 'Jajaja, eres lo máximo 🪭', 'stikers17': '¡Rawr! (de cariño) 🔥',
-  'stikers18': '¡Soy un dinosaurio de verdad! 🦖', 'stikers19': 'Globos para la mejor 🎈', 'stikers20': 'Así de enamorados 💞',
-  'stikers21': 'Un corazón para ti 💚', 'stikers22': 'Floreciendo contigo 🌸'
+  'stikers': ['¡Flores para ti! 🌹', 'Una rosa para la más linda 🌹'],
+  'stikers1': ['Te quiero un montón 💕', 'Más que ayer, menos que mañana 💕'],
+  'stikers2': ['¡Abrazo de Snoopy! 🤗', 'Abrazo apretadito 🤗'],
+  'stikers3': ['¡Erupción de amor! 🌋', 'Así de fuerte te quiero 🌋'],
+  'stikers4': ['¿Vamos de excursión? 🎒', 'Contigo voy a donde sea 🎒'],
+  'stikers5': ['Te llegó correo 💌', 'Revisa tu buzón, quizás hay algo 💌'],
+  'stikers6': ['¡Guau guau! 🐾', 'Huellitas para ti 🐾'],
+  'stikers7': ['¡Guau! Más mimos, por favor 🐶', 'Rásquenme la guatita 🐶'],
+  'stikers8': ['¡Guau! 💗', '¿Jugamos? 🎾'],
+  'stikers9': ['Tranquila, tú eres la más fuerte ✨', 'Respira, todo va a salir bien ✨'],
+  'stikers10': ['¡Hola desde aquí arriba! 👋', '¡Te estaba esperando! 👋'],
+  'stikers11': ['Con esta venda igual veo que eres la más linda 😎', 'Ni con los ojos tapados me pierdo de ti 😎'],
+  'stikers12': ['¡Eres increíble! 💪', '¡Tú puedes con todo! 💪'],
+  'stikers13': ['Hora de descansar, ya trabajaste mucho ☕', 'Un cafecito y seguimos ☕'],
+  'stikers14': ['Estas flores son para ti 💐', 'Un ramo para alegrarte el día 💐'],
+  'stikers15': ['¡Mira mi gatito! 🐱', 'Miau 🐱'],
+  'stikers16': ['Jajaja, eres lo máximo 🪭', 'Tu risa es mi favorita 🪭'],
+  'stikers17': ['¡Rawr! (de cariño) 🔥', 'Rawr significa te quiero en dinosaurio 🔥'],
+  'stikers18': ['¡Soy un dinosaurio de verdad! 🦖', '¡Rawr! Alejandro es mi primo 🦖'],
+  'stikers19': ['Globos para la mejor 🎈', '¡Que no se vuelen! 🎈'],
+  'stikers20': ['Así de enamorados 💞', 'Tú y yo 💞'],
+  'stikers21': ['Un corazón para ti 💚', 'Corazón verde, de esperanza 💚'],
+  'stikers22': ['Floreciendo contigo 🌸', 'Contigo todo florece 🌸']
 };
 (() => {
   const selector = '.sticker, .letter-sticker, .postal-sticker, .nota-sticker';
-  document.addEventListener('click', e => {
-    const st = e.target.closest?.(selector); if (!st) return;
-    const nombre = (st.getAttribute('src') || '').split('/').pop().replace(/\.(png|jpe?g)$/, '');
-    st.classList.remove('sticker-salta'); void st.offsetWidth; st.classList.add('sticker-salta');
-    setTimeout(() => st.classList.remove('sticker-salta'), 700);
-    // globito con su frase, sobre el sticker
+  const ANIMACIONES = ['sticker-salta', 'sticker-gira', 'sticker-baila', 'sticker-late'];
+  const SIMBOLOS = ['♥', '♡', '✿', '✧'];
+  const COLORES = ['#e0303f', '#ff8a8f', '#f2c14e', '#6fa0e8', '#4f9a4a'];
+  const vistos = leerSet('dallanaStickers');
+  const toques = {};
+  const nombreDe = st => (st.getAttribute('src') || '').split('/').pop().replace(/\.(png|jpe?g|gif|webp)(\?.*)?$/, '');
+  const totalStickers = () => new Set([...document.querySelectorAll(selector)].map(nombreDe).filter(n => FRASES_STICKERS[n])).size;
+  const suave = matchMedia('(prefers-reduced-motion: reduce)');
+
+  function corazoncitos(r) {
+    if (suave.matches) return;
+    for (let i = 0; i < 7; i++) {
+      const c = document.createElement('span');
+      c.className = 'sticker-corazon';
+      c.textContent = SIMBOLOS[i % SIMBOLOS.length];
+      c.style.left = `${r.left + scrollX + r.width / 2}px`;
+      c.style.top = `${r.top + scrollY + r.height / 3}px`;
+      c.style.color = COLORES[i % COLORES.length];
+      c.style.setProperty('--dx', `${Math.round((Math.random() - .5) * 120)}px`);
+      c.style.setProperty('--dy', `${Math.round(-50 - Math.random() * 70)}px`);
+      c.style.setProperty('--rot', `${Math.round((Math.random() - .5) * 120)}deg`);
+      c.style.animationDelay = `${i * 30}ms`;
+      document.body.append(c);
+      setTimeout(() => c.remove(), 1200);
+    }
+  }
+
+  function globo(st, texto, extra) {
     document.querySelectorAll('.sticker-globo').forEach(g => g.remove());
     const g = document.createElement('span');
     g.className = 'sticker-globo';
-    g.textContent = FRASES_STICKERS[nombre] || '💗';
+    g.textContent = texto;
+    if (extra) { const s = document.createElement('small'); s.textContent = extra; g.append(s); }
     document.body.append(g);
     const r = st.getBoundingClientRect();
     const x = Math.max(8, Math.min(innerWidth - 8 - g.offsetWidth, r.left + r.width / 2 - g.offsetWidth / 2));
+    const arriba = r.top - g.offsetHeight - 8 > 4;
     g.style.left = `${x + scrollX}px`;
-    g.style.top = `${r.top + scrollY - g.offsetHeight - 6}px`;
-    setTimeout(() => g.classList.add('fuera'), 2200);
-    setTimeout(() => g.remove(), 2700);
+    g.style.top = `${(arriba ? r.top - g.offsetHeight - 8 : r.bottom + 8) + scrollY}px`;
+    g.style.setProperty('--cola', `${Math.round(r.left + r.width / 2 - x)}px`);
+    g.classList.toggle('abajo', !arriba);
+    setTimeout(() => g.classList.add('fuera'), 2400);
+    setTimeout(() => g.remove(), 2900);
+  }
+
+  document.addEventListener('click', e => {
+    const st = e.target.closest?.(selector); if (!st) return;
+    const nombre = nombreDe(st);
+    const frases = FRASES_STICKERS[nombre] || ['💗'];
+    toques[nombre] = (toques[nombre] || 0) + 1;
+    // animación distinta cada vez
+    ANIMACIONES.forEach(a => st.classList.remove(a)); void st.offsetWidth;
+    const anim = ANIMACIONES[(toques[nombre] - 1) % ANIMACIONES.length];
+    st.classList.add(anim);
+    setTimeout(() => st.classList.remove(anim), 800);
+    corazoncitos(st.getBoundingClientRect());
+    try { navigator.vibrate?.(12); } catch {}
+    // colección
+    let extra = '';
+    if (FRASES_STICKERS[nombre] && !vistos.has(nombre)) {
+      vistos.add(nombre); guardarSet('dallanaStickers', vistos);
+      const total = totalStickers(), n = [...vistos].filter(v => FRASES_STICKERS[v]).length;
+      extra = `✨ Sticker descubierto ${Math.min(n, total)} de ${total}`;
+      if (n >= total && total > 0 && !leerJSON('dallanaStickersCompletos', false)) {
+        guardarJSON('dallanaStickersCompletos', true);
+        setTimeout(() => {
+          lanzarCelebracion();
+          alejandroReacciona('aplaudir', 2400);
+          alejandroDice(`¡Encontraste los ${total} stickers, mamá! Eres la mejor exploradora del rincón. 🏆💗`, 'Alejandro 🦀', null, true);
+          notificar(`descubrió los ${total} stickers de la página 🏆`, 'trophy');
+        }, 900);
+      }
+    }
+    globo(st, frases[(toques[nombre] - 1) % frases.length], extra);
   });
 })();
 
