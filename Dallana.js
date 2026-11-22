@@ -356,7 +356,8 @@ const HITOS_PIXEL = [
   { titulo: 'Nuestra tarde en la laguna', imagen: 'assets/pixel/laguna.gif', frase: '' },
   { titulo: 'Dormiditos abrazados', imagen: 'assets/pixel/dormir.gif', frase: 'Tuvimos que dormir porque el Eduardo estaba muy cansadito por sus vecinos JSJSJS' },
   { titulo: 'Estudiando juntos', imagen: 'assets/pixel/estudio.gif', frase: 'Dallana tratando de explicarme la materia y no estoy entendiendo nada' },
-  { titulo: 'Los patitos de la pasarela', imagen: 'assets/pixel/pasarela.gif', frase: '' }
+  { titulo: 'Los patitos de la pasarela', imagen: 'assets/pixel/pasarela.gif', frase: '' },
+  { titulo: 'La pregunta en la pasarela', imagen: 'assets/pixel/pasarela2.gif', frase: '' }
 ].map((h, i) => ({ ...h, sonrisas: (i + 1) * SONRISAS_POR_RECUERDO }));
 const txtSonrisas = n => n === 1 ? '1 sonrisa' : `${n} sonrisas`;
 const hoyLocal = () => new Date().toLocaleDateString('en-CA');

@@ -42,6 +42,7 @@
 - 2026-11-21: servidor opcional en Cloudflare (`rincon-servidor/`, guía en `rincon-servidor/GUIA.md`): temas de ntfy ocultos como secretos, PIN de Dallana (`#claveDialog`, `dallanaToken`), cartas guardadas para siempre (cron cada 15 min) y `/programar AAAA-MM-DD`, respaldo del progreso (`/api/progreso`, sube cada minuto si cambió y restaura lo que falte al entrar en otro teléfono). Se activa poniendo la dirección en `URL_RINCON` (vacío = igual que antes). Probado contra un servidor de prueba local. `sw.js` ya no intercepta peticiones a otros sitios (rompía los GET al servidor). Lista para probar en el teléfono: `PRUEBA-TELEFONO.md`. CSS v8.6, JS v3.68, caché dallana-v3.85.
 
 - 2026-11-21: Recuerdo 6 «Los patitos de la pasarela» (`assets/pixel/pasarela.gif`, 403 KB, `propuesta/escena_pasarela.py`): perspectiva de la foto de la pasarela, ellos de espaldas tomados de la mano, Dallana apunta a la laguna con patitos (izquierda), Eduardo con polerón crema y mochila con llavero de Alejandro. GIF con paleta común de 128 colores.
+- 2026-11-21: Recuerdo 7 «La pregunta en la pasarela» (`assets/pixel/pasarela2.gif`, 482 KB, `propuesta/escena_pasarela2.py`): más arriba en la rampa, gente por la vereda izquierda, Eduardo (según su foto: pelo negro corto con degradado y copete, polerón blanco de cuello redondo, jeans) pregunta «¿Las parejas deberían parecerse o ser distintas para que la relación funcione?» y Dallana (blusa celeste, pantalón crema) lo mira con corazones.
 
 **Not started / backlog**
 
