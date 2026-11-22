@@ -1639,13 +1639,15 @@ addEventListener('pagehide', cerrarTramo);
    Se abre solo una vez por versión; después se puede tocar a Alejandro para volver a verlas.
    ============================================================ */
 const NOVEDADES = {
-  version: '2026-11-20b',
+  version: '2026-11-22',
   mensajes: [
-    '¡Hola, Dallana! Me llamo Alejandro y te voy a mostrar las novedades de este espacio. 🦀',
-    '¡Ahora también soy cartero! 📬 A mi lado está nuestro buzón: ahí llegan las cartas de papá y yo te las traigo.',
-    'Y si quieres decirle algo a papá, toca el buzón y elige «Escríbele a papá». Yo se lo llevo al tiro. 💌',
-    'Ah… y tengo un secreto. Mantenme presionado un ratito para descubrirlo. 🤫',
-    '¡Eso es todo por ahora! Tócame cuando quieras.'
+    '¡Mamá! Hay un montón de novedades en tu rincón. Te las cuento rapidito. 🦀',
+    '🎮 ¡Hay un juego nuevo! Atrapa corazones conmigo en la sección 02 o desde mi menú. Hay imán ⭐, escudo 🛡️ y medallas.',
+    '🐶 Los stickers ahora saltan y hablan si los tocas. Hay 32 para descubrir… ¡y llegaron 12 perritos que se van turnando!',
+    '🐉 Mira el cielo: cambia con la hora y por detrás pasan dragoncitos de colores.',
+    '🦆 Hay recuerdos pixel nuevos de la pasarela. Se desbloquean con tus sonrisas.',
+    '🔄 Si algo no te aparece, recarga la página (desliza hacia abajo o toca ↻) para ver todas las novedades.',
+    '¡Eso es todo! Si quieres mi secreto, mantenme presionado. 🤫'
   ]
 };
 let alejandroPaso = 0;
