@@ -1390,6 +1390,8 @@ dialog.juego-dialog{width:min(420px,calc(100% - 20px));max-height:96dvh;padding:
 .sticker-globo.abajo::after{bottom:auto;top:-8px;border-width:2px 0 0 2px}
 .juego-racha{padding:1px 7px;border-radius:999px;background:var(--vino);color:#fff!important;font-size:13px;animation:sticker-late .6s ease-in-out}
 .juego-racha[hidden]{display:none}
+/* mientras juega, el Alejandro de la página se esconde (es popover y quedaría encima del juego) */
+body:has(#juegoDialog[open]) #alejandro{visibility:hidden}
 .juego-sonido{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:var(--tarjeta);font-size:17px;cursor:pointer}
 @keyframes sticker-salta{30%{scale:1.18;translate:0 -8px}60%{scale:.95;translate:0 0}}
 .sticker-globo{position:absolute;z-index:30;max-width:min(240px,80vw);padding:6px 11px;border:2px solid var(--vino);border-radius:12px;background:var(--tarjeta);box-shadow:3px 3px 0 var(--vino);color:var(--tinta);font:600 17px/1.25 var(--firma);text-align:center;pointer-events:none;animation:sticker-globo-in .3s cubic-bezier(.2,1.5,.4,1) both;transition:opacity .4s ease}

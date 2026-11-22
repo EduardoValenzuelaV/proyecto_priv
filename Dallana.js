@@ -3253,7 +3253,7 @@ pintarCielo();
   }
   function pintarVidas() {
     const v = Math.max(0, vidas);
-    $('juegoVidas').textContent = '❤️'.repeat(v) + '🤍'.repeat(3 - v) + (escudo ? ' 🫧' : '');
+    $('juegoVidas').textContent = '❤️'.repeat(v) + '🤍'.repeat(3 - v) + (escudo ? ' 🛡️' : '');
   }
   function pintarPuntos() {
     $('juegoPuntos').textContent = puntos;
@@ -3360,7 +3360,7 @@ pintarCielo();
       chispas.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1.5, vida: 1, color: colores[i % colores.length] });
     }
   }
-  function flotar(x, y, txt, color = '#8d1f2e', tam = 18) { textos.push({ x, y, txt, color, tam, vida: 1 }); }
+  function flotar(x, y, txt, color = '#8d1f2e', tam = 18, dur = 1400) { textos.push({ x, y, txt, color, tam, vida: 1, dur }); }
 
   function dibujar(ahora) {
     ctx.save();
@@ -3425,7 +3425,7 @@ pintarCielo();
       if (escudo) {
         escudo = false; pintarVidas();
         chispazo(c.x, c.y, ['#6fa0e8', '#c9d3f2', '#ffffff'], 12);
-        flotar(c.x, c.y - 10, '¡Plop! 🫧', '#3d72c4');
+        flotar(c.x, c.y - 10, '¡Plop! 💦', '#3d72c4');
         tono(520, .12, 'triangle', .05, 260);
         return;
       }
@@ -3445,7 +3445,7 @@ pintarCielo();
     }
     if (c.tipo === 'burbuja') {
       escudo = true; pintarVidas();
-      flotar(c.x, c.y - 10, '¡Escudo! 🫧', '#3d72c4');
+      flotar(c.x, c.y - 10, '¡Escudo! 🛡️', '#3d72c4');
       arpegio([520, 780], 80);
       return;
     }
@@ -3455,7 +3455,7 @@ pintarCielo();
     puntos += base * m;
     ale.atrapa = ahora + 260;
     if (c.tipo === 'carta') {
-      flotar(W / 2, BOCA - 90, FRASES_CARTA[Math.floor(Math.random() * FRASES_CARTA.length)], '#8d1f2e', 20);
+      flotar(W / 2, BOCA - 90, FRASES_CARTA[Math.floor(Math.random() * FRASES_CARTA.length)], '#8d1f2e', 22, 2400);
       arpegio([784, 988, 1175], 70);
     } else tono(c.tipo === 'oro' ? 1175 : 740 + Math.min(racha, 30) * 12, .07);
     flotar(c.x, c.y - 8, `+${base * m}`, c.tipo === 'oro' ? '#a8781f' : '#e0303f', c.tipo === 'oro' ? 22 : 18);
@@ -3494,7 +3494,7 @@ pintarCielo();
       });
     }
     chispas = chispas.filter(p => { p.x += p.vx * dt / 16; p.y += p.vy * dt / 16; p.vy += .15 * dt / 16; p.vida -= dt / 600; return p.vida > 0; });
-    textos = textos.filter(t => { t.y -= .6 * dt / 16; t.vida -= dt / 1100; return t.vida > 0; });
+    textos = textos.filter(t => { t.y -= .5 * dt / 16; t.vida -= dt / t.dur; return t.vida > 0; });
     dibujar(ahora);
     if (estado === 'jugando' || estado === 'cuenta') requestAnimationFrame(paso);
   }

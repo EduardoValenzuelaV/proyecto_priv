@@ -1,9 +1,9 @@
-const CACHE_NAME = 'dallana-v3.87';
+const CACHE_NAME = 'dallana-v3.88';
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=8.7',
-  './Dallana.js?v=3.70',
+  './Dallana.css?v=8.8',
+  './Dallana.js?v=3.71',
   './manifest.json',
   './assets/fotos/portada-musica.png',
   './assets/fotos/migeo.jpg',
