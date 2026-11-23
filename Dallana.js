@@ -158,7 +158,7 @@ const RESPALDO = [
   'Te debo tantos abrazos que perdí la cuenta. Te los voy a pagar todos, con intereses.',
   'Cuando sale una foto tuya sonriendo, yo la miro unas mil veces. Mínimo.',
   'Hoy te quiero así, tal cual: con tus ocurrencias, tus tonteras y esa sonrisa.',
-  'Si fueras una canción, te tendría en repetición todo el día. Ah, espera, ya lo hago contigo.',
+  null, // quitado por Eduardo (22-nov); el hueco mantiene los ids de los demás
   'Mensaje del futuro: seguimos juntos y te sigues riendo igual de bonito.',
   'De todas mis notificaciones, las tuyas son las únicas que abro corriendo.',
   'Si alguna vez te sientes poca cosa, acuérdate de que hay alguien que se emociona porque le respondiste un mensaje.',
@@ -192,7 +192,7 @@ const RESPALDO = [
   'Pronóstico del tiempo en Arauco: nublado, con 100% de probabilidad de extrañarte.',
   'Tu voz cantando debería tener derechos de autor. Yo pago la suscripción premium.',
   'Hoy pensé en ti 47 veces. Bueno, perdí la cuenta en la 12, pero fueron muchísimas.',
-  'Me preguntaron mi tipo de sangre y respondí «Dallana positivo».',
+  null, // quitado por Eduardo (22-nov)
   'Esta página tiene dragones, perritos, un cangrejo y un juego… y aun así lo más bonito que hay eres tú.',
   'Si fueras un mineral, no aparecerías en los libros: serías demasiado brillante para clasificarte.',
   'Pásame tu horario de hoy. Es para saber a qué hora extrañarte más fuerte.',
@@ -213,7 +213,7 @@ const RESPALDO = [
   'Si esto fuera MasterChef, tú nunca saldrías eliminada. No porque cocines perfecto, sino porque el jurado (yo) está totalmente comprado.',
   'Me contaste que las rocas guardan la historia de la Tierra en capas. Yo estoy guardando la nuestra igual: un recuerdo encima del otro.',
   'Concepción tiene muchas cosas lindas, pero la mejor que me dio fuiste tú.',
-].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
+].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''})).filter(m => m.mensaje);
 
 const PLAYLIST = [
   {nombre:'Taylor Swift - Love Story', archivo:'Taylor Swift - Love Story.mp3'},
