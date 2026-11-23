@@ -187,6 +187,32 @@ const RESPALDO = [
   'Mi superpoder secreto: reconocer tu risa en cualquier parte.',
   'Te aviso que hoy estás especialmente linda. No sé cómo lo sé, pero lo sé.',
 
+ // Nuevos (22-nov): primero salen los que no ha visto
+  'Dato geológico: las rocas tardan millones de años en formarse. Yo me demoré un segundo en enamorarme de ti.',
+  'Pronóstico del tiempo en Arauco: nublado, con 100% de probabilidad de extrañarte.',
+  'Tu voz cantando debería tener derechos de autor. Yo pago la suscripción premium.',
+  'Hoy pensé en ti 47 veces. Bueno, perdí la cuenta en la 12, pero fueron muchísimas.',
+  'Me preguntaron mi tipo de sangre y respondí «Dallana positivo».',
+  'Esta página tiene dragones, perritos, un cangrejo y un juego… y aun así lo más bonito que hay eres tú.',
+  'Si fueras un mineral, no aparecerías en los libros: serías demasiado brillante para clasificarte.',
+  'Pásame tu horario de hoy. Es para saber a qué hora extrañarte más fuerte.',
+  'Descubrimiento del día: tus abrazos cargan la batería más rápido que cualquier cargador. Necesito más pruebas.',
+  'Error 404: no se encontró a nadie más linda que tú.',
+  'Le pregunté a Google qué hacer cuando extrañas a alguien. Me dijo «mándale un mensaje». Aquí estoy.',
+  'Tu risa es tan contagiosa que deberían ponerte en cuarentena. Conmigo, obvio.',
+  'Si un día estás aburrida, acuérdate de que hay un cangrejo pixel esperándote. Y un novio también.',
+  'Busqué «la persona más linda del mundo» y no salió tu foto. Ya mandé el reclamo.',
+  'Si te portas bien hoy, te doy un premio. Si te portas mal, también. Contigo no sé ser estricto.',
+  'Ya sé por qué estudias geología: te gusta lo que tiene historia. Y nosotros vamos a tener mucha.',
+  'Notificación pendiente: tienes 1 beso sin reclamar. Vence nunca.',
+ // Sus gustos (turrón, mango, chirimoya, michelada, vino)
+  'Propuesta formal: una michelada, tú y yo, una tarde sin apuro. Acepto la respuesta en forma de beso.',
+  'Brindo por ti con vino, con michelada o con jugo de mango. Lo importante no es el vaso, es por quién brindo.',
+ // De sus gustos y de ustedes (elegidos por Eduardo)
+  'Si tuviera el portal de Doctor Strange, ya estaría tocando tu puerta. Mientras tanto, te mando esto.',
+  'Si esto fuera MasterChef, tú nunca saldrías eliminada. No porque cocines perfecto, sino porque el jurado (yo) está totalmente comprado.',
+  'Me contaste que las rocas guardan la historia de la Tierra en capas. Yo estoy guardando la nuestra igual: un recuerdo encima del otro.',
+  'Concepción tiene muchas cosas lindas, pero la mejor que me dio fuiste tú.',
 ].map((mensaje,i)=>({id:`offline-${i+1}`,mensaje,foto:''}));
 
 const PLAYLIST = [
@@ -571,8 +597,14 @@ async function pedir(url, label = 'Un mensaje para ti') {
       clearTimeout(wakeTimer);
     }
   }
+  // primero los que nunca ha visto; después da vueltas completas sin repetir hasta verlos todos
   const opciones = RESPALDO.filter(item => item.id !== currentId);
-  const item = opciones[Math.floor(Math.random() * opciones.length)] || RESPALDO[0];
+  const ronda = leerSet('dallanaRondaSonrisas');
+  let bolsa = opciones.filter(item => !seen.has(item.id));
+  if (!bolsa.length) bolsa = opciones.filter(item => !ronda.has(item.id));
+  if (!bolsa.length) { ronda.clear(); bolsa = opciones; }
+  const item = bolsa[Math.floor(Math.random() * bolsa.length)] || RESPALDO[0];
+  ronda.add(item.id); guardarSet('dallanaRondaSonrisas', ronda);
   mostrar(item, label);
   if (foot) foot.textContent = `${seen.size} ${seen.size === 1 ? 'recuerdo descubierto' : 'recuerdos descubiertos'} · ${favorites.size} favoritos ♥`;
 }
