@@ -62,3 +62,4 @@
 
 _Keep bullets factual and small; link issues or PRs when useful._
 - 2026-11-25: avisos ntfy más confiables (JSON sin cabeceras, sendBeacon al salir, cola de reintentos, avisos activos desde el inicio) y de todo lo que hace Dallana (sonrisas, stickers, museo, sueños, favoritos, buzón, juego, secciones, tocar a Alejandro…, agrupados cada 20 s). Juego: Alejandro empieza con un disfraz al azar y cambia entre los 39 cada 30–45 s con cartel «¡Disfraz nuevo!». JS v3.77, caché dallana-v3.96.
+- 2026-11-25: arreglo de avisos repetidos: «vio la explicación del buzón» salía cada minuto desde una pestaña en segundo plano (el tutorial reintentaba y anotaba en cada intento). Ahora el tutorial no reintenta en segundo plano y avisa una vez por visita; `anotar()` ignora todo con la página oculta; la cola descarta avisos de más de 3 días; la visita dice el equipo (p. ej. Android · Chrome). JS v3.78, caché dallana-v3.97.

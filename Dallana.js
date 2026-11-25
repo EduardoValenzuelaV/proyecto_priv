@@ -1616,7 +1616,10 @@ const actividad = { recuerdos: 0, ultimaCancion: '' };
    - lo chiquito (tocar stickers, pedir sonrisas, pasar por secciones…) se junta y llega en un solo aviso cada 20 s. */
 const COLA_AVISOS = 'dallanaAvisosPendientes';
 const horaCorta = t => new Date(t).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-function colaAvisos() { const c = leerJSON(COLA_AVISOS, []); return Array.isArray(c) ? c : []; }
+function colaAvisos() {   // lo que lleva más de 3 días sin poder salir se descarta
+  const c = leerJSON(COLA_AVISOS, []);
+  return Array.isArray(c) ? c.filter(a => a && a.texto && Date.now() - (a.t || 0) < 3 * 864e5) : [];
+}
 function guardarCola(c) { guardarJSON(COLA_AVISOS, c.slice(-60)); }
 
 function publicarAviso(a, alSalir = false) {
@@ -1663,7 +1666,7 @@ const loteAvisos = new Map();
 let loteTimer = 0;
 function anotar(texto) {
   try {
-    if (!avisosActivos) return;
+    if (!avisosActivos || document.visibilityState === 'hidden') return;
     loteAvisos.set(texto, (loteAvisos.get(texto) || 0) + 1);
     if (!loteTimer) loteTimer = setTimeout(enviarLote, 20000);
   } catch {}
@@ -1675,6 +1678,13 @@ function enviarLote() {
   loteAvisos.clear();
   if (lineas.length === 1) notificar(lineas[0], 'sparkles');
   else notificar(`anduvo por la página:\n• ${lineas.join('\n• ')}`, 'sparkles');
+}
+
+function equipo() {
+  const ua = navigator.userAgent || '';
+  const so = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'PC Windows' : /Mac OS X/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'equipo desconocido';
+  const nav = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /SamsungBrowser/.test(ua) ? 'Samsung Internet' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'navegador';
+  return `${so} · ${nav}`;
 }
 
 function avisarVisita() {
@@ -1696,7 +1706,7 @@ function avisarVisita() {
     if (sessionStorage.getItem('dallanaAvisado')) return;
     sessionStorage.setItem('dallanaAvisado', '1');
     const hora = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
-    notificar(`abrió la página · ${hora}`, quien ? 'heart' : 'eyes', 'Visita en tu pagina', 4);
+    notificar(`abrió la página · ${hora} · ${equipo()}`, quien ? 'heart' : 'eyes', 'Visita en tu pagina', 4);
   } catch {}
 }
 // se activa apenas existe, para que un error más abajo en el script no apague los avisos
@@ -2388,12 +2398,18 @@ function pintarTutorial() {
   if (sig) { sig.hidden = false; sig.textContent = tutorialPaso === TUTORIAL_BUZON.length - 1 ? '¡Entendido!' : 'Siguiente ›'; }
 }
 
+let tutorialAvisado = false;
 function abrirTutorialBuzon() {
   const globo = $('alejandroGlobo'); if (!globo || !globo.hidden) return;
-  anotar('vio la explicación del buzón');
+  // con la página en segundo plano no insiste: espera a que ella vuelva
+  if (document.visibilityState === 'hidden') {
+    document.addEventListener('visibilitychange', () => setTimeout(abrirTutorialBuzon, 1500), { once: true });
+    return;
+  }
   // con una carta o el juego abiertos, espera a que se cierren
   if (document.querySelector('dialog[open]')) { setTimeout(abrirTutorialBuzon, 3000); return; }
   if (!enCasa()) { volverACasa(abrirTutorialBuzon, true); return; }
+  if (!tutorialAvisado) { tutorialAvisado = true; anotar('vio la explicación del buzón'); }
   tutorialPaso = 0;
   modoGlobo('tutorial');
   pintarTutorial();
