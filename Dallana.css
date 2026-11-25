@@ -1417,3 +1417,316 @@ dialog.clave-dialog{width:min(380px,calc(100% - 24px));text-align:center}
 #claveInput{min-height:48px;padding:10px 14px;border:2px solid var(--rosa);border-radius:14px;background:var(--tarjeta);color:var(--tinta);font:600 22px var(--sans);letter-spacing:.3em;text-align:center}
 #claveInput:focus{outline:3px solid var(--vino);outline-offset:2px}
 .clave-estado{min-height:1.4em;margin:10px 0 0;color:var(--vino);font:600 17px var(--firma)}
+
+/* ============ ÁBREME CUANDO: MINI LIBROS ============
+   Libritos forrados en tela, cerrados con cinta de satén y sello de lacre.
+   Sin leer = con sello; leído = sin sello y con una florcita prensada; a medias = cuelga el separador. */
+.mini-libro,.libro-dialog{--tapa:#e8877b;--tapa-osc:#b9534b;--tapa-clara:#f8c3b9;--oro-tapa:#f1d290;--lacre:#d8414c;--lacre-osc:#a82a35;--tinta-carta:#3a2f3a}
+[data-color="azul"]{--tapa:#7f9fd8;--tapa-osc:#4c6daa;--tapa-clara:#c6d6f3;--lacre:#c9404e}
+[data-color="verde"]{--tapa:#87b878;--tapa-osc:#55894b;--tapa-clara:#cbe5c0}
+[data-color="miel"]{--tapa:#e3ad55;--tapa-osc:#a9762a;--tapa-clara:#f6dca4;--oro-tapa:#fff0c8}
+[data-color="lila"]{--tapa:#a993d6;--tapa-osc:#7a60ad;--tapa-clara:#dcd0f3}
+[data-color="rosa"]{--tapa:#eb98b8;--tapa-osc:#bd6487;--tapa-clara:#f8cfde}
+
+.letter-grid.estante-libros{gap:44px 20px;padding:8px 12px 20px}
+@media (min-width:900px){.letter-grid.estante-libros{gap:52px 30px}}
+
+.mini-libro{position:relative;display:block;width:100%;max-width:196px;aspect-ratio:3/4.15;justify-self:center;margin:0;padding:0;
+  border:0;background:none;color:inherit;font:inherit;cursor:pointer;perspective:900px;-webkit-tap-highlight-color:transparent;
+  transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.mini-libro>span{pointer-events:none}
+.mini-libro:nth-child(3n+2){rotate:.8deg}.mini-libro:nth-child(3n){rotate:-.6deg}
+
+/* repisa de madera */
+.ml-repisa{position:absolute;z-index:0;left:-18px;right:-18px;bottom:-13px;height:10px;border-radius:3px;
+  background:linear-gradient(180deg,#d9a272,#a86f43 65%,#87552f);box-shadow:0 9px 12px -7px rgba(90,50,20,.5)}
+.ml-repisa::after{content:"";position:absolute;left:10%;right:10%;top:-7px;height:7px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(70,35,20,.35),transparent 70%)}
+/* borde de las hojas */
+.ml-hojas{position:absolute;z-index:1;top:5px;bottom:-4px;left:12px;right:-6px;border-radius:2px 6px 6px 2px;
+  background:repeating-linear-gradient(90deg,#fffaf0 0 2px,#e8d7bb 2px 3px) right/7px 100% no-repeat,repeating-linear-gradient(180deg,#fffaf0 0 2px,#e8d7bb 2px 3px) bottom/100% 5px no-repeat,#fffaf0}
+/* separador: solo si quedó a medias */
+.ml-cinta{position:absolute;z-index:0;bottom:-19px;left:58%;width:9px;height:30px;
+  background:linear-gradient(90deg,var(--lacre-osc),var(--lacre) 45%,#f08088 55%,var(--lacre));clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%)}
+/* florcita prensada que asoma de un libro ya leído */
+.ml-flor{position:absolute;z-index:1;top:-14px;right:14px;width:30px;height:36px;background:var(--doodle-ramita) no-repeat center/contain;transform:rotate(18deg)}
+
+/* tapa forrada en tela */
+.ml-tapa{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14% 19% 18% 17%;
+  border-radius:3px 10px 10px 3px;transform-origin:left center;transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.22) 0 10%,rgba(255,255,255,.2) 10.5% 11.5%,rgba(0,0,0,.06) 12% 14%,rgba(0,0,0,0) 16%),
+    radial-gradient(ellipse at 80% 8%,rgba(255,255,255,.38),rgba(255,255,255,0) 50%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,rgba(0,0,0,0) 1px 3px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,rgba(0,0,0,0) 1px 3px),
+    var(--tapa);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),inset -2px 0 0 rgba(255,255,255,.2),0 14px 22px -12px rgba(80,35,25,.6),0 2px 4px rgba(80,35,25,.2)}
+/* lomo con nervios */
+.ml-lomo{position:absolute;left:3px;top:0;bottom:0;width:9%;background:linear-gradient(180deg,rgba(0,0,0,0) 14%,rgba(255,255,255,.28) 14% 15.5%,rgba(0,0,0,0) 15.5% 84.5%,rgba(255,255,255,.28) 84.5% 86%,rgba(0,0,0,0) 86%)}
+/* filete dorado estampado */
+.ml-marco{position:absolute;inset:9px 9px 9px 21px;border:1.5px solid var(--oro-tapa);border-radius:5px;opacity:.85;
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,0),inset 0 0 0 4px rgba(241,210,144,.45)}
+.ml-marco::before,.ml-marco::after{content:"♥";position:absolute;left:50%;transform:translateX(-50%);color:var(--oro-tapa);font-size:9px;line-height:1;padding:0 5px;background:var(--tapa)}
+.ml-marco::before{top:-6px}.ml-marco::after{bottom:-6px}
+/* cartela ovalada con el título */
+.ml-etiqueta{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:14px 10px 13px;
+  border-radius:46%/34%;background:radial-gradient(ellipse at 50% 30%,#fffdf6,#fbf1e2);text-align:center;
+  box-shadow:0 0 0 2px var(--oro-tapa),0 0 0 4px rgba(255,255,255,.35),0 6px 12px -6px rgba(0,0,0,.35)}
+.ml-kicker{color:var(--tapa-osc);font:italic 500 11px/1.2 var(--serif)}
+.ml-titulo{color:var(--tinta-carta);font:600 18px/1 var(--firma);overflow-wrap:break-word;text-wrap:balance}
+.ml-npag{color:var(--tinta-suave);font:italic 400 10.5px/1.2 var(--serif);opacity:.85}
+/* cinta de satén que cierra el libro y su sello de lacre */
+.ml-lazo{position:absolute;z-index:2;top:0;bottom:0;right:7%;width:9px;
+  background:linear-gradient(90deg,rgba(0,0,0,.18),rgba(255,255,255,.35) 40%,rgba(255,255,255,.1) 60%,rgba(0,0,0,.15)),var(--vino);
+  box-shadow:0 0 0 1px rgba(0,0,0,.05)}
+.ml-sello{position:absolute;z-index:3;bottom:11%;right:calc(7% - 13px);width:34px;height:34px;display:grid;place-items:center;border-radius:47% 53% 50% 50%/52% 48% 52% 48%;
+  background:radial-gradient(circle at 35% 30%,#f07a82,var(--lacre) 45%,var(--lacre-osc));color:rgba(255,220,220,.95);font-size:15px;line-height:1;
+  text-shadow:0 -1px 0 rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.25);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.08),inset 0 0 0 5px rgba(255,255,255,.08),0 3px 5px rgba(80,20,20,.35)}
+.ml-sello::before{content:"";position:absolute;inset:-3px;z-index:-1;border-radius:52% 48% 45% 55%/48% 55% 45% 52%;background:var(--lacre-osc);opacity:.9}
+.mini-libro.leido .ml-lazo,.mini-libro.leido .ml-sello{display:none}
+@media (min-width:600px){.ml-titulo{font-size:22px}.ml-kicker{font-size:12px}.ml-sello{width:38px;height:38px;font-size:16px;right:calc(7% - 14px)}}
+@media (hover:hover) and (pointer:fine){
+  .mini-libro:hover{transform:translateY(-9px)}
+  .mini-libro.leido:hover .ml-tapa{transform:rotateY(-24deg)}
+  .mini-libro:not(.leido):hover .ml-sello{transform:scale(1.08) rotate(-6deg)}
+}
+.ml-sello{transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.mini-libro:active{transform:scale(.96)}
+.mini-libro:focus-visible{outline:3px solid var(--vino);outline-offset:9px;border-radius:12px}
+
+/* ---------- el libro abierto ---------- */
+dialog.libro-dialog{width:min(540px,calc(100% - 14px));max-height:none;padding:0 0 6px;overflow:visible;border:0;background:transparent;box-shadow:none}
+dialog.libro-dialog::backdrop{background:radial-gradient(circle at 50% 40%,rgba(120,50,45,.5),rgba(50,20,28,.8))}
+.libro-dialog h2{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.libro-dialog .close{top:2px;right:0;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.libro-escena{padding:20px 6px 4px 10px;perspective:1800px}
+.libro-dialog[open] .libro-escena{animation:libro-llega .55s cubic-bezier(.18,.8,.25,1) both}
+.libro-abierto{position:relative;height:min(660px,calc(100dvh - 150px));padding:10px 12px 10px 18px;border-radius:5px 14px 14px 5px;
+  background:linear-gradient(90deg,rgba(0,0,0,.28) 0 16px,rgba(255,255,255,.16) 17px 18px,rgba(0,0,0,0) 24px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,rgba(0,0,0,0) 1px 3px),var(--tapa-osc);
+  box-shadow:0 34px 70px rgba(30,10,20,.55),inset 0 0 0 1px rgba(255,255,255,.12)}
+.libro-paginas{position:relative;height:100%;perspective:2000px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.libro-paginas::before{content:"";position:absolute;inset:3px -5px -3px 4px;border-radius:3px 9px 9px 3px;
+  background:repeating-linear-gradient(90deg,#fffaf0 0 2px,#e4d2b5 2px 3px) right/6px 100% no-repeat,#f5ecdc}
+
+/* la hoja: papel de carta antiguo */
+.libro-hoja{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;border-radius:3px 9px 9px 3px;transform-origin:left center;backface-visibility:hidden;
+  background:
+    linear-gradient(90deg,rgba(120,75,40,.2),rgba(120,75,40,0) 7%),
+    radial-gradient(rgba(170,120,80,.08) .8px,rgba(0,0,0,0) 1.2px) 0 0/6px 6px,
+    radial-gradient(ellipse at 50% 45%,#fffdf6 55%,#f7ead6 100%)}
+.libro-hoja::before{content:"";position:absolute;z-index:0;inset:14px 14px 14px 20px;border:1px solid rgba(209,52,63,.28);border-radius:4px;
+  box-shadow:inset 0 0 0 4px #fffcf4,inset 0 0 0 5px rgba(209,52,63,.16);pointer-events:none}
+/* flor prensada en una esquina, distinta en hojas pares e impares */
+.libro-hoja::after{content:"";position:absolute;z-index:0;left:24px;bottom:22px;width:42px;height:118px;background:var(--doodle-tulipan) no-repeat center bottom/contain;opacity:.42;transform:rotate(-14deg);transform-origin:bottom;pointer-events:none}
+.libro-hoja.par::after{left:auto;right:30px;top:24px;bottom:auto;width:110px;height:38px;background-image:var(--doodle-rama);transform:rotate(-8deg)}
+.libro-hoja--portada::after,.libro-hoja--foto::after,.libro-hoja--fin::after{display:none}
+.libro-hoja.se-va{z-index:3;animation:hoja-se-va .64s cubic-bezier(.45,.05,.55,.95) forwards}
+.libro-hoja.llega{z-index:3;animation:hoja-llega .64s cubic-bezier(.45,.05,.55,.95) both}
+.lh-sombra{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(70,35,20,.25))}
+.se-va .lh-sombra,.llega .lh-sombra{animation:hoja-sombra .64s ease forwards}
+@keyframes hoja-se-va{0%{transform:rotateY(0)}85%{opacity:1}100%{transform:rotateY(-108deg);opacity:0}}
+@keyframes hoja-llega{0%{transform:rotateY(-108deg);opacity:0}15%{opacity:1}100%{transform:rotateY(0)}}
+@keyframes hoja-sombra{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes libro-llega{from{opacity:0;transform:translateY(22px) scale(.92)}to{opacity:1;transform:none}}
+
+.lh-dentro{position:relative;z-index:1;display:flex;flex:1;flex-direction:column;align-items:center;gap:12px;min-height:0;overflow:auto;padding:40px 34px 52px 40px;text-align:center;scrollbar-width:thin}
+.lh-dentro>:first-child{margin-top:auto}.lh-dentro>:last-child{margin-bottom:auto}
+.lh-num{position:absolute;z-index:1;bottom:20px;left:0;right:0;color:var(--vino);font:italic 500 14px/1 var(--serif);text-align:center;opacity:.7}
+.lh-num::before,.lh-num::after{content:"♡";margin:0 8px;font-style:normal;font-size:10px;vertical-align:2px}
+/* puntita doblada para pasar la hoja */
+.lh-oreja{position:absolute;z-index:3;right:0;bottom:0;width:38px;height:38px;padding:0;border:0;border-radius:0 0 9px 0;cursor:pointer;
+  background:linear-gradient(135deg,rgba(0,0,0,0) 50%,#e9d6b6 50%,#f8eedb 70%,#fffaf0);filter:drop-shadow(-2px -2px 2px rgba(90,50,20,.15));transition:width .25s,height .25s}
+.lh-oreja:hover,.lh-oreja:focus-visible{width:48px;height:48px}
+.libro-hoja--portada .lh-oreja{animation:oreja-invita 2.4s ease-in-out 1.4s 2}
+@keyframes oreja-invita{0%,100%{width:38px;height:38px}50%{width:54px;height:54px}}
+
+/* portadilla */
+.lh-kicker{color:var(--tapa-osc);font:italic 500 18px/1.2 var(--serif)}
+.lh-portada-titulo{margin:0;color:var(--vino);font:600 clamp(40px,11vw,56px)/.95 var(--firma);text-wrap:balance}
+.lh-adorno{width:150px;height:46px;background:var(--doodle-rama) no-repeat center/contain}
+.lh-dedicatoria{margin:0;color:var(--tinta-suave);font:italic 400 16px/1.45 var(--serif)}
+.lh-sticker{width:min(118px,32vw);height:auto;margin:2px 0;filter:drop-shadow(0 6px 8px rgba(0,0,0,.18));transform:rotate(-6deg)}
+.lh-pista{color:var(--tapa-osc);font:600 21px/1 var(--firma)}
+.lh-seguir{margin-top:2px;padding:10px 20px;border:0;border-radius:999px;background:var(--vino);color:#fff;font:700 14px/1 var(--sans);cursor:pointer;box-shadow:0 6px 14px -6px rgba(165,34,46,.7)}
+.lh-seguir--suave{background:#fbe7e2;color:var(--vino);box-shadow:none}
+.lh-acciones{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px}
+/* carta: escrita a mano, con letra capital */
+.lh-titulo{margin:0;color:var(--vino);font:600 32px/1.05 var(--firma)}
+.lh-texto{margin:0;color:var(--tinta-carta);white-space:pre-wrap;font:500 25px/1.45 var(--firma);text-align:left;text-wrap:pretty;hyphens:auto}
+.lh-texto::first-letter{float:left;margin:.08em .1em 0 0;color:var(--vino);font:italic 600 2.5em/.8 var(--serif)}
+.lh-firma{align-self:flex-end;margin:4px 0 0;color:var(--vino);font:600 27px/1.1 var(--firma);transform:rotate(-3deg)}
+/* frase */
+.lh-comillas{color:var(--tapa);font:italic 600 120px/.45 var(--serif);margin-bottom:-4px}
+.lh-frase{margin:0;color:var(--tinta-carta);font:italic 500 clamp(22px,5.8vw,29px)/1.38 var(--serif);text-wrap:balance}
+.lh-autor{color:var(--vino);font:600 24px/1 var(--firma);font-style:normal}
+/* foto */
+.lh-polaroid{position:relative;margin:0;padding:11px 11px 12px;background:#fff;box-shadow:0 12px 26px -10px rgba(60,30,20,.45),0 1px 2px rgba(0,0,0,.08);transform:rotate(-2.5deg);max-width:100%}
+.lh-polaroid::before,.lh-polaroid::after{content:"";position:absolute;width:64px;height:20px;background:var(--tapa-clara);opacity:.85}
+.lh-polaroid::before{top:-9px;left:-14px;transform:rotate(-32deg)}
+.lh-polaroid::after{bottom:-8px;right:-14px;transform:rotate(-32deg)}
+.lh-polaroid img{display:block;width:100%;max-height:min(46dvh,380px);object-fit:cover;border-radius:2px;background:var(--kraft-claro)}
+.lh-polaroid figcaption{margin-top:10px;color:var(--tinta-carta);font:600 23px/1.2 var(--firma)}
+/* lista */
+.lh-lista{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none;text-align:left}
+.lh-lista li{position:relative;padding-left:30px;color:var(--tinta-carta);font:500 24px/1.3 var(--firma)}
+.lh-lista li::before{content:"♥";position:absolute;left:3px;top:3px;color:var(--lacre);font-size:16px}
+/* cierre: el sello vuelve a cerrar el libro */
+.lh-fin{color:var(--vino);font:600 74px/1 var(--firma)}
+.lh-sello-fin{position:relative;width:58px;height:58px;display:grid;place-items:center;border-radius:47% 53% 50% 50%/52% 48% 52% 48%;
+  background:radial-gradient(circle at 35% 30%,#f07a82,var(--lacre) 45%,var(--lacre-osc));color:rgba(255,220,220,.95);font-size:24px;
+  box-shadow:inset 0 0 0 4px rgba(0,0,0,.08),0 4px 8px rgba(80,20,20,.35);animation:sello-cae .7s cubic-bezier(.3,1.5,.5,1) .2s both}
+@keyframes sello-cae{from{opacity:0;transform:scale(1.8) rotate(-20deg)}to{opacity:1;transform:none}}
+.lh-fin-texto{margin:0;color:var(--tinta-suave);font:italic 400 18px/1.45 var(--serif)}
+
+/* tapa que se abre al empezar: primero salta el sello, cae la cinta y se abre */
+.libro-tapa{position:absolute;z-index:6;inset:0;transform-origin:left center;transform-style:preserve-3d;pointer-events:none}
+.lt-frente,.lt-dorso{position:absolute;inset:0;border-radius:5px 14px 14px 5px;backface-visibility:hidden}
+.lt-frente{display:flex;align-items:center;justify-content:center;padding:18% 18% 24% 18%;
+  background:linear-gradient(90deg,rgba(0,0,0,.24) 0 16px,rgba(255,255,255,.2) 17px 18px,rgba(0,0,0,0) 26px),radial-gradient(ellipse at 80% 8%,rgba(255,255,255,.36),rgba(255,255,255,0) 50%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,rgba(0,0,0,0) 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,rgba(0,0,0,0) 1px 3px),var(--tapa)}
+.lt-frente .ml-marco{inset:14px 14px 14px 30px}
+.lt-frente .ml-etiqueta{max-width:300px;padding:24px 16px 22px}
+.lt-frente .ml-kicker{font-size:16px}.lt-frente .ml-titulo{font-size:clamp(32px,9vw,44px)}
+.lt-frente .ml-sello{width:62px;height:62px;font-size:26px;bottom:14%;right:calc(8% - 23px)}
+.lt-frente .ml-lazo{width:15px;right:8%}
+.lt-dorso{transform:rotateY(180deg);background:radial-gradient(circle,var(--tapa-clara) 1.5px,transparent 2px) 0 0/16px 16px,#fff7ee}
+.libro-tapa.sin-sello .ml-sello{animation:sello-salta .5s cubic-bezier(.5,-.4,.7,1) forwards}
+.libro-tapa.sin-sello .ml-lazo{animation:lazo-cae .55s ease-in .12s forwards}
+@keyframes sello-salta{0%{transform:none}35%{transform:translateY(-14px) scale(1.15) rotate(-10deg)}100%{transform:translate(60px,120px) rotate(70deg) scale(.6);opacity:0}}
+@keyframes lazo-cae{to{transform:translateY(40%) scaleY(.4);opacity:0}}
+.libro-tapa.abierta{animation:tapa-abre 1s cubic-bezier(.45,.05,.3,1) forwards}
+@keyframes tapa-abre{0%{transform:rotateY(0)}78%{opacity:1}100%{transform:rotateY(-172deg);opacity:0;visibility:hidden}}
+
+/* controles */
+.libro-controles{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px}
+.libro-btn{min-width:112px;padding:11px 16px;border:0;border-radius:999px;background:#fffaf2;color:var(--vino);font:700 14px/1 var(--sans);cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.25);transition:transform .2s,opacity .2s}
+.libro-btn--sig{background:var(--vino);color:#fff}
+.libro-btn:active{transform:scale(.95)}
+.libro-btn:disabled{opacity:.4;cursor:default}
+.libro-btn:focus-visible,.lh-seguir:focus-visible,.lh-oreja:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.libro-num{min-width:52px;color:#fff;font:italic 600 15px/1 var(--serif);text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.libro-puntos{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px}
+.libro-puntos i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);transition:transform .25s,background .25s}
+.libro-puntos i.on{background:#fff;transform:scale(1.35)}
+@media (max-width:599px){
+  .libro-escena{padding:18px 2px 2px 6px}
+  .libro-abierto{height:calc(100dvh - 140px);padding:7px 8px 7px 14px}
+  .libro-hoja::before{inset:10px 10px 10px 14px}
+  .lh-dentro{padding:30px 22px 46px 26px}
+  .lh-texto{font-size:21px;line-height:1.4}
+  .lh-titulo{font-size:27px}
+  .libro-hoja::after{width:32px;height:90px;left:16px;bottom:16px}
+  .libro-hoja.par::after{width:86px;height:30px;right:20px;top:16px}
+  .libro-btn{min-width:0;padding:11px 15px}
+}
+@media (prefers-reduced-motion:reduce){
+  .libro-dialog[open] .libro-escena,.lh-sello-fin,.libro-hoja--portada .lh-oreja{animation:none}
+  .libro-tapa.abierta,.libro-tapa.sin-sello .ml-sello,.libro-tapa.sin-sello .ml-lazo{animation:none;opacity:0;visibility:hidden}
+}
+
+/* ---------- tapas ilustradas: marco dorado con nudos, flores y dragoncitos ---------- */
+[data-color="lila"]{--tapa:#a594dc;--tapa-osc:#6f5fb0;--tapa-clara:#ddd2f5}
+[data-color="coral"]{--tapa:#ec9689;--tapa-osc:#b9534b;--tapa-clara:#f8c3b9}
+.tapa-arte{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit}
+.ml-tapa{padding:0;justify-content:flex-start;overflow:hidden;background:var(--tapa)}
+.ml-tapa::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(90deg,rgba(40,20,60,.28) 0 5%,rgba(255,255,255,.22) 5.5% 6.5%,rgba(0,0,0,0) 9%),linear-gradient(200deg,rgba(255,255,255,.22),rgba(255,255,255,0) 40%)}
+.ml-lomo{z-index:1;width:5%;background:linear-gradient(180deg,rgba(0,0,0,0) 12%,rgba(255,240,210,.55) 12% 13.2%,rgba(0,0,0,0) 13.2% 86.8%,rgba(255,240,210,.55) 86.8% 88%,rgba(0,0,0,0) 88%)}
+.ml-tapa .ml-etiqueta{position:absolute;z-index:2;top:25%;left:20%;right:16%;width:auto;padding:0;gap:3px;background:none;box-shadow:none;border-radius:0;transform:none}
+.ml-tapa .ml-kicker,.lt-frente .ml-kicker{color:#fff8ee;text-shadow:0 1px 2px rgba(70,40,90,.55)}
+.ml-tapa .ml-titulo,.lt-frente .ml-titulo{color:#fffaf2;text-shadow:0 1px 0 rgba(120,70,40,.35),0 2px 6px rgba(70,40,90,.55)}
+.ml-tapa .ml-npag{color:#fff3e6;opacity:.9;text-shadow:0 1px 2px rgba(70,40,90,.5)}
+.ml-tapa .ml-sello{bottom:3.5%;right:auto;left:calc(50% - 17px + 2px)}
+@media (min-width:600px){.ml-tapa .ml-sello{left:calc(50% - 19px + 2px)}}
+.mini-libro.leido .ml-sello{display:none}
+@media (hover:hover) and (pointer:fine){.mini-libro:hover .ml-tapa{transform:rotateY(-22deg)}}
+/* tapa grande */
+.lt-frente{padding:0;overflow:hidden;background:var(--tapa)}
+.lt-frente::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(40,20,60,.3) 0 14px,rgba(255,255,255,.22) 15px 16px,rgba(0,0,0,0) 22px)}
+.lt-frente .ml-etiqueta{position:absolute;z-index:2;top:24%;left:18%;right:16%;width:auto;max-width:none;padding:0;background:none;box-shadow:none;border-radius:0;transform:none}
+.lt-frente .ml-kicker{font-size:18px}.lt-frente .ml-titulo{font-size:clamp(38px,11vw,52px)}
+.lt-frente .ml-sello{bottom:4%;right:auto;left:calc(50% - 31px)}
+/* hojas: marco dorado, nudo arriba y ramillete en la esquina */
+.libro-hoja::before{border-color:rgba(201,143,92,.45);box-shadow:inset 0 0 0 4px #fffcf4,inset 0 0 0 5px rgba(201,143,92,.28)}
+.lh-nudo{position:absolute;z-index:1;top:5px;left:50%;width:150px;height:48px;transform:translateX(-50%);background:var(--nudo-hoja) no-repeat center/contain;pointer-events:none}
+.libro-hoja::after{width:92px;height:92px;left:12px;bottom:12px;background:var(--flores-hoja) no-repeat center/contain;opacity:.9;transform:none}
+.libro-hoja.par::after{left:auto;right:14px;top:auto;bottom:12px;width:92px;height:92px;background-image:var(--flores-hoja);transform:scaleX(-1)}
+.lh-dentro{padding-top:56px}
+@media (max-width:599px){
+  .libro-hoja::after,.libro-hoja.par::after{width:70px;height:70px}
+  .lh-nudo{width:120px;height:40px}
+  .lh-dentro{padding-top:48px}
+}
+
+/* ---------- portadas distintas y tipografía de libro ---------- */
+.mini-libro,.libro-dialog{--libro-titulo:'Cormorant Garamond',Georgia,serif;--libro-script:'Pinyon Script','Segoe Script',cursive;
+  --t-color:#fffaf2;--t-sombra:0 1px 0 rgba(90,50,40,.35),0 2px 8px rgba(60,30,80,.6);--t-top:24%;--t-izq:18%;--t-der:16%}
+.ml-tapa .ml-kicker,.lt-frente .ml-kicker{font:400 16px/1 var(--libro-script);letter-spacing:0;color:var(--t-color);text-shadow:var(--t-sombra)}
+.ml-tapa .ml-titulo,.lt-frente .ml-titulo{font:700 20px/1.02 var(--libro-titulo);letter-spacing:.01em;color:var(--t-color);text-shadow:var(--t-sombra)}
+.ml-tapa .ml-npag{font:italic 500 11px/1 var(--libro-titulo);color:var(--t-color);text-shadow:var(--t-sombra)}
+.ml-tapa .ml-etiqueta,.lt-frente .ml-etiqueta{top:var(--t-top);left:var(--t-izq);right:var(--t-der);gap:4px}
+@media (min-width:600px){.ml-tapa .ml-titulo{font-size:22px}.ml-tapa .ml-kicker{font-size:18px}}
+.lt-frente .ml-kicker{font-size:26px}
+.lt-frente .ml-titulo{font-size:clamp(36px,10.5vw,50px);line-height:1}
+/* dónde va el título y de qué color en cada portada */
+[data-estilo="nubes"]{--t-top:13%;--t-color:#5e3561;--t-sombra:0 0 6px rgba(255,248,250,.95),0 0 2px #fff}
+[data-estilo="cerezos"]{--t-top:13%;--t-izq:16%;--t-der:16%;--t-color:#59366a;--t-sombra:0 0 6px rgba(255,248,252,.95),0 0 2px #fff}
+[data-estilo="cristales"]{--t-top:43%;--t-izq:29%;--t-der:29%;--t-color:#4a3570;--t-sombra:none}
+[data-estilo="ventana"]{--t-top:30%;--t-izq:24%;--t-der:24%;--t-sombra:0 2px 8px rgba(20,25,70,.85)}
+[data-estilo="castillo"]{--t-top:9%;--t-izq:14%;--t-der:14%;--t-color:#6a3557;--t-sombra:0 0 6px rgba(255,240,246,.95),0 0 2px #fff}
+[data-estilo="pergamino"]{--t-top:38%;--t-izq:20%;--t-der:20%;--t-color:#6b4535;--t-sombra:0 0 6px rgba(255,248,236,.9)}
+[data-estilo="cristales"] .ml-tapa .ml-titulo{font-size:16px}
+@media (min-width:600px){[data-estilo="cristales"] .ml-tapa .ml-titulo{font-size:17px}}
+[data-estilo="cristales"] .lt-frente .ml-titulo{font-size:clamp(26px,7.5vw,36px)}
+[data-estilo="cristales"] .ml-tapa .ml-kicker{font-size:13px}
+.lt-frente .ml-sello{left:calc(50% - 31px)}
+
+/* ---------- hojas de pergamino con nubes y dragoncitos de tinta ---------- */
+.libro-hoja{
+  background:
+    linear-gradient(90deg,rgba(120,75,40,.2),rgba(120,75,40,0) 7%),
+    radial-gradient(ellipse 60% 40% at 85% 10%,rgba(214,190,150,.45),rgba(214,190,150,0) 70%),
+    radial-gradient(ellipse 70% 45% at 10% 95%,rgba(222,198,160,.5),rgba(222,198,160,0) 70%),
+    radial-gradient(ellipse 50% 30% at 100% 70%,rgba(255,250,240,.7),rgba(255,250,240,0) 70%),
+    radial-gradient(rgba(150,110,70,.07) .8px,rgba(0,0,0,0) 1.2px) 0 0/5px 5px,
+    radial-gradient(ellipse at 50% 45%,#fbf2e0 40%,#efdec0 100%)}
+.libro-hoja::before{inset:0;border:0;border-radius:inherit;box-shadow:inset 0 0 30px rgba(150,110,60,.25);
+  background:var(--dragon-hoja) no-repeat right 10px top 12px/96px auto}
+.libro-hoja::after{left:10px;bottom:16px;width:96px;height:110px;background:var(--dragon-hoja) no-repeat center/contain;opacity:1;transform:scaleX(-1) rotate(-8deg)}
+.libro-hoja.par::after{left:10px;right:auto;top:auto;bottom:16px;width:96px;height:110px;background-image:var(--dragon-hoja);transform:scaleX(-1) rotate(-8deg)}
+.libro-hoja--portada::before,.libro-hoja--fin::before{background:none}
+.libro-hoja--foto::before{background-size:70px auto}
+.lh-dentro{padding:58px 30px 64px 34px}
+.lh-num{color:#8a5a48;font:italic 600 15px/1 var(--libro-titulo)}
+.lh-texto{color:#4a3833;font-size:24px}
+.lh-texto::first-letter{color:#c0546e;font:italic 700 2.7em/.78 var(--libro-titulo)}
+.lh-titulo{color:#a8475f;font:italic 600 30px/1.1 var(--libro-titulo)}
+.lh-firma{color:#a8475f}
+.lh-kicker{color:#a8475f;font:400 30px/1 var(--libro-script)}
+.lh-portada-titulo{color:#5a3a45;font:700 clamp(36px,10vw,48px)/1.02 var(--libro-titulo)}
+.lh-dedicatoria{font-family:var(--libro-titulo);font-size:19px;font-weight:500}
+.lh-fin{color:#a8475f;font:400 66px/1.1 var(--libro-script)}
+.lh-fin-texto{font-family:var(--libro-titulo);font-size:20px;font-weight:500}
+.lh-frase{font-family:var(--libro-titulo);font-weight:600;color:#4a3833}
+.lh-comillas{font-family:var(--libro-titulo);color:#c0546e}
+@media (max-width:599px){
+  .libro-hoja::before{background-size:72px auto;background-position:right 6px top 8px}
+  .libro-hoja::after,.libro-hoja.par::after{width:72px;height:84px;bottom:12px;left:6px}
+  .lh-dentro{padding:52px 20px 58px 24px}
+  .lh-texto{font-size:21px}
+}
+
+/* repisa: letra a la medida de los libritos y sello en la esquina */
+.ml-tapa .ml-kicker{font-size:14px;white-space:nowrap}
+.ml-tapa .ml-titulo{font-size:17px}
+.ml-tapa .ml-sello{width:28px;height:28px;font-size:12px;bottom:3.5%;left:auto;right:7%}
+[data-estilo="cristales"] .ml-tapa .ml-titulo{font-size:14px}
+[data-estilo="cristales"] .ml-tapa .ml-kicker{font-size:12px}
+[data-estilo="cristales"]{--t-top:42%;--t-izq:24%;--t-der:24%}
+@media (min-width:600px){
+  .ml-tapa .ml-kicker{font-size:16px}.ml-tapa .ml-titulo{font-size:19px}
+  [data-estilo="cristales"] .ml-tapa .ml-titulo{font-size:15px}
+  .ml-tapa .ml-sello{width:32px;height:32px;font-size:13px;left:auto}
+}
+[data-estilo="castillo"] .ml-tapa .ml-npag{display:none}

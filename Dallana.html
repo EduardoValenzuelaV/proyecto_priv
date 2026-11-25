@@ -25,8 +25,8 @@
 <title>Un rincón para Dallana 💌</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Dallana.css?v=9.1">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Pinyon+Script&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Dallana.css?v=9.6">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -210,7 +210,8 @@
     <div class="gift-head">
       <span class="chapter-kicker">04 · Cartas para momentos</span>
       <h2 id="lettersWhenTitle">Ábreme cuando...</h2>
-      <p>Elige el momento y te acompaño con unas palabras.</p>
+      <p>No escribí estas cartas porque crea que siempre voy a saber qué decirte. Las escribí porque hay muchas cosas que quisiera compartir contigo y porque me gusta la idea de que tengas unas palabras mías para distintos momentos.</p>
+      <p>No tienes que abrirlas todas, ni leerlas cuando no tengas ganas. Algunas están para hacerte compañía, otras para sacarte una sonrisa y otras simplemente para recordarte cuánto me gusta compartir esta historia contigo.</p>
     </div>
     <div class="letter-grid" id="letterCards"></div>
     <img class="sticker sticker--bl" src="assets/stickers/stikers21.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -330,29 +331,27 @@
   </article>
 </dialog>
 
-<dialog id="openWhenDialog" class="open-when-dialog">
-  <button class="close" data-close="openWhenDialog" aria-label="Cerrar">×</button>
-  <h2 id="openWhenDialogTitle">Una carta para ti</h2>
-  <div class="letter-scene" id="letterScene">
-    <div class="animated-envelope" aria-hidden="true">
-      <div class="envelope-back"></div>
-      <div class="envelope-flap"></div>
-      <div class="envelope-front"></div>
-      <div class="envelope-seal">♥</div>
-    </div>
-    <div class="animated-note">
-      <span class="nota-doodle nota-guirnalda" aria-hidden="true"></span>
-      <span class="nota-doodle nota-tulipan" aria-hidden="true"></span>
-      <span class="nota-doodle nota-estrella" aria-hidden="true"></span>
-      <span class="nota-doodle nota-flor" aria-hidden="true"></span>
-      <span class="nota-doodle nota-rama" aria-hidden="true"></span>
-      <span class="nota-doodle nota-esquina" aria-hidden="true"></span>
-      <img class="nota-sticker" src="assets/stickers/stikers18.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
-      <span class="chapter-kicker">PARA ESTE MOMENTO</span>
-      <h3 id="openWhenNoteTitle">Una carta para ti</h3>
-      <p id="openWhenMessage"></p>
+<dialog id="libroDialog" class="libro-dialog" aria-labelledby="libroTitulo">
+  <button class="close" data-close="libroDialog" aria-label="Cerrar el librito">×</button>
+  <h2 id="libroTitulo">Un librito para ti</h2>
+  <div class="libro-escena">
+    <div class="libro-abierto">
+      <div class="libro-paginas" id="libroPaginas" aria-live="polite"></div>
+      <div class="libro-tapa" id="libroTapa" aria-hidden="true">
+        <div class="lt-frente">
+          <span class="ml-etiqueta"><span class="ml-kicker" id="libroTapaEtiqueta">Ábreme cuando</span><span class="ml-titulo" id="libroTapaNombre"></span></span>
+          <span class="ml-sello">♥</span>
+        </div>
+        <div class="lt-dorso"></div>
+      </div>
     </div>
   </div>
+  <div class="libro-controles">
+    <button class="libro-btn" id="libroAnterior" type="button">‹ Anterior</button>
+    <span class="libro-num" id="libroNum">1 / 1</span>
+    <button class="libro-btn libro-btn--sig" id="libroSiguiente" type="button">Siguiente ›</button>
+  </div>
+  <div class="libro-puntos" id="libroPuntos" aria-hidden="true"></div>
 </dialog>
 
 
@@ -532,6 +531,6 @@
   </div>
 </aside>
 
-<script src="Dallana.js?v=3.78" defer></script>
+<script src="Dallana.js?v=3.84" defer></script>
 </body>
 </html>

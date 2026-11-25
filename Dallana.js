@@ -630,66 +630,679 @@ function escribirConResaltes(el, texto) {
   });
 }
 
-/* En teléfono, achica la letra de la nota hasta que quepa entera (sin scroll), para ver texto y decoraciones juntos */
-function ajustarNotaAPantalla() {
-  const nota = document.querySelector('.animated-note');
-  const p = $('openWhenMessage'), h = $('openWhenNoteTitle');
-  if (!nota || !p || !h) return;
-  p.style.fontSize = ''; h.style.fontSize = '';
-  if (innerWidth >= 600) return;
-  let size = parseFloat(getComputedStyle(p).fontSize);
-  const ratioTitulo = parseFloat(getComputedStyle(h).fontSize) / size;
-  while (nota.scrollHeight > nota.clientHeight + 1 && size > 12) {
-    size -= 0.5;
-    p.style.fontSize = `${size}px`;
-    h.style.fontSize = `${size * ratioTitulo}px`;
+/* ============================================================
+   ÁBREME CUANDO: MINI LIBROS QUE SE HOJEAN
+   Cada libro de contenido.cartas:
+     { titulo: 'Ábreme cuando …', color: 'azul', mensaje: '…' (hoja 1), paginas: [ hoja 2, hoja 3, … ] }
+   Hojas posibles, en el orden que quieras:
+     { tipo: 'carta', titulo: '…', texto: '…', firma: 'Eduardo' }   (si no cabe, la letra se achica y luego hay scroll)
+     { tipo: 'frase', texto: '…', autor: '…' }
+     { tipo: 'foto', foto: 'assets/fotos/archivo.jpg', pie: '…' }
+     { tipo: 'lista', titulo: '…', items: ['…', '…'] }
+   Portadas (campo «portada»): nubes, cerezos, cristales, ventana, castillo, nudos, nudos-azul, pergamino
+   (si no se pone, se van turnando para que no haya dos iguales seguidas).
+   Siempre empieza con una portadilla y termina con una hoja de cierre. Recuerda en qué hoja quedó
+   (dallanaLibrosPagina) y cuáles terminó de leer (dallanaLibrosLeidos).
+   ============================================================ */
+/* ---------- Arte de las tapas: marco dorado con nudos de corazón, flores y dos dragoncitos (SVG propio) ----------
+   Se dibuja a la medida de la tapa (ancho 300, alto según la proporción) para que no se deforme. */
+const PALETAS_TAPA = {
+  lila: ['#9b8ad9', '#f2b9d0'], rosa: ['#e59bbf', '#fdd4c8'], azul: ['#8aa2e6', '#e9c3e8'],
+  verde: ['#84bfae', '#f2d0dd'], miel: ['#e3ae73', '#f7cfda'], coral: ['#ec9689', '#f9d3cd']
+};
+const FLOR_COLORES = { rosa: ['#f6aac7', '#d9729a'], lila: ['#bb9ff0', '#8c69cc'], azul: ['#9493f2', '#5f5cc8'] };
+let tapaId = 0;
+
+function svgFlor(x, y, r, tono, giro = 0) {
+  const [c, c2] = FLOR_COLORES[tono];
+  let p = '';
+  for (let k = 0; k < 5; k++) p += `<ellipse cx="0" cy="${-r * .62}" rx="${r * .5}" ry="${r * .62}" transform="rotate(${k * 72})"/>`;
+  return `<g transform="translate(${x} ${y}) rotate(${giro})"><g fill="${c}" stroke="${c2}" stroke-width=".9">${p}</g>`
+    + `<circle r="${r * .3}" fill="${c2}"/><circle r="${r * .12}" fill="#fff3c9"/>`
+    + `<g stroke="${c2}" stroke-width=".8" stroke-linecap="round">${[0, 72, 144, 216, 288].map(a => `<line x1="0" y1="0" x2="0" y2="${-r * .45}" transform="rotate(${a + 36})"/>`).join('')}</g></g>`;
+}
+function svgHoja(x, y, largo, giro) {
+  return `<ellipse cx="${x}" cy="${y}" rx="${largo * .22}" ry="${largo * .5}" transform="rotate(${giro} ${x} ${y})" fill="#6fae9f" stroke="#4d8a7d" stroke-width=".8"/>`;
+}
+function svgRamillete(x, y, flores, hojas) {
+  return hojas.map(([dx, dy, l, g]) => svgHoja(x + dx, y + dy, l, g)).join('') + flores.map(([dx, dy, r, t, g]) => svgFlor(x + dx, y + dy, r, t, g)).join('');
+}
+/* dragoncito mirando a la derecha, en un cuadro de ~95×58 */
+function svgDragon(relleno, borde, ala2, transform) {
+  return `<g transform="${transform}" stroke="${borde}" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">`
+    + `<path d="M52 30 C58 14 70 5 86 2 C79 10 77 17 78 25 C72 22 66 25 62 30 Z" fill="${ala2}"/>`
+    + `<path d="M28 42 C18 44 12 54 2 55 C8 51 11 46 14 41 C17 38 22 37 28 38 Z" fill="${relleno}"/>`
+    + `<path d="M26 40 C36 30 56 28 67 32 C73 34 77 30 81 24 L86 21 L95 25 L88 29 C83 36 77 42 67 44 C53 48 38 47 26 40 Z" fill="${relleno}"/>`
+    + `<path d="M83 22 L84 14 L88 21 Z" fill="${relleno}"/>`
+    + `<path d="M47 45 L45 53 L50 47 M60 44 L60 53 L64 45" fill="none"/>`
+    + `<path d="M44 33 C34 17 20 8 4 6 C14 12 16 18 14 24 C22 20 27 24 27 30 C33 26 38 28 43 34 Z" fill="${relleno}"/>`
+    + `<path d="M14 24 C20 22 24 25 26 29 M27 30 C32 28 37 29 41 33" fill="none" opacity=".6"/>`
+    + `<circle cx="87" cy="25" r="1.1" fill="${borde}" stroke="none"/></g>`;
+}
+/* nudo de corazones entrelazados (arriba; abajo va reflejado) */
+function svgNudo(cx, y0) {
+  const trazos = [
+    `M${cx} ${y0 + 56} C${cx - 30} ${y0 + 36} ${cx - 32} ${y0 + 6} ${cx - 14} ${y0 + 2} C${cx - 5} ${y0} ${cx} ${y0 + 9} ${cx} ${y0 + 15} C${cx} ${y0 + 9} ${cx + 5} ${y0} ${cx + 14} ${y0 + 2} C${cx + 32} ${y0 + 6} ${cx + 30} ${y0 + 36} ${cx} ${y0 + 56} Z`,
+    `M${cx - 12} ${y0 + 40} C${cx - 40} ${y0 + 54} ${cx - 70} ${y0 + 42} ${cx - 66} ${y0 + 20} C${cx - 63} ${y0 + 6} ${cx - 44} ${y0 + 6} ${cx - 42} ${y0 + 20} C${cx - 41} ${y0 + 28} ${cx - 52} ${y0 + 30} ${cx - 53} ${y0 + 23}`,
+    `M${cx + 12} ${y0 + 40} C${cx + 40} ${y0 + 54} ${cx + 70} ${y0 + 42} ${cx + 66} ${y0 + 20} C${cx + 63} ${y0 + 6} ${cx + 44} ${y0 + 6} ${cx + 42} ${y0 + 20} C${cx + 41} ${y0 + 28} ${cx + 52} ${y0 + 30} ${cx + 53} ${y0 + 23}`,
+    `M${cx - 20} ${y0 + 8} C${cx - 40} ${y0 - 4} ${cx - 80} ${y0 - 2} ${cx - 104} ${y0 + 18} C${cx - 112} ${y0 + 26} ${cx - 104} ${y0 + 36} ${cx - 96} ${y0 + 30}`,
+    `M${cx + 20} ${y0 + 8} C${cx + 40} ${y0 - 4} ${cx + 80} ${y0 - 2} ${cx + 104} ${y0 + 18} C${cx + 112} ${y0 + 26} ${cx + 104} ${y0 + 36} ${cx + 96} ${y0 + 30}`
+  ];
+  return `<g fill="none" stroke-linecap="round" stroke-linejoin="round">`
+    + trazos.map(d => `<path d="${d}" stroke="#c98f5c" stroke-width="7.5"/><path d="${d}" stroke="#fbe2bd" stroke-width="4.2"/>`).join('')
+    + `<circle cx="${cx}" cy="${y0 + 26}" r="3.2" fill="#fbe2bd" stroke="#c98f5c" stroke-width="1.5"/></g>`;
+}
+function tapaSVG(color, alto = 415, conDragones = true) {
+  const H = Math.max(360, Math.round(alto));
+  const [c1, c2] = PALETAS_TAPA[color] || PALETAS_TAPA.lila;
+  const id = `tapa${tapaId++}`;
+  // brillitos (siempre los mismos)
+  let s = 7, brillos = '';
+  const azar = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  for (let k = 0; k < 46; k++) brillos += `<circle cx="${(azar() * 280 + 10).toFixed(1)}" cy="${(azar() * (H - 20) + 10).toFixed(1)}" r="${(azar() * 1.3 + .4).toFixed(2)}"/>`;
+  const yb = y => H - y;
+  const ventana = `M72 ${yb(56)} C48 ${H * .7} 44 ${H * .36} 64 ${H * .28} C86 ${H * .2} 122 ${H * .19} 150 ${H * .16} C178 ${H * .19} 214 ${H * .2} 236 ${H * .28} C256 ${H * .36} 252 ${H * .7} 228 ${yb(56)} C200 ${yb(46)} 176 ${yb(44)} 150 ${yb(30)} C124 ${yb(44)} 100 ${yb(46)} 72 ${yb(56)} Z`;
+  return `<svg class="tapa-arte" viewBox="0 0 300 ${H}" aria-hidden="true" focusable="false">`
+    + `<defs><linearGradient id="${id}" x1="0" y1="0" x2=".25" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`
+    + `<radialGradient id="${id}v" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>`
+    + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+    + `<path d="${ventana}" fill="url(#${id}v)" stroke="#f3d1a5" stroke-width="2.2"/>`
+    + `<g fill="#fff" opacity=".55">${brillos}</g>`
+    + `<rect x="11" y="11" width="278" height="${H - 22}" rx="3" fill="none" stroke="#c98f5c" stroke-width="4.5"/>`
+    + `<rect x="11" y="11" width="278" height="${H - 22}" rx="3" fill="none" stroke="#f6d6aa" stroke-width="2.4"/>`
+    + `<rect x="19" y="19" width="262" height="${H - 38}" rx="2" fill="none" stroke="#f6d6aa" stroke-width="1.1" opacity=".8"/>`
+    // ramilletes: esquinas de arriba, costados y abajo
+    + svgRamillete(40, 54, [[0, 0, 13, 'rosa', 10], [24, -18, 9, 'rosa', -20]], [[-12, 14, 18, 40], [14, 10, 16, -50], [30, -2, 14, 70], [-6, -16, 14, -20]])
+    + svgRamillete(260, 54, [[0, 0, 13, 'rosa', -10], [-24, -18, 9, 'rosa', 20]], [[12, 14, 18, -40], [-14, 10, 16, 50], [-30, -2, 14, -70], [6, -16, 14, 20]])
+    + svgRamillete(36, H * .42, [[0, 0, 13, 'rosa', 0], [4, 30, 12, 'lila', 30]], [[12, -16, 16, 30], [-6, 16, 14, -30], [14, 18, 14, 60], [-4, 44, 14, 10]])
+    + svgRamillete(264, H * .36, [[0, 0, 13, 'rosa', 20], [-4, 30, 12, 'lila', -10]], [[-12, -16, 16, -30], [6, 16, 14, 30], [-14, 18, 14, -60], [4, 44, 14, -10]])
+    + svgRamillete(54, yb(62), [[0, 0, 14, 'azul', 0], [26, 16, 10, 'azul', 40], [-14, -28, 11, 'lila', 15]], [[18, -10, 16, 60], [-16, 10, 16, -40], [6, 24, 14, 20], [-20, -12, 14, -70]])
+    + svgRamillete(246, yb(62), [[0, 0, 14, 'lila', 0], [-26, 16, 10, 'azul', -40], [14, -28, 11, 'azul', -15]], [[-18, -10, 16, -60], [16, 10, 16, 40], [-6, 24, 14, -20], [20, -12, 14, 70]])
+    // enredadera de hojitas y florcitas que sigue el arco
+    + [[.25, 'izq'], [.33, 'izq'], [.5, 'izq'], [.58, 'izq'], [.24, 'der'], [.46, 'der'], [.54, 'der'], [.7, 'der']].map(([f, lado], k) => {
+      const x = lado === 'izq' ? 52 + (f > .5 ? -2 : 4) : 248 - (f > .5 ? -2 : 4), y = H * f, g = lado === 'izq' ? 1 : -1;
+      return svgHoja(x - 6 * g, y, 12, 40 * g) + svgHoja(x + 7 * g, y + 6, 11, -30 * g) + (k % 2 ? svgFlor(x, y - 2, 6.5, k % 4 === 1 ? 'lila' : 'rosa', k * 25) : `<circle cx="${x}" cy="${y - 3}" r="2.2" fill="#bb9ff0" stroke="#8c69cc" stroke-width=".6"/><circle cx="${x + 4 * g}" cy="${y + 3}" r="1.8" fill="#f6aac7" stroke="#d9729a" stroke-width=".6"/>`);
+    }).join('')
+    + svgNudo(150, 20)
+    + `<g transform="matrix(1 0 0 -1 0 ${H})">${svgNudo(150, 20)}</g>`
+    + (conDragones ? dragonVuela('violeta', `translate(16 ${H * .6}) scale(.58) rotate(-6)`)
+      + dragonVuela('crema', `translate(286 ${H * .53}) scale(-.54 .54) rotate(-6)`) : '')
+    + `</svg>`;
+}
+
+/* ---------- Dragones detallados (dibujo propio): alas con huesos y membrana, escamas, vientre con placas, cuernos y espinas ----------
+   dragonVuela(paleta, transform): de perfil volando a la derecha, en un cuadro de ~200×130 (origen arriba a la izquierda).
+   dragonGuardian2(paleta, x, y, s): sentado de frente con las alas abiertas. */
+const PALETAS_DRAGON = {
+  azul: { base: '#3f62a8', luz: '#7fa2e0', sombra: '#233a72', ala: '#5f86cc', alaOsc: '#2c4888', vientre: '#c9d6ef', linea: '#1b2b57', ojo: '#ffd36a' },
+  rosa: { base: '#b9506f', luz: '#ec93ad', sombra: '#7a2944', ala: '#d97895', alaOsc: '#923856', vientre: '#f6d3dc', linea: '#5a1c31', ojo: '#ffe08a' },
+  violeta: { base: '#6a58ae', luz: '#a796e0', sombra: '#3f3178', ala: '#8d7bd0', alaOsc: '#4f3f92', vientre: '#ddd3f3', linea: '#2b2158', ojo: '#ffe29a' },
+  crema: { base: '#e8c99a', luz: '#fff0d6', sombra: '#b48a58', ala: '#f3dcb6', alaOsc: '#c79c66', vientre: '#fff7e6', linea: '#7d5a33', ojo: '#6a8fd8' },
+  oro: { base: '#e2ad48', luz: '#fbdc8c', sombra: '#a8721f', ala: '#efc56f', alaOsc: '#b8842f', vientre: '#fff0c4', linea: '#6e4710', ojo: '#c94b5c' },
+  tinta: { base: '#f7eedf', luz: '#fffbf3', sombra: '#ddc9a8', ala: '#fbf4e7', alaOsc: '#e9d8b8', vientre: '#fffdf8', linea: '#3f3431', ojo: '#c45576' },
+  vino: { base: '#7a3f55', luz: '#b67990', sombra: '#4a2133', ala: '#9a5a72', alaOsc: '#5a2a3e', vientre: '#e9c9d3', linea: '#2e1420', ojo: '#ffd36a' }
+};
+let dragonUid = 0;
+function defsDragon(p, id) {
+  return `<defs><linearGradient id="${id}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.luz}"/><stop offset=".45" stop-color="${p.base}"/><stop offset="1" stop-color="${p.sombra}"/></linearGradient>`
+    + `<linearGradient id="${id}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.ala}" stop-opacity=".95"/><stop offset="1" stop-color="${p.alaOsc}" stop-opacity=".95"/></linearGradient>`
+    + `<pattern id="${id}e" width="5" height="4" patternUnits="userSpaceOnUse"><path d="M0 4Q2.5 .5 5 4" fill="none" stroke="${p.linea}" stroke-width=".45" opacity=".5"/></pattern></defs>`;
+}
+function alaDetallada(p, id, S, E, W, puntas, garra = true) {
+  // membrana festoneada entre las puntas de los dedos, curvada hacia la muñeca
+  let d = `M${S[0]} ${S[1]}L${E[0]} ${E[1]}L${W[0]} ${W[1]}L${puntas[0][0]} ${puntas[0][1]}`;
+  for (let k = 1; k < puntas.length; k++) {
+    const a = puntas[k - 1], b = puntas[k];
+    const cx = (a[0] + b[0]) / 2 + (W[0] - (a[0] + b[0]) / 2) * .38, cy = (a[1] + b[1]) / 2 + (W[1] - (a[1] + b[1]) / 2) * .38;
+    d += `Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0]} ${b[1]}`;
+  }
+  const u = puntas[puntas.length - 1];
+  d += `Q${((u[0] + S[0]) / 2 + 6).toFixed(1)} ${((u[1] + S[1]) / 2 - 2).toFixed(1)} ${S[0]} ${S[1]}Z`;
+  const huesos = puntas.map(t => `M${W[0]} ${W[1]}L${t[0]} ${t[1]}`).join('');
+  // venitas finas de la membrana
+  const venas = puntas.slice(0, -1).map((t, k) => { const n = puntas[k + 1]; const mx = (t[0] + n[0]) / 2, my = (t[1] + n[1]) / 2; return `M${W[0]} ${W[1]}Q${((W[0] + mx) / 2 + 3).toFixed(1)} ${((W[1] + my) / 2 + 2).toFixed(1)} ${(mx + (W[0] - mx) * .3).toFixed(1)} ${(my + (W[1] - my) * .3).toFixed(1)}`; }).join('');
+  return `<path d="${d}" fill="url(#${id}a)" stroke="${p.linea}" stroke-width="1.1" stroke-linejoin="round"/>`
+    + `<path d="${venas}" fill="none" stroke="${p.linea}" stroke-width=".5" opacity=".35"/>`
+    + `<path d="${huesos}" fill="none" stroke="${p.sombra}" stroke-width="1.6" stroke-linecap="round"/>`
+    + `<path d="M${S[0]} ${S[1]}L${E[0]} ${E[1]}L${W[0]} ${W[1]}" fill="none" stroke="${p.sombra}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`
+    + `<path d="M${S[0]} ${S[1]}L${E[0]} ${E[1]}L${W[0]} ${W[1]}" fill="none" stroke="${p.luz}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>`
+    + (garra ? `<path d="M${W[0]} ${W[1]}l-2 -6 4 4z" fill="${p.linea}"/>` : '');
+}
+function dragonVuela(paleta, transform) {
+  const p = PALETAS_DRAGON[paleta] || PALETAS_DRAGON.azul, id = `dg${dragonUid++}`;
+  const cuerpo = 'M70 62C80 54 100 50 118 52C126 53 132 50 138 44C144 36 150 30 158 28C164 26 170 26 176 28L189 31C192 32 193 35 191 36L184 38L188 41C182 44 172 43 164 42C156 44 150 50 145 58C140 66 132 72 120 74C104 78 86 78 74 74Z';
+  const cola = 'M74 70C56 80 42 94 26 102C16 107 8 107 3 102C10 104 17 101 24 96C38 86 52 74 70 62Z';
+  const espinas = [[156, 27, 6], [146, 34, 6], [136, 44, 6], [124, 50, 5.5], [110, 50, 5.5], [96, 52, 5], [82, 56, 5], [68, 66, 4.5], [54, 76, 4], [40, 86, 3.5], [28, 95, 3]]
+    .map(([x, y, s]) => `M${x - s * .6} ${y + 1}L${x - s * .2} ${y - s}L${x + s * .5} ${y + .6}Z`).join('');
+  return `<g transform="${transform}">${defsDragon(p, id)}`
+    // ala lejana (detrás), más oscura
+    + `<g opacity=".9" style="filter:brightness(.82)">${alaDetallada({ ...p, ala: p.alaOsc, alaOsc: p.sombra }, id, [104, 52], [100, 22], [84, 2], [[34, -18], [44, 4], [58, 22], [76, 40]], false)}</g>`
+    + `<path d="${cola}" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1.1" stroke-linejoin="round"/>`
+    + `<path d="M3 102L-9 95L-5 104L-12 112L4 107Z" fill="${p.base}" stroke="${p.linea}" stroke-width="1"/>`
+    + `<path d="${espinas}" fill="${p.sombra}" stroke="${p.linea}" stroke-width=".6" stroke-linejoin="round"/>`
+    // pata trasera
+    + `<path d="M86 70C84 80 78 88 70 92L62 96L66 97L60 101L70 100L76 96C86 90 94 80 94 70Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1" stroke-linejoin="round"/>`
+    + `<path d="${cuerpo}" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1.2" stroke-linejoin="round"/>`
+    + `<path d="${cuerpo}" fill="url(#${id}e)"/>`
+    // vientre con placas
+    + `<path d="M144 58C140 66 132 72 120 74C104 78 88 77 76 73C90 74 106 72 120 68C130 65 138 60 142 54Z" fill="${p.vientre}" stroke="${p.linea}" stroke-width=".6"/>`
+    + `<path d="M136 64l2 -5M128 69l1.5 -5M118 72l1 -5M108 74l.5 -4.6M98 75v-4.4M88 75l-.5 -4" stroke="${p.linea}" stroke-width=".6" opacity=".55"/>`
+    // pata delantera
+    + `<path d="M128 70C128 78 124 84 116 86L110 86L114 89L108 91L118 91C128 88 134 80 134 68Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1" stroke-linejoin="round"/>`
+    // cabeza: cuernos, cresta, ojo, nariz y boca
+    + `<path d="M161 30C155 22 148 16 139 13C147 19 152 26 156 33ZM166 28C165 19 161 11 154 6C159 14 161 21 162 30Z" fill="${p.vientre}" stroke="${p.linea}" stroke-width=".9"/>`
+    + `<path d="M158 36l-6 2 5 1-4 4 6-2" fill="${p.sombra}" stroke="${p.linea}" stroke-width=".6"/>`
+    + `<path d="M168 33.5C170 31 174 30.5 176 32C174 33.6 171 34.3 168 33.5Z" fill="${p.ojo}" stroke="${p.linea}" stroke-width=".7"/><circle cx="172.6" cy="32.4" r=".8" fill="${p.linea}"/>`
+    + `<path d="M166 30.5C170 28.6 175 28.8 178 30.6" fill="none" stroke="${p.linea}" stroke-width=".8"/>`
+    + `<path d="M185 36.2L174 37.4" stroke="${p.linea}" stroke-width=".7"/><circle cx="187.4" cy="32.6" r=".7" fill="${p.linea}"/>`
+    + `<path d="M150 31C156 29 164 28 170 29" fill="none" stroke="${p.luz}" stroke-width="1" opacity=".7"/>`
+    // ala cercana (delante), grande y levantada
+    + alaDetallada(p, id, [110, 52], [120, 22], [100, 2], [[24, -12], [36, 18], [54, 36], [78, 48]])
+    + `</g>`;
+}
+function dragonGuardian2(paleta, x, y, s) {
+  const p = PALETAS_DRAGON[paleta] || PALETAS_DRAGON.violeta, id = `dg${dragonUid++}`;
+  const mitad = (signo) => `<g transform="scale(${signo} 1)">`
+    + alaDetallada(p, id, [16, -40], [52, -96], [92, -128], [[150, -132], [158, -90], [150, -52], [128, -20], [96, -6]])
+    + `<path d="M16 6C24 0 30 -6 30 -16C30 -24 26 -30 22 -34L14 -28C18 -20 18 -10 10 -4Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1"/>`
+    + `<path d="M28 8C36 8 42 12 42 18H18C20 12 22 9 28 8Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1"/>`
+    + `<path d="M22 18l3 4M28 18l2 4M34 18l1 4" stroke="${p.linea}" stroke-width=".9"/>`
+    + `<path d="M7 -98C12 -108 20 -116 30 -120C24 -112 20 -104 18 -96Z" fill="${p.vientre}" stroke="${p.linea}" stroke-width=".9"/>`
+    + `</g>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${defsDragon(p, id)}`
+    + mitad(1) + mitad(-1)
+    // cola enroscada a los pies
+    + `<path d="M-18 16C-50 22 -70 14 -64 0C-60 -8 -48 -6 -50 2" fill="none" stroke="${p.linea}" stroke-width="9" stroke-linecap="round"/><path d="M-18 16C-50 22 -70 14 -64 0C-60 -8 -48 -6 -50 2" fill="none" stroke="${p.base}" stroke-width="6.5" stroke-linecap="round"/>`
+    // torso, cuello y cabeza de frente
+    + `<path d="M-24 14C-30 -8 -26 -34 -14 -52C-12 -60 -12 -70 -11 -80H11C12 -70 12 -60 14 -52C26 -34 30 -8 24 14Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1.2"/>`
+    + `<path d="M-24 14C-30 -8 -26 -34 -14 -52C-12 -60 -12 -70 -11 -80H11C12 -70 12 -60 14 -52C26 -34 30 -8 24 14Z" fill="url(#${id}e)"/>`
+    + `<path d="M-12 10C-16 -10 -12 -32 -5 -46H5C12 -32 16 -10 12 10Z" fill="${p.vientre}" stroke="${p.linea}" stroke-width=".7"/>`
+    + Array.from({ length: 9 }, (_, k) => `<path d="M${-11 + k * .5} ${6 - k * 6}Q0 ${8 - k * 6} ${11 - k * .5} ${6 - k * 6}" fill="none" stroke="${p.linea}" stroke-width=".6" opacity=".6"/>`).join('')
+    + `<path d="M-14 -78C-16 -90 -12 -102 0 -108C12 -102 16 -90 14 -78C10 -71 5 -66 0 -64C-5 -66 -10 -71 -14 -78Z" fill="url(#${id}c)" stroke="${p.linea}" stroke-width="1.1"/>`
+    + `<path d="M-4 -70C-2 -67 2 -67 4 -70" fill="none" stroke="${p.linea}" stroke-width=".8"/><circle cx="-2" cy="-71.5" r=".6" fill="${p.linea}"/><circle cx="2" cy="-71.5" r=".6" fill="${p.linea}"/>`
+    + `<path d="M-8 -88C-6 -90 -3 -90 -2 -88C-4 -87 -6 -87 -8 -88ZM8 -88C6 -90 3 -90 2 -88C4 -87 6 -87 8 -88Z" fill="${p.ojo}" stroke="${p.linea}" stroke-width=".6"/>`
+    + `<path d="M0 -104V-96M-4 -100l4 2 4-2" fill="none" stroke="${p.luz}" stroke-width=".8" opacity=".8"/>`
+    + `</g>`;
+}
+
+/* rosita de tinta (para el pergamino y las hojas) */
+function rosita(x, y, r) {
+  return `<g transform="translate(${x} ${y})"><path d="M${-r * 1.5} ${r * .9}C${-r} ${r * .2} ${-r * .4} ${r * .4} 0 ${r * .9}C${r * .2} ${r * 1.4} ${-r * .8} ${r * 1.8} ${-r * 1.5} ${r * .9}Z" fill="#a8c49a" stroke="#5f7d55" stroke-width=".6"/>`
+    + `<circle r="${r}" fill="#f4bccb" stroke="#c45576" stroke-width=".8"/><path d="M${-r * .45} ${-r * .1}a${r * .45} ${r * .45} 0 1 1 ${r * .7} ${r * .4}M${-r * .8} ${r * .3}c${r * .4} ${r * .5} ${r * 1.2} ${r * .5} ${r * 1.5} ${-r * .1}" fill="none" stroke="#c45576" stroke-width=".7"/></g>`;
+}
+function dragonConRosas(transform, paleta = 'tinta') {
+  return `<g transform="${transform}">${dragonVuela(paleta, 'translate(0 0)')}${rosita(60, 66, 5)}${rosita(100, 74, 6)}${rosita(130, 58, 4.5)}${rosita(40, 82, 4)}</g>`;
+}
+
+/* ---------- Portadas distintas para cada librito (dibujos propios en SVG, inspirados en las ideas de Eduardo) ----------
+   portadaSVG(estilo, alto): nubes, cerezos, cristales, ventana, castillo, nudos, nudos-azul, pergamino. */
+const PORTADAS = ['nubes', 'cerezos', 'cristales', 'ventana', 'castillo', 'nudos', 'nudos-azul', 'pergamino'];
+const COLOR_PORTADA = { nubes: 'rosa', cerezos: 'lila', cristales: 'azul', ventana: 'azul', castillo: 'rosa', nudos: 'lila', 'nudos-azul': 'azul', pergamino: 'miel' };
+
+function azarSemilla(s) { return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
+function chispa(x, y, r, fill = '#fff', op = 1) {
+  return `<path d="M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z" fill="${fill}" opacity="${op}"/>`;
+}
+function estrellitas(n, x0, y0, w, h, semilla, fill = '#fff') {
+  const az = azarSemilla(semilla); let out = '';
+  for (let k = 0; k < n; k++) {
+    const x = (x0 + az() * w).toFixed(1), y = (y0 + az() * h).toFixed(1), r = az();
+    out += r > .82 ? chispa(+x, +y, 2.5 + r * 3, fill, .95) : `<circle cx="${x}" cy="${y}" r="${(r * 1.2 + .4).toFixed(2)}" fill="${fill}" opacity="${(.45 + r * .5).toFixed(2)}"/>`;
+  }
+  return out;
+}
+function luna(x, y, r, fill) { return `<path d="M${x} ${y - r}A${r} ${r} 0 1 0 ${x} ${y + r}A${r * .78} ${r} 0 1 1 ${x} ${y - r}Z" fill="${fill}"/>`; }
+function nube(x, y, s, fill, borde = 'none') {
+  const c = [[0, 0, 22], [24, -10, 26], [52, -2, 22], [74, 6, 16], [-20, 8, 15], [30, 10, 22]];
+  const sombra = `<g fill="#000" opacity=".06" transform="translate(3 6)">${c.map(([a, b, r]) => `<circle cx="${a}" cy="${b}" r="${r}"/>`).join('')}</g>`;
+  const luz = `<g fill="#fff" opacity=".45">${c.map(([a, b, r]) => `<circle cx="${a - r * .2}" cy="${b - r * .35}" r="${r * .55}"/>`).join('')}</g>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${sombra}<g fill="${fill}" stroke="${borde}" stroke-width="1.5">${c.map(([a, b, r]) => `<circle cx="${a}" cy="${b}" r="${r}"/>`).join('')}</g>${luz}</g>`;
+}
+function montana(x, y, w, h, fill, nieve) {
+  return `<path d="M${x - w / 2} ${y}L${x} ${y - h}L${x + w / 2} ${y}Z" fill="${fill}"/>`
+    + `<path d="M${x - w * .16} ${y - h * .68}L${x} ${y - h}L${x + w * .16} ${y - h * .68}L${x + w * .07} ${y - h * .74}L${x} ${y - h * .64}L${x - w * .08} ${y - h * .74}Z" fill="${nieve}"/>`;
+}
+function torre(x, y, w, h, muro, techo, ventana) {
+  return `<rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${muro}"/>`
+    + `<path d="M${x - 3} ${y - h}L${x + w / 2} ${y - h - w * 1.3}L${x + w + 3} ${y - h}Z" fill="${techo}"/>`
+    + `<rect x="${x + w / 2 - 2.5}" y="${y - h + h * .25}" width="5" height="8" rx="2.5" fill="${ventana}"/>`;
+}
+function castilloSVG(x, y, s, muro, techo, ventana) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">`
+    + `<rect x="-40" y="-34" width="80" height="34" fill="${muro}"/>`
+    + `<path d="M-40 -34h8v-5h8v5h8v-5h8v5h8v-5h8v5h8v-5h8v5h8v-5h8v5" fill="${muro}"/>`
+    + torre(-52, 0, 16, 58, muro, techo, ventana) + torre(36, 0, 16, 50, muro, techo, ventana) + torre(-10, -26, 20, 44, muro, techo, ventana)
+    + `<path d="M-7 0v-14a7 7 0 0 1 14 0v14Z" fill="${techo}" opacity=".85"/>`
+    + `<rect x="-28" y="-22" width="5" height="8" rx="2.5" fill="${ventana}"/><rect x="22" y="-22" width="5" height="8" rx="2.5" fill="${ventana}"/></g>`;
+}
+function ramaCerezo(x, y, s, giro, semilla) {
+  const az = azarSemilla(semilla); let flores = '';
+  const pts = [[20, -4], [38, -12], [52, -6], [60, -20], [30, -20], [70, -10], [46, -26], [12, -12], [64, 2]];
+  pts.forEach(([a, b], k) => {
+    const r = 4.2 + az() * 2.6;
+    let p = '';
+    for (let j = 0; j < 5; j++) p += `<ellipse cx="0" cy="${-r * .6}" rx="${r * .5}" ry="${r * .6}" transform="rotate(${j * 72})"/>`;
+    flores += `<g transform="translate(${a} ${b}) rotate(${az() * 70})" fill="${k % 3 ? '#f9c6d6' : '#f2a3bd'}" stroke="#e07a9c" stroke-width=".5">${p}<circle r="${r * .22}" fill="#c9506f" stroke="none"/></g>`;
+  });
+  return `<g transform="translate(${x} ${y}) rotate(${giro}) scale(${s})"><path d="M-6 6C16 -2 40 -10 74 -8M34 -9C42 -18 50 -22 60 -22M18 -4C22 -10 28 -16 32 -20" fill="none" stroke="#8c5a4e" stroke-width="2.4" stroke-linecap="round"/>${flores}</g>`;
+}
+function tulipan(x, y, h, color, borde, giro = 0) {
+  return `<g transform="translate(${x} ${y}) rotate(${giro})"><path d="M0 0C1 ${-h * .4} -1 ${-h * .7} 0 ${-h}" fill="none" stroke="#6c9e62" stroke-width="2.2"/>`
+    + `<path d="M0 ${-h * .25}C-14 ${-h * .4} -16 ${-h * .7} -10 ${-h * .85}C-6 ${-h * .6} -4 ${-h * .45} 0 ${-h * .3}Z" fill="#a8cf96" stroke="#6c9e62" stroke-width="1"/>`
+    + `<path d="M-8 ${-h}C-9 ${-h - 12} -5 ${-h - 18} 0 ${-h - 19}C5 ${-h - 18} 9 ${-h - 12} 8 ${-h}C6 ${-h + 5} -6 ${-h + 5} -8 ${-h}Z" fill="${color}" stroke="${borde}" stroke-width="1.1"/>`
+    + `<path d="M0 ${-h - 19}C-2 ${-h - 10} -1 ${-h - 4} 0 ${-h + 3}" fill="none" stroke="${borde}" stroke-width=".8" opacity=".6"/></g>`;
+}
+function cristal(x, y, w, h, c1, c2, giro = 0) {
+  const t = w * .5;
+  return `<g transform="translate(${x} ${y}) rotate(${giro})" stroke="#fff" stroke-width=".9" stroke-linejoin="round">`
+    + `<path d="M${-t} 0L${-t} ${-h + t}L0 ${-h}L${t} ${-h + t}L${t} 0Z" fill="${c1}" opacity=".92"/>`
+    + `<path d="M0 ${-h}L${t * .25} ${-h + t}L${t * .25} 0L${t} 0L${t} ${-h + t}Z" fill="${c2}" opacity=".9"/>`
+    + `<path d="M${-t * .55} ${-h * .15}L${-t * .55} ${-h + t * 1.2}" stroke-opacity=".7"/></g>`;
+}
+function librosPila(x, y, s) {
+  const libros = [['#7f95cc', '#5b6fa6', 86, 0], ['#a790c9', '#7a65a3', 80, 4], ['#94b5d8', '#6c8db3', 84, -3], ['#c7a4d4', '#9a77a8', 78, 3]];
+  return `<g transform="translate(${x} ${y}) scale(${s})">` + libros.map(([c, b, w, dx], k) => {
+    const yy = -k * 15;
+    return `<rect x="${dx}" y="${yy - 14}" width="${w}" height="14" rx="3" fill="${c}" stroke="${b}" stroke-width="1.2"/>`
+      + `<rect x="${dx + w - 10}" y="${yy - 12}" width="8" height="10" fill="#f6ead2"/><path d="M${dx + 12} ${yy - 7}h${w - 30}" stroke="#f6ead2" stroke-width="1" opacity=".7"/>`
+      + (k % 2 ? chispa(dx + w * .4, yy - 7, 3.2, '#f6ead2') : '');
+  }).join('') + `</g>`;
+}
+/* dragoncito chibi durmiendo hecho bolita */
+function dragonDormido(x, y, s, cuerpo, borde, ala, mejilla = '#f08fae') {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${borde}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">`
+    + `<path d="M-46 4C-60 2 -62 -12 -52 -14" fill="none" stroke-width="5" stroke="${cuerpo}"/><path d="M-46 4C-60 2 -62 -12 -52 -14" fill="none"/>`
+    + `<ellipse cx="0" cy="-12" rx="46" ry="26" fill="${cuerpo}"/>`
+    + `<path d="M-30 -34l5 -8 5 7 5 -8 5 7 5 -8 5 7" fill="${ala}"/>`
+    + `<path d="M-24 -30C-10 -52 24 -56 40 -40C26 -40 12 -34 4 -22C-6 -28 -16 -30 -24 -30Z" fill="${ala}"/>`
+    + `<path d="M-8 -36C2 -40 14 -42 26 -40M-2 -30C8 -34 18 -36 30 -36" fill="none" opacity=".55"/>`
+    + `<ellipse cx="34" cy="-2" rx="20" ry="15" fill="${cuerpo}"/>`
+    + `<path d="M26 -2q5 4 10 0" fill="none"/><circle cx="42" cy="4" r="4" fill="${mejilla}" stroke="none" opacity=".75"/>`
+    + `<path d="M22 -14l-3 -8 7 4" fill="${ala}"/>`
+    + chispa(-12, -12, 5, '#fff', .55) + chispa(10, -4, 3.5, '#fff', .5) + `</g>`;
+}
+/* dragón sentado de frente con las alas abiertas (silueta con escamas sugeridas) */
+function dragonGuardian(x, y, s, cuerpo, borde, ala) {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${borde}" stroke-width="1.4" stroke-linejoin="round">`
+    + `<path d="M-14 -40C-50 -70 -90 -96 -120 -92C-108 -70 -112 -48 -118 -24C-100 -36 -84 -32 -74 -18C-60 -30 -40 -30 -24 -18Z" fill="${ala}" opacity=".92"/>`
+    + `<path d="M14 -40C50 -70 90 -96 120 -92C108 -70 112 -48 118 -24C100 -36 84 -32 74 -18C60 -30 40 -30 24 -18Z" fill="${ala}" opacity=".92"/>`
+    + `<path d="M-120 -92L-74 -18M-118 -60L-50 -24M120 -92L74 -18M118 -60L50 -24" fill="none" opacity=".45"/>`
+    + `<path d="M-26 6C-30 -20 -22 -44 -10 -58C-6 -66 6 -66 10 -58C22 -44 30 -20 26 6Z" fill="${cuerpo}"/>`
+    + `<path d="M-8 -56C-12 -70 -10 -84 0 -90C10 -84 12 -70 8 -56Z" fill="${cuerpo}"/>`
+    + `<path d="M-6 -86l-6 -12 8 6M6 -86l6 -12 -8 6" fill="${cuerpo}"/>`
+    + `<path d="M-10 -40h20M-12 -28h24M-13 -16h26M-13 -4h26" stroke="#fff" stroke-opacity=".35" fill="none"/>`
+    + `<path d="M-26 6C-34 4 -40 8 -38 14H-14ZM26 6C34 4 40 8 38 14H14Z" fill="${cuerpo}"/>`
+    + `<circle cx="-4" cy="-78" r="1.3" fill="#fff" stroke="none"/><circle cx="4" cy="-78" r="1.3" fill="#fff" stroke="none"/></g>`;
+}
+/* dragón de línea (para el pergamino): tinta y flores rosadas */
+function dragonLinea(x, y, s, giro = 0) {
+  return `<g transform="translate(${x} ${y}) rotate(${giro}) scale(${s})" fill="#fbf4e8" stroke="#4d403b" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">`
+    + `<path d="M4 -8C20 -34 42 -52 70 -60C60 -46 62 -36 66 -26C56 -30 46 -26 40 -18C34 -22 26 -20 20 -14Z"/>`
+    + `<path d="M70 -60L40 -18M66 -26L30 -12" fill="none" opacity=".6"/>`
+    + `<path d="M-6 -6C-26 -30 -46 -40 -60 -40C-52 -30 -52 -22 -56 -14C-46 -16 -38 -12 -34 -6C-24 -10 -14 -8 -8 -2Z"/>`
+    + `<path d="M-60 -40L-34 -6" fill="none" opacity=".6"/>`
+    + `<path d="M-8 -4C-4 -14 6 -16 12 -10C18 2 14 20 6 34C0 46 -4 58 4 70C10 78 4 86 -4 82" fill="none" stroke-width="7" stroke="#fbf4e8"/>`
+    + `<path d="M-8 -4C-4 -14 6 -16 12 -10C18 2 14 20 6 34C0 46 -4 58 4 70C10 78 4 86 -4 82" fill="none"/>`
+    + `<path d="M-4 82c-6 2 -8 8 -4 12m4 -12c0 6 4 10 8 10" fill="none"/>`
+    + `<path d="M6 -12C6 -22 12 -30 20 -32L28 -30L22 -24C20 -18 14 -12 6 -12Z"/>`
+    + `<path d="M18 -31l2 -9 3 8M14 -29l-2 -8 5 6" fill="none"/>`
+    + `<path d="M0 6l-8 6M6 16l8 6M2 30l-8 4" fill="none"/>`
+    + [[-2, 2], [10, 24], [-2, 48], [-30, -20]].map(([a, b]) => `<g transform="translate(${a} ${b})" stroke="#d1607e" stroke-width=".9" fill="#f7c6d2"><circle r="5"/><path d="M-2 -1a2.2 2.2 0 1 1 3 2M-4 2c2 2 6 2 8 -1" fill="none"/><path d="M-6 3l-5 4M5 4l5 3" stroke="#7a9a6c"/></g>`).join('')
+    + `</g>`;
+}
+function marcoSimple(H, c1, c2) {
+  return `<rect x="10" y="10" width="280" height="${H - 20}" rx="4" fill="none" stroke="${c1}" stroke-width="4"/>`
+    + `<rect x="10" y="10" width="280" height="${H - 20}" rx="4" fill="none" stroke="${c2}" stroke-width="2"/>`
+    + `<rect x="18" y="18" width="264" height="${H - 36}" rx="2" fill="none" stroke="${c2}" stroke-width=".9" opacity=".7"/>`;
+}
+
+const PINTORES = {
+  nubes(H, id) {
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfdff3"/><stop offset=".55" stop-color="#fbe0cf"/><stop offset="1" stop-color="#f5c2d2"/></linearGradient></defs>`
+      + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+      + nube(-20, H * .12, 1.3, '#fbe9dc') + nube(210, H * .08, 1.1, '#fde6d6') + nube(-30, H * .34, 1.2, '#f8cdb5') + nube(230, H * .3, 1.4, '#fbd3bd')
+      + nube(-40, H * .72, 1.6, '#f6c0cc') + nube(200, H * .78, 1.5, '#f9cdd3') + nube(60, H * .9, 1.8, '#fde3dc') + nube(250, H * .6, .9, '#fde8dc')
+      + estrellitas(14, 30, 20, 240, H * .5, 3, '#fff')
+      + dragonVuela('azul', `translate(14 ${H * .5}) scale(.6) rotate(-6)`)
+      + dragonVuela('rosa', `translate(288 ${H * .46}) scale(-.58 .58) rotate(-6)`)
+      + marcoSimple(H, '#fff', '#f3c9a8');
+  },
+  cerezos(H, id) {
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc6ef"/><stop offset=".6" stop-color="#f3d9e8"/><stop offset="1" stop-color="#f6e6d6"/></linearGradient></defs>`
+      + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+      + nube(30, H * .5, .9, '#fbe2ee') + nube(190, H * .46, 1, '#fde9f1')
+      + montana(90, H * .74, 170, H * .3, '#e7d6ec', '#fff') + montana(205, H * .74, 190, H * .34, '#ddd0ea', '#fff')
+      + castilloSVG(150, H * .8, 1.05, '#f7e7cc', '#e6a46a', '#c98a52')
+      + [30, 58, 86, 214, 242, 270].map((x, k) => `<path d="M${x} ${H}L${x - 13} ${H}L${x} ${H * .82 + (k % 3) * 8}L${x + 13} ${H}Z" fill="${k % 2 ? '#d7b46f' : '#c9a35e'}"/>`).join('')
+      + `<rect x="0" y="${H * .93}" width="300" height="${H * .07}" fill="#e9cf9a"/>`
+      + dragonVuela('oro', `translate(34 ${H * .52}) scale(.32) rotate(-10)`)
+      + dragonVuela('vino', `translate(128 ${H * .5}) scale(.58) rotate(-4)`)
+      + estrellitas(10, 40, 20, 220, H * .3, 11, '#fff')
+      + ramaCerezo(-6, 40, 1.1, 20, 5) + ramaCerezo(306, 40, 1.1, 160, 9).replace('rotate(160)', 'rotate(160) scale(1 -1)')
+      + ramaCerezo(-4, H - 70, 1, -20, 13) + ramaCerezo(304, H - 70, 1, 200, 17).replace('rotate(200)', 'rotate(200) scale(1 -1)');
+  },
+  cristales(H, id) {
+    const panel = `M64 ${H * .4}h172v${H * .33}a14 14 0 0 1 -14 14h-144a14 14 0 0 1 -14 -14Z`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a7e"/><stop offset=".6" stop-color="#6d58a8"/><stop offset="1" stop-color="#b49ad6"/></linearGradient>`
+      + `<radialGradient id="${id}l"><stop offset="0" stop-color="#fff6dc"/><stop offset=".55" stop-color="#fbe9c2" stop-opacity=".9"/><stop offset="1" stop-color="#fbe9c2" stop-opacity="0"/></radialGradient></defs>`
+      + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+      + estrellitas(60, 20, 20, 260, H * .8, 21, '#fff')
+      + `<circle cx="150" cy="${H * .17}" r="58" fill="url(#${id}l)"/>`
+      + dragonGuardian2('violeta', 150, H * .4 + 2, .8)
+      + [[30, H, 26, 120, '#d7a6e3', '#b783c8', -6], [62, H, 20, 86, '#a9c0ef', '#7f98d6', 8], [8, H, 18, 70, '#f1c2dc', '#d593ba', -14],
+         [270, H, 26, 124, '#d7a6e3', '#b783c8', 6], [238, H, 20, 90, '#a9c0ef', '#7f98d6', -8], [292, H, 18, 72, '#f1c2dc', '#d593ba', 14],
+         [150, H - 4, 30, 70, '#c9a7ec', '#9f7fd0', 0], [124, H - 2, 20, 50, '#f1c2dc', '#d593ba', -18], [176, H - 2, 20, 52, '#a9c0ef', '#7f98d6', 18]]
+        .map(([a, b, w, h, c1, c2, g]) => cristal(a, b, w, h, c1, c2, g)).join('')
+      + `<path d="${panel}" fill="#f6ead3" stroke="#d6ad6c" stroke-width="3"/><path d="${panel}" fill="none" stroke="#fff3da" stroke-width="1" transform="translate(0 0)"/>`
+      + `<circle cx="150" cy="${H * .4}" r="13" fill="#b9a4e6" stroke="#d6ad6c" stroke-width="3"/>` + chispa(150, H * .4, 7, '#fff')
+      + marcoSimple(H, '#a8804a', '#e9c98c')
+      + [[22, 22], [278, 22], [22, H - 22], [278, H - 22]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="9" fill="#5a4c9c" stroke="#e9c98c" stroke-width="2"/>` + chispa(a, b, 5, '#f6e2b5')).join('');
+  },
+  ventana(H, id) {
+    const wx = 60, ww = 180, wy = H * .12, wh = H * .7;
+    const arco = `M${wx} ${wy + wh}V${wy + 70}C${wx} ${wy + 20} ${wx + ww / 2} ${wy} ${wx + ww / 2} ${wy}C${wx + ww / 2} ${wy} ${wx + ww} ${wy + 20} ${wx + ww} ${wy + 70}V${wy + wh}Z`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3a78"/><stop offset="1" stop-color="#4f5fa6"/></linearGradient></defs>`
+      + `<rect width="300" height="${H}" fill="#dfe5ef"/>`
+      + `<path d="${arco}" fill="url(#${id})" stroke="#5b6aa8" stroke-width="10"/>`
+      + estrellitas(34, wx + 8, wy + 20, ww - 16, wh - 40, 31, '#fff')
+      + luna(wx + ww * .7, wy + 52, 16, '#f7e7b5')
+      + `<path d="M${wx + ww / 2} ${wy + 6}V${wy + wh}M${wx + 6} ${wy + wh * .55}H${wx + ww - 6}M${wx + 6} ${wy + wh * .8}H${wx + ww - 6}" stroke="#5b6aa8" stroke-width="5" fill="none"/>`
+      + `<path d="M${wx} ${wy + wh * .88}C${wx + 50} ${wy + wh * .74} ${wx + 120} ${wy + wh * .8} ${wx + ww} ${wy + wh * .7}V${wy + wh}H${wx}Z" fill="#6c5a9e" opacity=".7"/>`
+      + `<rect x="${wx - 22}" y="${wy + wh}" width="${ww + 44}" height="12" rx="3" fill="#5b6aa8"/>`
+      + librosPila(wx - 18, wy + wh, .9)
+      + dragonVuela('violeta', `translate(${wx + 6} ${wy + wh * .34}) scale(.5) rotate(-10)`)
+      + dragonVuela('rosa', `translate(${wx + ww + 4} ${wy + wh * .56}) scale(-.34 .34) rotate(-4)`)
+      + chispa(40, 40, 6, '#c3cbe6') + chispa(262, 70, 5, '#c3cbe6') + chispa(250, H - 40, 6, '#c3cbe6') + chispa(36, H - 34, 4, '#c3cbe6')
+      + marcoSimple(H, '#b7c0dc', '#fff');
+  },
+  castillo(H, id) {
+    const wx = 80, ww = 140, wy = H * .45, wh = H * .36;
+    const arco = `M${wx} ${wy + wh}V${wy + 56}C${wx} ${wy + 14} ${wx + ww / 2} ${wy} ${wx + ww / 2} ${wy - 6}C${wx + ww / 2} ${wy} ${wx + ww} ${wy + 14} ${wx + ww} ${wy + 56}V${wy + wh}Z`;
+    let rayos = '';
+    for (let k = 0; k < 24; k++) rayos += `<path d="M246 ${H * .085}L${246 + Math.cos(k / 24 * 6.283) * 34} ${H * .085 + Math.sin(k / 24 * 6.283) * 34}" stroke="#f3cf73" stroke-width="1.2" opacity=".7"/>`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d63b8"/><stop offset="1" stop-color="#9a8fd6"/></linearGradient></defs>`
+      + `<rect width="300" height="${H}" fill="#f6d8e4"/>` + rayos + `<circle cx="246" cy="${H * .085}" r="15" fill="#f6c95e" stroke="#e7ad3b" stroke-width="1.5"/>`
+      + [[34, H * .3, -18], [266, H * .3, 18], [24, H * .55, -8], [276, H * .55, 8]].map(([a, b, g]) => svgHoja(a, b, 34, g) + svgHoja(a + (a < 150 ? 12 : -12), b + 22, 26, -g * 2) + svgFlor(a + (a < 150 ? 6 : -6), b - 20, 7, 'lila', g)).join('')
+      + `<path d="${arco}" fill="url(#${id})" stroke="#7b4f4a" stroke-width="7"/>`
+      + estrellitas(20, wx + 10, wy + 10, ww - 20, wh * .5, 41, '#fff') + luna(wx + ww * .5, wy + 34, 12, '#fff8de')
+      + `<path d="M${wx + 4} ${wy + wh * .72}C${wx + 40} ${wy + wh * .6} ${wx + 110} ${wy + wh * .66} ${wx + ww - 4} ${wy + wh * .58}V${wy + wh}H${wx + 4}Z" fill="#8cc08a"/>`
+      + `<path d="M${wx + 60} ${wy + wh}C${wx + 70} ${wy + wh * .85} ${wx + 100} ${wy + wh * .8} ${wx + 110} ${wy + wh * .66}" stroke="#f1d9a6" stroke-width="7" fill="none" stroke-linecap="round"/>`
+      + castilloSVG(wx + ww * .66, wy + wh * .66, .55, '#efe2f4', '#9b7dc4', '#f7d27a')
+      + `<rect x="${wx - 14}" y="${wy + wh}" width="${ww + 28}" height="9" rx="2" fill="#7b4f4a"/>`
+      + dragonVuela('violeta', `translate(${wx + 14} ${wy + wh * .2}) scale(.3) rotate(-8)`)
+      + `<rect x="0" y="${H * .84}" width="300" height="${H * .16}" fill="#eaf3e2"/>`
+      + Array.from({ length: 11 }, (_, k) => tulipan(14 + k * 27, H + 4, 40 + (k * 13) % 22, k % 3 ? '#f6b9cb' : '#f19bb6', '#cf6d8f', (k % 2 ? 4 : -4))).join('')
+      + marcoSimple(H, '#fff', '#e8b6c8');
+  },
+  nudos(H) { return tapaSVG('lila', H, true).replace(/^<svg[^>]*>|<\/svg>$/g, ''); },
+  'nudos-azul'(H) { return tapaSVG('azul', H, true).replace(/^<svg[^>]*>|<\/svg>$/g, ''); },
+  pergamino(H, id) {
+    return `<defs><radialGradient id="${id}" cx=".5" cy=".45" r=".75"><stop offset="0" stop-color="#f9efda"/><stop offset=".7" stop-color="#efdcb8"/><stop offset="1" stop-color="#dcc095"/></radialGradient></defs>`
+      + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+      + nube(170, H * .2, 1.6, '#e9d7b6') + nube(-40, H * .82, 1.8, '#f4e6cc') + nube(200, H * .9, 1.4, '#ecdcbd')
+      + estrellitas(30, 10, 10, 280, H - 20, 51, '#c9a77a')
+      + dragonConRosas(`translate(132 ${H * .2}) scale(.72) rotate(-28)`) + dragonConRosas(`translate(24 ${H * .86}) scale(.7) rotate(-30)`)
+      + marcoSimple(H, '#c9a06a', '#f6e8cc');
+  }
+};
+
+function portadaSVG(estilo, alto = 415) {
+  const H = Math.max(360, Math.round(alto));
+  const pintar = PINTORES[estilo] || PINTORES.nudos;
+  const id = `pt${tapaId++}`;
+  const textura = `<filter id="${id}t"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .35  0 0 0 0 .25  0 0 0 0 .2  0 0 0 .5 -.18"/></filter>`
+    + `<rect width="300" height="${H}" filter="url(#${id}t)" opacity=".55" style="mix-blend-mode:multiply"/>`;
+  return `<svg class="tapa-arte" viewBox="0 0 300 ${H}" aria-hidden="true" focusable="false">${pintar(H, id)}${textura}</svg>`;
+}
+
+/* Adornos de las hojas: el mismo nudo dorado arriba y un ramillete en la esquina */
+const svgDato = svg => `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '))}")`;
+const ADORNO_NUDO = svgDato(`<svg viewBox="40 10 220 70">${svgNudo(150, 16)}</svg>`);
+const ADORNO_DRAGON = svgDato(`<svg viewBox="-20 -40 230 190">${dragonConRosas('translate(10 40) rotate(-24 100 60)')}</svg>`);
+const estiloLibro = (libro, i) => PORTADAS.includes(libro.portada) ? libro.portada : PORTADAS[i % PORTADAS.length];
+const ADORNO_FLORES = svgDato(`<svg viewBox="0 0 120 120">${svgRamillete(46, 70, [[0, 0, 14, 'rosa', 0], [26, 16, 10, 'lila', 30], [-14, -28, 11, 'azul', 15], [30, -14, 8, 'rosa', -20]], [[18, -10, 16, 60], [-16, 10, 16, -40], [6, 24, 14, 20], [-20, -12, 14, -70], [40, 4, 14, 80]])}</svg>`);
+
+const COLORES_LIBRO = ['lila', 'rosa', 'azul', 'verde', 'miel', 'coral'];
+const STICKERS_LIBRO = ['stikers18', 'stikers4', 'stikers14', 'stikers21', 'stikers22', 'stikers9', 'stikers12', 'stikers6'];
+let libroActual = null, hojasLibro = [], hojaIdx = 0, hojeando = false;
+
+function partesTitulo(titulo, i) {
+  const m = String(titulo || '').match(/^(ábreme cuando)\s+(.+)$/i);
+  return m ? { etiqueta: 'Ábreme cuando', nombre: m[2] } : { etiqueta: `Librito Nº ${i + 1}`, nombre: titulo || `Librito ${i + 1}` };
+}
+
+/* Hoja 1 = la carta del libro («mensaje»); después, en orden, lo que haya en «paginas» (hoja 2, 3, 4…) */
+function paginasDeLibro(libro) {
+  const hojas = [{ tipo: 'portada' }];
+  if (libro.mensaje) hojas.push({ tipo: 'carta', texto: libro.mensaje });
+  (Array.isArray(libro.paginas) ? libro.paginas : []).forEach(p => hojas.push({ ...p, tipo: p.tipo || 'carta', texto: p.texto || p.mensaje || '' }));
+  if (hojas.length === 1) hojas.push({ tipo: 'carta', texto: 'Aquí tienes unas palabras para este momento.' });
+  hojas.push({ tipo: 'fin' });
+  return hojas;
+}
+
+const marcasLibros = () => leerJSON('dallanaLibrosPagina', {});
+
+function crearHoja(p, i) {
+  const h = document.createElement('article');
+  h.className = `libro-hoja libro-hoja--${p.tipo}`;
+  const dentro = document.createElement('div'); dentro.className = 'lh-dentro';
+  const add = (tag, cls, txt, padre = dentro) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; padre.append(e); return e; };
+  const boton = (cls, txt, fn) => { const b = add('button', cls, txt); b.type = 'button'; b.onclick = fn; return b; };
+  const { etiqueta, nombre } = partesTitulo(libroActual.titulo, libroActual._i);
+  if (p.tipo === 'portada') {
+    add('span', 'lh-kicker', etiqueta);
+    add('h3', 'lh-portada-titulo', nombre);
+    add('span', 'lh-adorno').setAttribute('aria-hidden', 'true');
+    add('p', 'lh-dedicatoria', 'Un librito de Eduardo para Dallana');
+    const img = add('img', 'lh-sticker');
+    img.src = `assets/stickers/${STICKERS_LIBRO[libroActual._i % STICKERS_LIBRO.length]}.png`; img.alt = ''; img.decoding = 'async';
+    const marca = marcasLibros()[libroActual.titulo];
+    if (marca > 1 && marca < hojasLibro.length - 1) boton('lh-seguir', `Seguir en la hoja ${marca}`, () => irAHoja(marca, 1));
+    else add('span', 'lh-pista', 'Pasa la hoja desde la esquinita');
+  } else if (p.tipo === 'carta') {
+    if (p.titulo) add('h3', 'lh-titulo', p.titulo);
+    add('p', 'lh-texto', String(p.texto || '').trim());
+    if (p.firma) add('p', 'lh-firma', p.firma);
+  } else if (p.tipo === 'frase') {
+    add('span', 'lh-comillas', '“').setAttribute('aria-hidden', 'true');
+    add('blockquote', 'lh-frase', p.texto || '');
+    if (p.autor) add('cite', 'lh-autor', p.autor);
+  } else if (p.tipo === 'foto') {
+    const fig = add('figure', 'lh-polaroid');
+    const img = add('img', '', null, fig);
+    img.src = urlFoto(p.foto); img.alt = p.pie || 'Una foto para ti'; img.loading = 'lazy'; img.decoding = 'async';
+    if (p.pie) add('figcaption', '', p.pie, fig);
+  } else if (p.tipo === 'lista') {
+    if (p.titulo) add('h3', 'lh-titulo', p.titulo);
+    const ul = add('ul', 'lh-lista');
+    (p.items || []).forEach(it => add('li', '', it, ul));
+  } else if (p.tipo === 'fin') {
+    add('span', 'lh-fin', 'Fin');
+    add('span', 'lh-sello-fin', '♥').setAttribute('aria-hidden', 'true');
+    add('p', 'lh-fin-texto', 'Este librito se queda aquí, para cuando lo necesites.');
+    add('p', 'lh-firma', 'Te quiero, Eduardo');
+    const acciones = add('div', 'lh-acciones');
+    const b1 = add('button', 'lh-seguir lh-seguir--suave', 'Leer de nuevo', acciones); b1.type = 'button'; b1.onclick = () => irAHoja(0, -1);
+    const b2 = add('button', 'lh-seguir', 'Cerrar librito', acciones); b2.type = 'button'; b2.onclick = () => $('libroDialog')?.close();
+  }
+  h.append(dentro);
+  if (i % 2 === 0) h.classList.add('par');
+  if (i > 0 && p.tipo !== 'fin') add('span', 'lh-num', String(i), h);
+  if (p.tipo !== 'fin') {
+    const oreja = add('button', 'lh-oreja', null, h);
+    oreja.type = 'button'; oreja.setAttribute('aria-label', 'Pasar a la hoja siguiente');
+    oreja.onclick = () => irAHoja(i + 1, 1);
+  }
+  add('span', 'lh-sombra', null, h).setAttribute('aria-hidden', 'true');
+  return h;
+}
+
+/* En teléfono, achica la letra de una hoja de carta hasta que quepa sin scroll */
+function ajustarHoja(h) {
+  const dentro = h.querySelector('.lh-dentro'), texto = h.querySelector('.lh-texto');
+  if (!dentro || !texto) return;
+  texto.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(texto).fontSize);
+  while (dentro.scrollHeight > dentro.clientHeight + 1 && size > 15) {
+    size -= .5;
+    texto.style.fontSize = `${size}px`;
   }
 }
-addEventListener('resize', () => { if ($('openWhenDialog')?.open) ajustarNotaAPantalla(); });
 
-function abrirCartaDeAnimo(carta) {
-  const scene = $('letterScene');
-  const dlg = $('openWhenDialog');
-  if (!scene || !dlg) return;
-  scene.classList.remove('is-opening', 'is-open');
-  const t1 = $('openWhenNoteTitle'); if (t1) t1.textContent = carta.titulo || 'Una carta para ti';
-  const m = $('openWhenMessage'); if (m) escribirConResaltes(m, carta.mensaje || 'Aquí tienes unas palabras para este momento.');
-  const t2 = $('openWhenDialogTitle'); if (t2) t2.textContent = carta.titulo || 'Una carta para ti';
-  dlg.showModal();
-  notificar(`abrió la carta «${carta.titulo || 'Ábreme cuando'}»`, 'envelope');
-  sumarCorazon();
-  ajustarNotaAPantalla();
-  if (document.fonts) document.fonts.ready.then(ajustarNotaAPantalla);
-  scene.classList.remove('rompe-sello');
-  requestAnimationFrame(() => { scene.classList.add('is-opening'); romperSello(scene); });
-  const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620;
-  setTimeout(() => { if (dlg.open) scene.classList.add('is-open'); }, delay);
+function pintarControles() {
+  const total = hojasLibro.length;
+  const num = $('libroNum'); if (num) num.textContent = `${hojaIdx + 1} / ${total}`;
+  const ant = $('libroAnterior'), sig = $('libroSiguiente');
+  if (ant) ant.disabled = hojaIdx === 0;
+  if (sig) { sig.disabled = hojaIdx >= total - 1; sig.textContent = hojaIdx === 0 ? 'Abrir ›' : 'Siguiente ›'; }
+  const puntos = $('libroPuntos');
+  if (puntos) {
+    puntos.replaceChildren();
+    puntos.hidden = total > 16;
+    for (let k = 0; k < total; k++) { const d = document.createElement('i'); if (k === hojaIdx) d.className = 'on'; puntos.append(d); }
+  }
 }
+
+function irAHoja(n, dir = n > hojaIdx ? 1 : -1) {
+  const cont = $('libroPaginas'); if (!cont || !libroActual) return;
+  const vieja = cont.querySelector('.libro-hoja.actual');
+  if (hojeando || n < 0 || n >= hojasLibro.length || (vieja && n === hojaIdx)) return;
+  const nueva = crearHoja(hojasLibro[n], n);
+  nueva.classList.add('actual');
+  hojaIdx = n;
+  const animar = vieja && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!vieja) cont.append(nueva);
+  else if (dir > 0) {
+    cont.prepend(nueva);
+    vieja.classList.remove('actual');
+    if (animar) { hojeando = true; vieja.classList.add('se-va'); setTimeout(() => { vieja.remove(); hojeando = false; }, 640); }
+    else vieja.remove();
+  } else {
+    cont.append(nueva);
+    vieja.classList.remove('actual');
+    if (animar) { hojeando = true; nueva.classList.add('llega'); setTimeout(() => { vieja.remove(); nueva.classList.remove('llega'); hojeando = false; }, 640); }
+    else vieja.remove();
+  }
+  ajustarHoja(nueva);
+  if (document.fonts) document.fonts.ready.then(() => ajustarHoja(nueva));
+  pintarControles();
+  try { navigator.vibrate?.(8); } catch {}
+  // marcador y lectura
+  const marcas = marcasLibros();
+  if (n > 0 && n < hojasLibro.length - 1) marcas[libroActual.titulo] = n;
+  if (n === hojasLibro.length - 1) {
+    delete marcas[libroActual.titulo];
+    const leidos = leerSet('dallanaLibrosLeidos');
+    if (!leidos.has(libroActual.titulo)) {
+      leidos.add(libroActual.titulo); guardarSet('dallanaLibrosLeidos', leidos);
+      notificar(`terminó de leer el librito «${libroActual.titulo}» 📖`, 'books');
+      renderCartas();
+    }
+  } else if (n > 0) anotar(`leyó la página ${n} de «${libroActual.titulo}»`);
+  guardarJSON('dallanaLibrosPagina', marcas);
+}
+
+function abrirLibro(libro, i) {
+  const dlg = $('libroDialog'), cont = $('libroPaginas'), tapa = $('libroTapa');
+  if (!dlg || !cont) return;
+  libroActual = { ...libro, _i: i };
+  hojasLibro = paginasDeLibro(libro);
+  hojaIdx = 0; hojeando = false;
+  const { etiqueta, nombre } = partesTitulo(libro.titulo, i);
+  const estilo = estiloLibro(libro, i);
+  dlg.dataset.estilo = estilo;
+  dlg.dataset.color = libro.color || COLOR_PORTADA[estilo];
+  const t = $('libroTitulo'); if (t) t.textContent = libro.titulo || nombre;
+  const te = $('libroTapaEtiqueta'), tn = $('libroTapaNombre');
+  if (te) te.textContent = etiqueta; if (tn) tn.textContent = nombre;
+  dlg.style.setProperty('--nudo-hoja', ADORNO_NUDO);
+  dlg.style.setProperty('--flores-hoja', ADORNO_FLORES);
+  dlg.style.setProperty('--dragon-hoja', ADORNO_DRAGON);
+  cont.replaceChildren();
+  if (tapa) tapa.classList.remove('abierta', 'sin-sello');
+  if (!dlg.open) dlg.showModal();
+  const frente = tapa?.querySelector('.lt-frente');
+  if (frente) {
+    frente.querySelector('.tapa-arte')?.remove();
+    const r = frente.getBoundingClientRect();
+    frente.insertAdjacentHTML('afterbegin', portadaSVG(estilo, r.width ? 300 * r.height / r.width : 560));
+  }
+  irAHoja(0, 1);
+  notificar(`abrió el librito «${libro.titulo || nombre}» 📖`, 'closed_book');
+  sumarCorazon();
+  const reducir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // primero salta el sello y cae la cinta; después se abre la tapa
+  if (tapa) {
+    setTimeout(() => { if (dlg.open) tapa.classList.add('sin-sello'); }, reducir ? 0 : 380);
+    setTimeout(() => { if (dlg.open) tapa.classList.add('abierta'); }, reducir ? 0 : 900);
+  }
+}
+
+/* Controles: botones, flechas del teclado, deslizar el dedo y tocar los bordes de la hoja */
+(() => {
+  const dlg = $('libroDialog'), cont = $('libroPaginas');
+  if (!dlg || !cont) return;
+  $('libroAnterior')?.addEventListener('click', () => irAHoja(hojaIdx - 1, -1));
+  $('libroSiguiente')?.addEventListener('click', () => irAHoja(hojaIdx + 1, 1));
+  dlg.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { irAHoja(hojaIdx + 1, 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { irAHoja(hojaIdx - 1, -1); e.preventDefault(); }
+  });
+  let x0 = null, y0 = null;
+  cont.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; });
+  cont.addEventListener('pointerup', e => {
+    if (x0 == null) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) { irAHoja(hojaIdx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); return; }
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8 || e.target.closest('button, a')) return;
+    const r = cont.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width;
+    if (fx > .78) irAHoja(hojaIdx + 1, 1);
+    else if (fx < .18) irAHoja(hojaIdx - 1, -1);
+  });
+  dlg.addEventListener('close', () => { hojeando = false; });
+})();
 
 function renderCartas() {
   const host = $('letterCards'); if (!host) return;
   host.replaceChildren();
+  host.classList.add('estante-libros');
   if (!(contenido.cartas || []).length) {
     const empty = document.createElement('div'); empty.className = 'empty-state';
-    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H12.2l-1.1 3.3c-.4 1.2-1.5 2-2.8 2h0c-1.3 0-2.4-.8-2.8-2L10.2 4H4c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2z"/><path d="M19 16V8a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v8"/><path d="M7 4h2"/><path d="M17 4h2"/><path d="M11 19h2"/><path d="M11 7h2"/></svg>';
-    empty.innerHTML += '<p>Aún no hay cartas escritas. Pronto llegarán unas palabras para ti.</p>';
+    empty.innerHTML = '<p>Aún no hay libritos escritos. Pronto llegarán unas palabras para ti.</p>';
     host.append(empty);
     return;
   }
+  const leidos = leerSet('dallanaLibrosLeidos');
+  const marcas = marcasLibros();
   (contenido.cartas || []).forEach((c, i) => {
+    const titulo = c.titulo || `Librito ${i + 1}`;
+    const { etiqueta, nombre } = partesTitulo(titulo, i);
+    const nHojas = paginasDeLibro(c).length - 2;
+    const leido = leidos.has(titulo);
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'open-card';
-    const titulo = c.titulo || `Carta ${i + 1}`;
-    // Sobre: solapa, carta asomando y sello; "Ábreme cuando" va como etiqueta y el resto a mano
-    const m = titulo.match(/^(ábreme cuando)\s+(.+)$/i);
-    const deco = cls => { const s = document.createElement('span'); s.className = cls; s.setAttribute('aria-hidden', 'true'); return s; };
-    const sello = deco('oc-seal'); sello.textContent = '♥';
-    const etiqueta = deco('oc-label'); etiqueta.textContent = m ? m[1] : `Carta Nº ${i + 1}`;
-    const texto = document.createElement('span'); texto.className = 'oc-title'; texto.textContent = m ? m[2] : titulo;
-    b.append(deco('oc-letter'), deco('oc-flap'), deco('oc-cordel'), deco('oc-ramito'), sello, deco('oc-deco oc-deco--i'), deco('oc-deco oc-deco--d'), etiqueta, texto);
-    b.setAttribute('aria-label', titulo);
+    b.type = 'button'; b.className = 'mini-libro';
+    const estilo = estiloLibro(c, i);
+    b.dataset.estilo = estilo;
+    b.dataset.color = c.color || COLOR_PORTADA[estilo];
+    b.style.setProperty('--i', i);
+    const span = (cls, txt, padre = b) => { const s = document.createElement('span'); s.className = cls; if (txt != null) s.textContent = txt; padre.append(s); return s; };
+    // sin leer: cerrado con cinta y sello · leído: sin sello y con una florcita · a medias: cuelga el separador
+    span('ml-repisa');
+    if (marcas[titulo] && !leido) span('ml-cinta');
+    span('ml-hojas');
+    if (leido) { b.classList.add('leido'); span('ml-flor'); }
+    const tapa = span('ml-tapa');
+    tapa.insertAdjacentHTML('afterbegin', portadaSVG(estilo, 415));
+    span('ml-lomo', null, tapa);
+    const eti = span('ml-etiqueta', null, tapa);
+    span('ml-kicker', etiqueta, eti); span('ml-titulo', nombre, eti);
+    span('ml-npag', `${nHojas} ${nHojas === 1 ? 'hoja' : 'hojas'}`, eti);
+    span('ml-sello', '♥', tapa);
+    const estado = leido ? ', ya lo leíste' : marcas[titulo] ? `, quedaste en la hoja ${marcas[titulo]}` : ', sin abrir';
+    b.setAttribute('aria-label', `${titulo}: librito de ${nHojas} ${nHojas === 1 ? 'hoja' : 'hojas'}${estado}`);
     b.setAttribute('aria-haspopup', 'dialog');
-    b.onclick = () => abrirCartaDeAnimo(c);
+    b.onclick = () => abrirLibro(c, i);
     host.append(b);
   });
 }
@@ -1241,10 +1854,6 @@ document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => {
   const el = $(b.dataset.close); if (el) el.close();
 });
 
-const openWhenDlg = $('openWhenDialog');
-if (openWhenDlg) openWhenDlg.addEventListener('close', () => {
-  const scene = $('letterScene'); if (scene) scene.classList.remove('is-opening', 'is-open');
-});
 
 /* ============================================================
    MÚSICA
@@ -1964,8 +2573,8 @@ let alejandroPos = { x: 0, y: 0 }, paseoId = 0, paseoTimer = 0, alejandroMoviend
 const enCasa = () => !alejandroMoviendo && Math.abs(alejandroPos.x) < 1 && Math.abs(alejandroPos.y) < 1;
 
 function zonasCarta() {
-  const sel = '#letterDialog[open] .letter-paper, #letterDialog[open] .letter-head, #openWhenDialog[open] .animated-note, '
-    + '#openWhenDialog[open] h2, #cartaPapaDialog[open] .carta-papa-papel, #cartaPapaDialog[open] .buzon-lista, #paraPapaDialog[open] form';
+  const sel = '#letterDialog[open] .letter-paper, #letterDialog[open] .letter-head, #libroDialog[open] .libro-abierto, '
+    + '#libroDialog[open] .libro-controles, #cartaPapaDialog[open] .carta-papa-papel, #cartaPapaDialog[open] .buzon-lista, #paraPapaDialog[open] form';
   return [...document.querySelectorAll(sel)].map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);
 }
 
