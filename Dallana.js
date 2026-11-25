@@ -545,8 +545,11 @@ function soltarCorazoncitos(paper) {
   }
 }
 
+let sonrisaPedida = false;
 function mostrar(d, label = 'Un mensaje para ti') {
   if (!d) return;
+  if (sonrisaPedida) sonrisaPedida = false, anotar(`pidió una sonrisa: «${String(d.mensaje || '').slice(0, 90)}»`);
+  else if (label === 'Un recuerdo favorito') anotar('volvió a leer un favorito');
   currentId = String(d.id);
   currentMensaje = d.mensaje || '';
   const tag = $('tag'); if (tag) tag.textContent = label;
@@ -811,6 +814,7 @@ function pintarColeccion(total) {
 }
 
 function voltearObra(obra, carta, titulo) {
+  anotar(`dio vuelta el cuadro «${titulo}» del museo`);
   const volteada = obra.classList.toggle('volteada');
   carta.setAttribute('aria-pressed', String(volteada));
   carta.querySelector('.obra-frente').setAttribute('aria-hidden', String(volteada));
@@ -892,8 +896,8 @@ function renderSuenos() {
     el.append(t, m);
     el.onclick = () => {
       const id = s.id || String(i);
-      if (done.has(id)) { done.delete(id); el.classList.remove('done'); }
-      else { done.add(id); el.classList.add('done'); }
+      if (done.has(id)) { done.delete(id); el.classList.remove('done'); anotar(`desmarcó el sueño «${s.titulo || `Sueño ${i + 1}`}»`); }
+      else { done.add(id); el.classList.add('done'); notificar(`marcó como cumplido el sueño «${s.titulo || `Sueño ${i + 1}`}» ✅`, 'white_check_mark'); }
       guardarSet('dallanaDreamsDone', done);
     };
     host.append(el);
@@ -1069,6 +1073,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
   // Las cosas del escritorio saltan al tocarlas
   cover.querySelectorAll('.portada-cosa').forEach(c => c.addEventListener('click', () => {
     c.classList.remove('mueve'); void c.offsetWidth; c.classList.add('mueve');
+    anotar('jugó con las cositas de la portada');
   }));
 
   // En PC el sobre se inclina siguiendo el mouse
@@ -1086,6 +1091,7 @@ if (openEnvelopeBtn) openEnvelopeBtn.onclick = () => {
 const randomBtn = $('random');
 if (randomBtn) randomBtn.onclick = () => {
   vibrar();
+  sonrisaPedida = true;
   actividad.recuerdos++;
   sumarSonrisa();
   const q = currentId ? `?ultimo=${encodeURIComponent(currentId)}` : '';
@@ -1109,6 +1115,7 @@ const favBtn = $('favorite');
 if (favBtn) favBtn.onclick = () => {
   if (!currentId) return;
   if (favorites.has(currentId)) {
+    anotar('quitó un favorito');
     favorites.delete(currentId);
     delete favoriteTexts[currentId];
   } else {
@@ -1165,6 +1172,7 @@ function renderFavoritos() {
     btn.setAttribute('aria-label', 'Quitar de favoritos');
     btn.onclick = (e) => {
       e.stopPropagation();
+      anotar('quitó un favorito');
       favorites.delete(String(id));
       delete favoriteTexts[String(id)];
       guardarSet('dallanaFavorites', favorites);
@@ -1192,6 +1200,7 @@ function renderFavoritos() {
 
 const viewFavoritesBtn = $('viewFavorites');
 if (viewFavoritesBtn) viewFavoritesBtn.onclick = () => {
+  anotar('miró sus favoritos');
   renderFavoritos();
   const dlg = $('favoritesDialog');
   if (dlg) dlg.showModal();
@@ -1220,6 +1229,8 @@ if (openLetterBtn) openLetterBtn.onclick = () => {
 const resetBtn = $('resetProgress');
 if (resetBtn) resetBtn.onclick = () => {
   if (!confirm('¿Quieres reiniciar tu progreso en este rincón?')) return;
+  notificar('reinició su progreso en la página', 'warning', 'Actividad en tu pagina', 4);
+  enviarLote();
   ['dallanaSeen', 'dallanaFavorites', 'dallanaFavoriteTexts', 'dallanaDreamsDone', 'dallanaLetterUnlocked', 'dallanaSonrisas', 'dallanaCorazonesHoy'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   seen = new Set(); favorites = new Set(); favoriteTexts = {};
   actualizarBotonFavoritos();
@@ -1312,6 +1323,7 @@ if (musicVolume) musicVolume.oninput = () => {
 
 const musicPlay = $('musicPlay');
 if (musicPlay) musicPlay.onclick = async () => {
+  if (musicAudio && !musicAudio.paused) anotar('pausó la música');
   if (!musicAudio) return;
   if (!musicAudio.paused) {
     musicAudio.pause();
@@ -1367,6 +1379,7 @@ if (secretHeart) secretHeart.onclick = () => {
     const sm = $('secretMessage'); if (sm) sm.hidden = false;
     const aa = $('albumArt'); if (aa) aa.classList.add('secret-found');
     const hint = $('musicHint'); if (hint) hint.textContent = 'Encontraste un detalle escondido.';
+    notificar('encontró el corazón escondido del reproductor 🤫', 'heart_eyes');
     toquesSecretos = 0;
   }
 };
@@ -1594,20 +1607,74 @@ let avisosActivos = false;
 let quienVisita = '';
 const actividad = { recuerdos: 0, ultimaCancion: '' };
 
-function notificar(texto, tags = 'heart', titulo = 'Actividad en tu pagina') {
+/* Avisos a papá por ntfy, hechos para que lleguen siempre:
+   - se publican como JSON en https://ntfy.sh/ sin cabeceras propias: es una petición «simple» (sin preflight CORS),
+     que los celulares no bloquean ni siquiera al cerrar la página;
+   - al salir o cambiar de app se usan sendBeacon (el navegador lo entrega aunque la página ya no exista);
+   - si un aviso no sale (sin internet, ntfy ocupado), queda en una cola (dallanaAvisosPendientes) y se reintenta
+     cada 30 s, al volver internet y en la próxima visita, con la hora en que pasó;
+   - lo chiquito (tocar stickers, pedir sonrisas, pasar por secciones…) se junta y llega en un solo aviso cada 20 s. */
+const COLA_AVISOS = 'dallanaAvisosPendientes';
+const horaCorta = t => new Date(t).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+function colaAvisos() { const c = leerJSON(COLA_AVISOS, []); return Array.isArray(c) ? c : []; }
+function guardarCola(c) { guardarJSON(COLA_AVISOS, c.slice(-60)); }
+
+function publicarAviso(a, alSalir = false) {
+  const tarde = Date.now() - a.t > 120000 ? ` (a las ${horaCorta(a.t)})` : '';
+  const cuerpo = JSON.stringify({ topic: NTFY_TEMA, title: a.titulo, message: a.texto + tarde, tags: String(a.tags || 'heart').split(','), priority: a.prioridad || 3 });
+  if (alSalir && navigator.sendBeacon) {
+    try { if (navigator.sendBeacon('https://ntfy.sh/', new Blob([cuerpo], { type: 'text/plain' }))) return Promise.resolve(true); } catch {}
+  }
+  return fetch('https://ntfy.sh/', { method: 'POST', body: cuerpo, keepalive: cuerpo.length < 60000 })
+    .then(r => r.ok).catch(() => false);
+}
+
+let enviandoCola = false;
+async function enviarPendientes() {
+  if (enviandoCola || !NTFY_TEMA || URL_RINCON) return;
+  const cola = colaAvisos(); if (!cola.length) return;
+  enviandoCola = true;
+  try {
+    while (cola.length) {
+      if (!(await publicarAviso(cola[0]))) break;
+      cola.shift(); guardarCola(cola);
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  } finally { enviandoCola = false; }
+}
+
+function notificar(texto, tags = 'heart', titulo = 'Actividad en tu pagina', prioridad = 3) {
   try {
     if (!avisosActivos) return;
     if (URL_RINCON) {
       if (tokenRincon) rincon('/api/aviso', { method: 'POST', keepalive: true, body: JSON.stringify({ titulo, texto: `${quienVisita} ${texto}`, tags }) }).catch(() => {});
       return;
     }
-    fetch(`https://ntfy.sh/${NTFY_TEMA}`, {
-      method: 'POST',
-      body: `${quienVisita} ${texto}`,
-      headers: { Title: titulo, Tags: tags },
-      keepalive: true
-    }).catch(() => {});
+    const aviso = { texto: `${quienVisita} ${texto}`, tags, titulo, prioridad, t: Date.now() };
+    const alSalir = document.visibilityState === 'hidden';
+    publicarAviso(aviso, alSalir).then(ok => {
+      if (!ok) { const c = colaAvisos(); c.push(aviso); guardarCola(c); }
+    });
   } catch {}
+}
+
+/* Lo chiquito se anota y sale junto (repetidos se cuentan: «tocó el sticker X (3 veces)») */
+const loteAvisos = new Map();
+let loteTimer = 0;
+function anotar(texto) {
+  try {
+    if (!avisosActivos) return;
+    loteAvisos.set(texto, (loteAvisos.get(texto) || 0) + 1);
+    if (!loteTimer) loteTimer = setTimeout(enviarLote, 20000);
+  } catch {}
+}
+function enviarLote() {
+  clearTimeout(loteTimer); loteTimer = 0;
+  if (!loteAvisos.size) return;
+  const lineas = [...loteAvisos].map(([t, n]) => n > 1 ? `${t} (${n} veces)` : t);
+  loteAvisos.clear();
+  if (lineas.length === 1) notificar(lineas[0], 'sparkles');
+  else notificar(`anduvo por la página:\n• ${lineas.join('\n• ')}`, 'sparkles');
 }
 
 function avisarVisita() {
@@ -1616,16 +1683,37 @@ function avisarVisita() {
     if (['localhost', '127.0.0.1', ''].includes(location.hostname)) return;
     const params = new URLSearchParams(location.search);
     if (params.get('yo') === '1') { localStorage.setItem('dallanaYo', '1'); return; }
+    if (params.get('yo') === '0') localStorage.removeItem('dallanaYo');
     if (localStorage.getItem('dallanaYo') === '1') return;
     const de = (params.get('de') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
-    quienVisita = de ? de.charAt(0).toUpperCase() + de.slice(1) : 'Alguien (visita anónima)';
+    if (de) { try { localStorage.setItem('dallanaQuien', de); } catch {} }
+    const quien = de || (() => { try { return localStorage.getItem('dallanaQuien') || ''; } catch { return ''; } })();
+    quienVisita = quien ? quien.charAt(0).toUpperCase() + quien.slice(1) : 'Alguien (visita anónima)';
     avisosActivos = true;
+    enviarPendientes();
+    setInterval(enviarPendientes, 30000);
+    addEventListener('online', enviarPendientes);
     if (sessionStorage.getItem('dallanaAvisado')) return;
     sessionStorage.setItem('dallanaAvisado', '1');
     const hora = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
-    notificar(`abrió la página · ${hora}`, de ? 'heart' : 'eyes', 'Visita en tu pagina');
+    notificar(`abrió la página · ${hora}`, quien ? 'heart' : 'eyes', 'Visita en tu pagina', 4);
   } catch {}
 }
+// se activa apenas existe, para que un error más abajo en el script no apague los avisos
+avisarVisita();
+
+/* Secciones por las que pasa (una vez por visita, van en el aviso agrupado) */
+(() => {
+  if (!('IntersectionObserver' in window)) return;
+  const vistas = new Set();
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const sec = e.target, nombre = sec.getAttribute('aria-label') || document.getElementById(sec.getAttribute('aria-labelledby') || '')?.textContent?.trim();
+    io.unobserve(sec);
+    if (nombre && !vistas.has(nombre)) { vistas.add(nombre); anotar(`pasó por «${nombre.slice(0, 60)}»`); }
+  }), { threshold: .4 });
+  document.querySelectorAll('main section, section[aria-label], section[aria-labelledby]').forEach(sec => { if (!sec.closest('dialog')) io.observe(sec); });
+})();
 
 /* Canciones: avisa una vez por canción distinta (no al pausar y reanudar) */
 if (musicAudio) musicAudio.addEventListener('play', () => {
@@ -1647,6 +1735,7 @@ const formatoDuracion = ms => {
   return `${Math.floor(min / 60)} h ${min % 60} min`;
 };
 function cerrarTramo() {
+  enviarLote();
   if (!visibleDesde) return;
   const tramo = Date.now() - visibleDesde;
   visibleDesde = 0;
@@ -1661,6 +1750,7 @@ document.addEventListener('visibilitychange', () => {
   else if (!visibleDesde) {
     visibleDesde = Date.now();
     if (tiempoTotal >= 10000) notificar('volvió a la página', 'eyes');
+    enviarPendientes();
   }
 });
 addEventListener('pagehide', cerrarTramo);
@@ -1748,6 +1838,7 @@ function saludoAlejandro() {
 
 $('alejandroSprite')?.addEventListener('click', () => {
   if (alejandroIgnorarClick) { alejandroIgnorarClick = false; return; }
+  anotar(`tocó a Alejandro${disfrazActual ? ` (disfrazado de ${disfrazActual.nombre})` : ''}`);
   const globo = $('alejandroGlobo');
   if (globo && !globo.hidden) { cerrarAlejandro(false); return; }
   cancelarPaseo();
@@ -2299,6 +2390,7 @@ function pintarTutorial() {
 
 function abrirTutorialBuzon() {
   const globo = $('alejandroGlobo'); if (!globo || !globo.hidden) return;
+  anotar('vio la explicación del buzón');
   // con una carta o el juego abiertos, espera a que se cierren
   if (document.querySelector('dialog[open]')) { setTimeout(abrirTutorialBuzon, 3000); return; }
   if (!enCasa()) { volverACasa(abrirTutorialBuzon, true); return; }
@@ -2510,6 +2602,7 @@ function abrirCartaPapa(c) {
 }
 
 function abrirBuzon() {
+  anotar('abrió el buzón de Alejandro');
   const dlg = $('cartaPapaDialog'); if (!dlg) return;
   cerrarAlejandro(false);
   $('cartaPapaVista').hidden = true;
@@ -2536,6 +2629,7 @@ function abrirBuzon() {
 }
 
 function abrirParaPapa() {
+  anotar('abrió «Dile algo a papá» para escribirte');
   const dlg = $('paraPapaDialog'); if (!dlg) return;
   cerrarAlejandro(false);
   $('cartaPapaDialog')?.open && $('cartaPapaDialog').close();
@@ -3284,6 +3378,30 @@ pintarCielo();
   let hoja = null, estado = 'menu', puntos = 0, vidas = 3, cosas = [], chispas = [], textos = [];
   let ultimo = 0, proxima = 0, racha = 0, mejorRacha = 0, nivel = 1, atrapados = 0;
   let iman = 0, escudo = false, invulnerable = 0, mareo = 0, baile = 0, sacudida = 0, banner = null, cuentaHasta = 0;
+  // disfraces: en cada partida Alejandro se va cambiando al azar entre los 39, cada 30–45 s
+  let bolsaJuego = [], disfrazJuego = null, proximoDisfraz = 0, restanteDisfraz = 0;
+  const DISFRAZ_MIN = 30000, DISFRAZ_MAS = 15000;
+  function sacarDisfraz() {
+    if (!bolsaJuego.length) bolsaJuego = DISFRACES.filter(d => d !== disfrazJuego).sort(() => Math.random() - .5);
+    return bolsaJuego.pop();
+  }
+  function cambiarDisfrazJuego(ahora, anunciar = true) {
+    const d = sacarDisfraz();
+    proximoDisfraz = ahora + DISFRAZ_MIN + Math.random() * DISFRAZ_MAS;
+    const img = new Image();
+    img.onload = () => {
+      if (estado !== 'jugando' && estado !== 'cuenta' && anunciar) return;
+      hoja = img; disfrazJuego = d;
+      if (!anunciar) return;
+      const t = performance.now();
+      banner = { txt: '¡Disfraz nuevo! ✨', hasta: t + 1500 };
+      flotar(W / 2, BOCA - 96, `¡Ahora soy ${d.nombre}!`, '#8d1f2e', 20, 2400);
+      chispazo(ale.x, BOCA - 20, ['#ffd84a', '#ff8a8f', '#c9a6ff', '#8fd3ff'], 18);
+      baile = t + 1300;
+      arpegio([659, 784, 988, 1319], 65);
+    };
+    img.src = urlDisfraz(d);
+  }
   let ale = { x: W / 2, destino: W / 2, atrapa: 0 };
   let nubesFondo = [];
   const leerRecord = () => Number(leerJSON('dallanaRecordJuego', 0)) || 0;
@@ -3545,6 +3663,7 @@ pintarCielo();
       if (ahora >= cuentaHasta) { estado = 'jugando'; proxima = ahora + 300; tono(1047, .12); }
     } else {
       if (ahora >= proxima) soltar(ahora);
+      if (proximoDisfraz && ahora >= proximoDisfraz) cambiarDisfrazJuego(ahora);
       cosas = cosas.filter(c => {
         c.y += c.v * dt / 16;
         // con el imán, los corazones, cartas y dorados vuelan hacia Alejandro
@@ -3570,7 +3689,8 @@ pintarCielo();
   function empezar() {
     if (estado === 'pausa') { reanudar(); return; }
     hoja = new Image();
-    hoja.src = urlDisfraz(disfrazActual);
+    hoja.src = urlDisfraz(disfrazJuego || disfrazActual);
+    cambiarDisfrazJuego(performance.now(), false);   // empieza ya disfrazado, al azar
     puntos = 0; vidas = 3; cosas = []; chispas = []; textos = []; ultimo = 0; proxima = 0;
     racha = 0; mejorRacha = 0; nivel = 1; atrapados = 0;
     iman = 0; escudo = false; invulnerable = 0; mareo = 0; baile = 0; sacudida = 0; banner = null;
@@ -3585,6 +3705,7 @@ pintarCielo();
   function pausar() {
     if (estado !== 'jugando' && estado !== 'cuenta') return;
     estado = 'pausa';
+    restanteDisfraz = Math.max(0, proximoDisfraz - performance.now());
     $('juegoMensaje').textContent = 'Pausa ⏸️ Alejandro te espera.';
     $('juegoEmpezar').textContent = 'Seguir jugando';
     $('juegoPantalla').hidden = false;
@@ -3595,11 +3716,13 @@ pintarCielo();
     const ahora = performance.now(), corrimiento = 2100;
     cuentaHasta = ahora + corrimiento;
     if (iman > 0) iman += corrimiento;
+    if (proximoDisfraz) proximoDisfraz = ahora + corrimiento + restanteDisfraz;
     requestAnimationFrame(paso);
   }
 
   function terminar() {
     estado = 'fin';
+    proximoDisfraz = 0;
     const record = leerRecord();
     const nuevo = puntos > record;
     if (nuevo) { guardarJSON('dallanaRecordJuego', puntos); pintarRecord(); }
@@ -3616,6 +3739,7 @@ pintarCielo();
     $('juegoEmpezar').textContent = 'Jugar otra vez';
     $('juegoPantalla').hidden = false;
     arpegio(nuevo ? [523, 659, 784, 1047, 1319] : [659, 523, 392], 110);
+    if (!nuevo) anotar(`jugó Atrapa corazones: ${puntos} ${puntos === 1 ? 'punto' : 'puntos'}${medalla ? ' ' + medalla[1] : ''}`);
     if (nuevo) {
       notificar(`hizo un nuevo récord en el juego de Alejandro: ${puntos} puntos${medalla ? ' ' + medalla[1] : ''} 🎮`, 'video_game');
       lanzarCelebracion();
@@ -3764,6 +3888,7 @@ const PERRITOS = Array.from({ length: 12 }, (_, i) => `perrito${i + 1}`);
     const nombre = nombreDe(st);
     const frases = FRASES_STICKERS[nombre] || ['💗'];
     toques[nombre] = (toques[nombre] || 0) + 1;
+    anotar(`tocó el sticker «${nombre}»`);
     // animación distinta cada vez
     ANIMACIONES.forEach(a => st.classList.remove(a)); void st.offsetWidth;
     const anim = ANIMACIONES[(toques[nombre] - 1) % ANIMACIONES.length];
@@ -3777,6 +3902,7 @@ const PERRITOS = Array.from({ length: 12 }, (_, i) => `perrito${i + 1}`);
       vistos.add(nombre); guardarSet('dallanaStickers', vistos);
       const total = totalStickers(), n = [...vistos].filter(v => FRASES_STICKERS[v]).length;
       extra = `✨ Sticker descubierto ${Math.min(n, total)} de ${total}`;
+      anotar(`descubrió un sticker nuevo (${Math.min(n, total)} de ${total})`);
       if (n >= total && total > 0 && !leerJSON('dallanaStickersCompletos', false)) {
         guardarJSON('dallanaStickersCompletos', true);
         setTimeout(() => {
@@ -3935,7 +4061,6 @@ setInterval(() => {
 /* ============================================================
    INICIALIZACIÓN
    ============================================================ */
-avisarVisita();
 actualizarContador();
 registrarDia();
 actualizarProgreso();

@@ -9,7 +9,7 @@
 
 **Servicios externos**
 
-- ntfy.sh: `NTFY_TEMA` (avisos y mensajes de Dallana para Eduardo; Eduardo también responde ahí desde la app) y `NTFY_CARTAS` (cartas de Eduardo). La página lee ambos con `/json?poll=1`; en `NTFY_TEMA` las cartas son los mensajes sin un título de `TITULOS_DE_LA_PAGINA`. Si se agrega un título nuevo a `notificar`, sumarlo a esa lista. Títulos con emoji solo vía publicación JSON (los headers HTTP no aceptan emoji).
+- ntfy.sh: `NTFY_TEMA` (avisos y mensajes de Dallana para Eduardo; Eduardo también responde ahí desde la app) y `NTFY_CARTAS` (cartas de Eduardo). La página lee ambos con `/json?poll=1`; en `NTFY_TEMA` las cartas son los mensajes sin un título de `TITULOS_DE_LA_PAGINA`. Si se agrega un título nuevo a `notificar`, sumarlo a esa lista. Títulos con emoji solo vía publicación JSON (los headers HTTP no aceptan emoji). Los avisos (`notificar`) se publican como JSON en `https://ntfy.sh/` sin cabeceras (petición simple, sin preflight); al salir con `sendBeacon`; los que fallan quedan en `dallanaAvisosPendientes` y se reintentan. Lo chico va por `anotar()` y sale agrupado cada 20 s. `avisarVisita()` corre justo después de definirse (no al final), para que un error más abajo no apague los avisos.
 
 - Servidor opcional `rincon-servidor/` (Cloudflare Worker + KV): `/api/entrar` (PIN → token), `/api/cartas`, `/api/aviso`, `/api/progreso`; secretos PIN, CLAVE, NTFY_CARTAS, NTFY_AVISOS. Activo solo si `URL_RINCON` no está vacío.
 

@@ -61,3 +61,4 @@
 - Los nombres de los temas ntfy están en el JS público.
 
 _Keep bullets factual and small; link issues or PRs when useful._
+- 2026-11-25: avisos ntfy más confiables (JSON sin cabeceras, sendBeacon al salir, cola de reintentos, avisos activos desde el inicio) y de todo lo que hace Dallana (sonrisas, stickers, museo, sueños, favoritos, buzón, juego, secciones, tocar a Alejandro…, agrupados cada 20 s). Juego: Alejandro empieza con un disfraz al azar y cambia entre los 39 cada 30–45 s con cartel «¡Disfraz nuevo!». JS v3.77, caché dallana-v3.96.
