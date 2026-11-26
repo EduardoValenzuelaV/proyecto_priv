@@ -1,11 +1,11 @@
-const CACHE_NAME = 'dallana-v4.07';
+const CACHE_NAME = 'dallana-v4.13';
 // Solo lo básico para abrir sin internet. Lo demás (fotos, GIF de recuerdos, stickers) se guarda
 // en la caché cuando ella lo ve, así cada actualización no vuelve a bajar varios MB por adelantado.
 const ASSETS_TO_CACHE = [
   './',
   './Dallana.html',
-  './Dallana.css?v=9.8',
-  './Dallana.js?v=3.87',
+  './Dallana.css?v=10.4',
+  './Dallana.js?v=3.92',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/pixel/alejandro.png?v=5',

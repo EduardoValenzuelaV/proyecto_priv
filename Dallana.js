@@ -93,14 +93,15 @@ const API_DISPONIBLE = (
    ============================================================ */
 const CONTENIDO_LOCAL = {
   cartas: [
-    {titulo:"Ábreme cuando estés triste",mensaje:" si estás leyendo esto es porque algo te duele, y me gustaría estar ahí ahora mismo para abrazarte fuerte y no soltarte. No voy a decirte que no estés triste, porque tienes derecho a sentirte así. Solo quiero que sepas que no estás sola, ni ahora ni nunca. No tienes que explicarme nada ni tener las palabras correctas. Llora si lo necesitas, y después escríbeme, aunque sea solo un “estoy mal”. Yo voy a entender. Y cuando esto pase, porque va a pasar, voy a seguir aquí, igual que hoy."},
-    {titulo:"Ábreme cuando no te sientas bonita",mensaje:"Sé que hay días en que te miras al espejo y no te gusta lo que ves. Me da pena, porque yo te miro todos los días y no me canso de ver lo Hermosa que eres. Pero lo que más me gusta de ti no sale en ninguna foto: es cómo te brillan los ojos cuando hablas de algo que amas, cómo te ríes de tus propias tonteras, cómo cantas cuando crees que nadie te escucha. Hoy, si no puedes creerlo tú, créeme a mí: eres la mujer mas hermosa de mi mundo."},
-    {titulo:"Ábreme cuando dudes de ti misma",mensaje:"Ya sé, esa vocecita que te dice que no eres suficiente. Yo también la conozco. Pero déjame contarte lo que yo veo: una mujer que estudia algo difícil porque le apasiona, que defiende lo que piensa aunque cueste, que no se rinde fácil. Todo lo que has logrado hasta ahora lo hiciste tú, con tu esfuerzo y tu cabeza. Esa voz miente. Y si hoy no te crees capaz, no pasa nada: yo creo en ti por los dos hasta que vuelvas a verlo."},
-    {titulo:"Ábreme cuando tengas un mal día",mensaje:" No tienes que arreglarlo todo hoy. Date permiso de que sea un mal día y nada más. Come algo rico, ponte cómoda, y si quieres contarme todo con lujo de detalles, aquí estoy para escucharte y enojarme contigo con lo que sea que te haya pasado. Mañana vas a despertar y esto se va a ver más chiquito. Mientras tanto, te mando el abrazo más largo que puedas imaginar."},
-    {titulo:"Ábreme cuando sientas que no puedes más",mensaje:"Para. Respira conmigo un segundo. No tienes que poder con todo, y no tienes que hacerlo sola. Sé que eres fuerte, pero ser fuerte no significa aguantarlo todo calladita. A veces ser fuerte es decir “necesito ayuda”. Así que hoy te pido algo: descansa, apóyate en mí, en tu familia, en la gente que te quiere. Llámame, a la hora que sea, de verdad. Nada de lo que tengas pendiente vale más que tú. Lo que importa ahora es que estés bien, y yo quiero ayudarte a llegar ahí."},
-    {titulo:"Ábreme cuando estés orgullosa de ti",mensaje:"Mírate Te lo dije, o no? Sabía que ibas a poder. Quiero que te quedes un ratito con esta sensación y la disfrutes, porque te costó y te la ganaste. A veces pasas tan rápido a lo siguiente que no te das tiempo de celebrar, así que hoy celebra. Yo estoy feliz, orgulloso, emocionado, todo junto. Y una vez me dijiste que estabas demasiado orgullosa de mí; hoy me toca a mí decírtelo a ti: estoy demasiado orgulloso de ti, mi amor."},
-    {titulo:"Ábreme cuando necesites recordar cuánto vales",mensaje:"Quiero que leas esto despacito. Vales muchísimo, y no lo digo por decir. No vales por tus notas, ni por lo que logras, ni por lo que piensen los demás. Vales porque eres tú:  defiendes lo que crees aunque cueste, porque tienes un corazón enorme que a veces ni tú misma ves. Si alguien te hizo sentir menos, se equivocó. Si fuiste tú misma, te pido que te trates con la misma ternura con la que tratas a los demás. Tú mereces todo lo bonito que le das al mundo, y yo voy a estar aquí para recordártelo cada vez que se te olvide."},
-    {titulo:"Ábreme cuando simplemente quieras sonreír",mensaje:"Ok, cierra los ojos un segundo y acuérdate: tú, súper seria,  Nosotros la noche del 31, muertos de la risa con esa parodia de terror. ¿Ya sonreíste? Si no, aquí va otra: en este mismo momento, en algún lugar, hay un tonto enamorado de ti pensando en lo afortunado que es. Ese soy yo. Tú eres mi Talca y yo soy tu Arauco, para siempre. Te Amo mi Amor. 💙"}
+    {titulo:"Ábreme cuando estés triste",mensaje:" si estás leyendo esto es porque algo te duele, y me gustaría estar ahí ahora mismo para abrazarte fuerte y no soltarte. No voy a decirte que no estés triste, porque tienes derecho a sentirte así. Solo quiero que sepas que no estás sola, ni ahora ni nunca. No tienes que explicarme nada ni tener las palabras correctas. Llora si lo necesitas, y después escríbeme, aunque sea solo un “estoy mal”. Yo voy a entender. Y cuando esto pase, porque va a pasar, voy a seguir aquí, igual que hoy.",paginas:[{"tipo": "carta", "texto": "Mi amor, no sé exactamente qué habrá pasado para que hoy te sientas así, pero me gustaría saberlo, si quieres contármelo.\n\nNo voy a intentar convencerte de que no es para tanto ni a decirte que tienes que mirar el lado positivo. A veces las cosas simplemente duelen, cansan o nos dejan sin muchas ganas de nada.\n\nSi quieres hablar, quiero escucharte. Si no sabes cómo explicar lo que te pasa, podemos ir descubriéndolo de a poquito. Y si prefieres distraerte con una película, conversar de cualquier tontería o simplemente descansar, también está bien.\n\nOjalá pudiera darte un abrazo ahora mismo. De esos en los que no hace falta decir demasiado.\n\nNo tengo una solución para cada cosa que te pueda pasar, pero sí tengo ganas de conocerte también en esos días y aprender a acompañarte de la manera que te haga bien.", "firma": "Te quiero mucho"}, {"tipo": "frase", "texto": "No necesitas tener un buen día para merecer cariño."}, {"tipo": "frase", "texto": "Me importa cómo estás, no solamente cómo sonríes."}, {"tipo": "carta", "texto": "Quería dejarte algo escrito para esos días en los que parece que todo cuesta un poquito más.\n\nA veces pienso en lo mucho que disfruto nuestras conversaciones, nuestras risas y esos momentos en los que terminamos haciendo cualquier cosa y aun así lo pasamos increíble. Me gusta todo eso, pero también quiero que sepas que no espero que cada día sea así.\n\nNo quiero que sientas que tienes que mostrarme siempre tu versión más alegre. Me interesa saber cómo estás de verdad, incluso cuando la respuesta no sea «bien».\n\nOjalá hoy encuentres algo pequeño que te haga sentir un poquito mejor: una canción que te guste, un té calentito, una conversación agradable o un momento para ti.\n\nY cuando quieras compartirlo conmigo, me encantará escucharte."}, {"tipo": "vale", "texto": "Un abrazo largo y una tarde tranquila juntos."}]},
+    {titulo:"Ábreme cuando no te sientas bonita",mensaje:"Sé que hay días en que te miras al espejo y no te gusta lo que ves. Me da pena, porque yo te miro todos los días y no me canso de ver lo Hermosa que eres. Pero lo que más me gusta de ti no sale en ninguna foto: es cómo te brillan los ojos cuando hablas de algo que amas, cómo te ríes de tus propias tonteras, cómo cantas cuando crees que nadie te escucha. Hoy, si no puedes creerlo tú, créeme a mí: eres la mujer mas hermosa de mi mundo.",paginas:[{"tipo": "carta", "texto": "A mí me encanta descubrir tus pequeñas particularidades: tus gustos, tus expresiones, tu forma de defender tus ideas y hasta esas cosas que haces de una manera que probablemente nadie más haría igual.\n\nNo eres una fotografía ni tienes que verte de una manera determinada para ser especial.\n\nMe gusta la persona con la que converso, la que se ríe conmigo, la que tiene sus propias opiniones y la que todavía me sorprende con cosas nuevas.\n\nY me hace ilusión seguir conociéndola."}, {"tipo": "frase", "texto": "Ojalá algún día te hables con la misma ternura con la que hablas de las personas que quieres."}, {"tipo": "frase", "texto": "Tu sonrisa me encanta, pero no es lo único que me enamora."}, {"tipo": "vale", "texto": "Una sesión de fotografías juntos, sin preocuparnos por salir perfectos."}]},
+    {titulo:"Ábreme cuando dudes de ti misma",mensaje:"Ya sé, esa vocecita que te dice que no eres suficiente. Yo también la conozco. Pero déjame contarte lo que yo veo: una mujer que estudia algo difícil porque le apasiona, que defiende lo que piensa aunque cueste, que no se rinde fácil. Todo lo que has logrado hasta ahora lo hiciste tú, con tu esfuerzo y tu cabeza. Esa voz miente. Y si hoy no te crees capaz, no pasa nada: yo creo en ti por los dos hasta que vuelvas a verlo.",paginas:[{"tipo": "carta", "texto": "Mi geóloga favorita, sé que a veces puedes dudar de tus capacidades, pero me gustaría que no olvidaras todo lo que hay detrás de la persona que eres hoy.\n\nMe gusta tu curiosidad, escucharte hablar de geología y ver cómo te interesas por aprender cosas nuevas. Me gusta que tengas opiniones propias y que no tengas miedo de defender lo que piensas.\n\nNo quiero decirte que todo será fácil ni que nunca te vas a equivocar. Seguramente habrá momentos en los que las cosas no resulten como esperabas. Pero eso no significa que no seas capaz.\n\nMe gustaría que pudieras reconocer tus propios avances, incluso los que parecen pequeños. No tienes que compararte con nadie ni llevar el ritmo de otra persona.\n\nYo voy a seguir alegrándome de tus logros, pero espero que tú también puedas sentir orgullo por todo lo que estás construyendo."}, {"tipo": "carta", "texto": "Hay tantas cosas que todavía puedes aprender, tantos lugares que puedes conocer y tantas metas que puedes alcanzar.\n\nNo tienes que tener todas las respuestas ahora. Me gusta pensar que todavía estás descubriendo muchas partes de ti, y que eso no tiene nada de malo.\n\nSi alguna vez sientes que no avanzas, recuerda que no todo el esfuerzo se nota inmediatamente. A veces uno está aprendiendo, intentando y preparando el terreno para algo que todavía no llega.\n\nY cuando consigas algo que te costó, quiero que me lo cuentes. Me gusta escucharte hablar de tus proyectos y saber qué cosas te hacen ilusión.\n\nEstoy orgulloso de ti, mi amor."}, {"tipo": "frase", "texto": "Me gustaría que reconocieras cuánto has avanzado, no solamente cuánto te falta."}, {"tipo": "frase", "texto": "Tu camino no tiene que parecerse al de nadie."}, {"tipo": "frase", "texto": "No te apures: todavía tienes mucho por descubrir."}, {"tipo": "vale", "texto": "Una tarde de estudio juntos, con snacks y descansos."}]},
+    {titulo:"Ábreme cuando tengas un mal día",mensaje:" No tienes que arreglarlo todo hoy. Date permiso de que sea un mal día y nada más. Come algo rico, ponte cómoda, y si quieres contarme todo con lujo de detalles, aquí estoy para escucharte y enojarme contigo con lo que sea que te haya pasado. Mañana vas a despertar y esto se va a ver más chiquito. Mientras tanto, te mando el abrazo más largo que puedas imaginar.",paginas:[{"tipo": "carta", "texto": "Hola, amor. ¿Qué pasó hoy?\n\nNo sé si fue un día agotador, si algo salió mal o si simplemente no fue uno de esos días que dan ganas de recordar. Pero me gustaría escucharte.\n\nPuedes contarme desde lo más importante hasta esa pequeña tontería que te molestó durante horas. A veces esos detalles también necesitan salir.\n\nY si no tienes ganas de hablar del día, podemos hacer otra cosa. Elegir una película, compartir canciones, comer algo rico o conversar de cualquier tema que se nos ocurra.\n\nNo quiero que sientas que tienes que convertir un mal día en uno bueno solamente porque estamos hablando.\n\nQuizás mañana se vea todo un poquito distinto. Por ahora, espero que puedas descansar."}, {"tipo": "carta", "texto": "Tengo una propuesta para hoy: dejar algunas cosas para después, ponerte cómoda y darte un ratito para ti.\n\nPuedes prepararte tu tecito, elegir algo rico y ver alguna película que te guste. No es necesario que aproveches cada minuto ni que termines todas tus tareas.\n\nY si quieres compañía, aquí tienes a alguien que estaría feliz de escucharte, aunque sea mientras me cuentas por quinta vez algo que ya me habías contado.\n\nA veces no necesitamos grandes planes. A mí me basta con compartir una conversación contigo y saber cómo estuvo tu día.\n\nCuídate un poquito, mi amor."}, {"tipo": "frase", "texto": "No todos los días tienen que salir bien."}, {"tipo": "frase", "texto": "Puedes descansar sin sentir que estás perdiendo el tiempo."}, {"tipo": "vale", "texto": "Una tarde en la que tú eliges qué hacemos y yo me encargo de organizarlo."}]},
+    {titulo:"Ábreme cuando sientas que no puedes más",mensaje:"Para. Respira conmigo un segundo. No tienes que poder con todo, y no tienes que hacerlo sola. Sé que eres fuerte, pero ser fuerte no significa aguantarlo todo calladita. A veces ser fuerte es decir “necesito ayuda”. Así que hoy te pido algo: descansa, apóyate en mí, en tu familia, en la gente que te quiere. Llámame, a la hora que sea, de verdad. Nada de lo que tengas pendiente vale más que tú. Lo que importa ahora es que estés bien, y yo quiero ayudarte a llegar ahí.",paginas:[{"tipo": "carta", "texto": "Mi amor, si llegaste hasta aquí porque estás pasando por un momento que te supera, quiero que sepas que no tienes que encontrar todas las respuestas de inmediato.\n\nMe gustaría que pudieras darte un momento para respirar, descansar y pensar qué necesitas primero. No todo tiene que solucionarse hoy.\n\nSi quieres contarme qué está pasando, voy a escucharte. Quizás pueda ayudarte a ordenar algunas ideas, quizás solamente pueda acompañarte. Y si necesitas buscar apoyo en alguien más o pedir ayuda profesional, también está bien.\n\nNo quiero que sientas que tienes que poder con todo para demostrar algo.\n\nMe importa que estés bien, pero también me importa que puedas pedir lo que necesitas y cuidar de ti."}, {"tipo": "frase", "texto": "Pedir ayuda también puede ser parte de encontrar una salida."}, {"tipo": "carta", "texto": "Ojalá nunca sientas que tienes que aparentar fortaleza conmigo.\n\nNo me tienes que demostrar que eres capaz de soportarlo todo ni tienes que encontrar siempre una solución antes de contarme lo que pasa.\n\nYo también estoy aprendiendo a querer mejor, a escuchar con más atención y a reconocer cuándo puedo ayudar y cuándo simplemente debo respetar tu espacio.\n\nNo siempre voy a saber qué decir, y seguramente alguna vez me equivoque. Pero quiero que podamos hablarlo y aprender juntos.\n\nNo quiero ser alguien que te diga cómo tienes que sentirte. Quiero ser alguien con quien puedas hablar sin tener que fingir."}, {"tipo": "frase", "texto": "No tienes que resolverlo todo esta noche."}, {"tipo": "vale", "texto": "Un día tranquilo juntos, sin pendientes ni obligaciones."}]},
+    {titulo:"Ábreme cuando estés orgullosa de ti",mensaje:"Mírate Te lo dije, o no? Sabía que ibas a poder. Quiero que te quedes un ratito con esta sensación y la disfrutes, porque te costó y te la ganaste. A veces pasas tan rápido a lo siguiente que no te das tiempo de celebrar, así que hoy celebra. Yo estoy feliz, orgulloso, emocionado, todo junto. Y una vez me dijiste que estabas demasiado orgullosa de mí; hoy me toca a mí decírtelo a ti: estoy demasiado orgulloso de ti, mi amor.",paginas:[{"tipo": "carta", "texto": "¡MI AMOR, CUÉNTAME!\n\n¿Qué pasó? ¿Cómo lo conseguiste? ¿Qué fue lo más difícil? ¿En qué momento te diste cuenta de que lo habías logrado?\n\nQuiero saber los detalles, incluso los que quizás pienses que no son importantes.\n\nMe gusta verte emocionada por algo que conseguiste y escuchar cuando me cuentas de tus avances. Sé que detrás de cada logro hay tiempo, esfuerzo y muchas cosas que no siempre se ven.\n\nPero hoy no quiero hablarte de lo que te falta ni de lo que viene después. Hoy quiero que disfrutes esto.\n\nOjalá puedas sentirte orgullosa de ti misma. Yo, por mi parte, estoy muy feliz de poder celebrar contigo."}, {"tipo": "frase", "texto": "Hoy quiero escucharte presumir de ti misma. ¡Con lujo de detalles!"}, {"tipo": "carta", "texto": "Quiero que guardes este momento.\n\nNo solamente por lo que conseguiste, sino por cómo llegaste hasta aquí. Por las veces que lo intentaste, por lo que aprendiste y por todo lo que pusiste de tu parte.\n\nMe gusta acompañarte en tus proyectos y saber que hay cosas que te ilusionan. Quiero seguir escuchando tus historias, conocer tus nuevos desafíos y celebrar esas pequeñas victorias que a veces uno pasa por alto.\n\nY si alguna vez vuelves a dudar de ti, quizás puedas recordar este día y todo lo que fuiste capaz de hacer.\n\nHoy toca celebrar, mi amor."}, {"tipo": "frase", "texto": "¡Siiiiiiiiiuuuuuuuuuuu!", "celebra": true}, {"tipo": "vale", "texto": "Una celebración elegida por ti, con comida rica incluida."}]},
+    {titulo:"Ábreme cuando necesites recordar cuánto vales",mensaje:"Quiero que leas esto despacito. Vales muchísimo, y no lo digo por decir. No vales por tus notas, ni por lo que logras, ni por lo que piensen los demás. Vales porque eres tú:  defiendes lo que crees aunque cueste, porque tienes un corazón enorme que a veces ni tú misma ves. Si alguien te hizo sentir menos, se equivocó. Si fuiste tú misma, te pido que te trates con la misma ternura con la que tratas a los demás. Tú mereces todo lo bonito que le das al mundo, y yo voy a estar aquí para recordártelo cada vez que se te olvide.",paginas:[{"tipo": "carta", "texto": "Dallana, hay algo que quisiera que nunca olvidaras: no tienes que estar consiguiendo cosas, haciendo todo bien o cumpliendo expectativas para tener valor.\n\nMe gusta tu forma de ser, tus ideas, tu curiosidad, tus gustos y esa combinación tan tuya entre ternura, carácter y humor.\n\nMe gusta que tengas un mundo propio, cosas que te apasionan y opiniones que a veces me hacen pensar de otra manera.\n\nNo quiero que te conviertas en alguien diferente para encajar en ningún lugar. Me gusta seguir descubriendo quién eres, incluso en esas partes que todavía estás conociendo tú misma.\n\nY espero que también puedas darte el tiempo de reconocer todo lo que hay en ti, sin exigirte ser perfecta."}, {"tipo": "frase", "texto": "No tienes que ser perfecta para que alguien disfrute de tu compañía."}, {"tipo": "carta", "texto": "Me encanta cuando hablas de algo que te interesa y se nota cuánto te gusta. Me encanta tu manera de cantar, tu estilo, tus ocurrencias y cómo puedes pasar de una conversación profunda a hacerme reír por cualquier tontería.\n\nMe gusta que seas tú, con tus gustos, tus ideas y tus particularidades.\n\nNo escribo esto para que tengas que verme como alguien que siempre tiene razón sobre ti. Es simplemente mi manera de contarte algunas de las cosas que he ido descubriendo y que me hacen admirarte.\n\nTodavía me queda muchísimo por conocer, y eso me hace ilusión."}, {"tipo": "frase", "texto": "Hay muchas razones para admirarte, incluso en lo cotidiano."}]},
+    {titulo:"Ábreme cuando simplemente quieras sonreír",mensaje:"Ok, cierra los ojos un segundo y acuérdate: tú, súper seria,  Nosotros la noche del 31, muertos de la risa con esa parodia de terror. ¿Ya sonreíste? Si no, aquí va otra: en este mismo momento, en algún lugar, hay un tonto enamorado de ti pensando en lo afortunado que es. Ese soy yo. Tú eres mi Talca y yo soy tu Arauco, para siempre. Te Amo mi Amor. 💙",paginas:[{"tipo": "carta", "texto": "Se informa a la señorita que:\n\n• La chirimoya alegre sigue teniendo una importancia que merece ser estudiada.\n• Hay una persona que recuerda con mucho cariño nuestras noches de películas.\n• Esa misma persona sigue pensando que tu risa es demasiado bonita.\n• Y, por último, se confirma que está bastante enamorada.\n\nNo hay más novedades por ahora.\n\nAtentamente,\nEl departamento de investigaciones."}]},
+    {"titulo": "Ábreme cuando me extrañes", "mensaje": "Mi amor, si hoy me extrañas, quería dejarte unas palabras para que sepas que también pienso en ti.\n\nA veces echo de menos cosas muy sencillas: tenerte cerca, caminar contigo, escuchar tu voz sin depender de una pantalla o simplemente compartir un rato sin tener que planear nada especial.\n\nMe hace ilusión pensar en la próxima vez que nos veamos y en todas esas cosas que todavía tenemos pendientes.\n\nMientras tanto, me gusta saber cómo estuvo tu día.", "portada": "luna", "paginas": [{"tipo": "carta", "texto": "Me gusta que tengas tu mundo, tus actividades, tus personas y tus cosas. Quiero seguir conociendo todo eso y que podamos compartirlo sin dejar de ser nosotros mismos.\n\nCuando nos extrañemos, podemos buscar una forma de sentirnos cerca: una llamada, una canción, una conversación o simplemente contarnos cómo va el día.\n\nY cuando volvamos a encontrarnos, tendremos nuevas historias que contarnos y seguramente algún plan pendiente."}, {"tipo": "frase", "texto": "Tengo un abrazo pendiente contigo."}, {"tipo": "vale", "texto": "Una cita planeada para nuestro próximo encuentro."}]}
   ],
   museo: [
     {titulo:'Tu vocación',descripcion:'Tu curiosidad por la geología y la dedicación que pones en tu carrera me inspiran.',mensaje:'Mi geóloga favorita.',icono:'geologa',tecnica:'Rocas, fósiles y mucha curiosidad',foto:''},
@@ -639,6 +640,8 @@ function escribirConResaltes(el, texto) {
      { tipo: 'frase', texto: '…', autor: '…' }
      { tipo: 'foto', foto: 'assets/fotos/archivo.jpg', pie: '…' }
      { tipo: 'lista', titulo: '…', items: ['…', '…'] }
+     { tipo: 'vale', texto: '…' }   (cupón «Vale por…» para canjear con Eduardo)
+     { tipo: 'frase', texto: '…', celebra: true, gif: 'assets/…gif' }   (hoja de celebración con confeti; gif opcional)
    Portadas (campo «portada»): nubes, cerezos, cristales, ventana, castillo, nudos, nudos-azul, pergamino
    (si no se pone, se van turnando para que no haya dos iguales seguidas).
    Siempre empieza con una portadilla y termina con una hoja de cierre. Recuerda en qué hoja quedó
@@ -725,8 +728,8 @@ function tapaSVG(color, alto = 415, conDragones = true) {
     }).join('')
     + svgNudo(150, 20)
     + `<g transform="matrix(1 0 0 -1 0 ${H})">${svgNudo(150, 20)}</g>`
-    + (conDragones ? dragonElegante('violeta', `translate(16 ${H * .6}) scale(0.418) rotate(-6)`)
-      + dragonElegante('crema', `translate(286 ${H * .53}) scale(-0.389 0.389) rotate(-6)`) : '')
+    + (conDragones ? dragonElegante('violeta', `translate(18 ${H * .74}) scale(0.3) rotate(-6)`)
+      + dragonElegante('crema', `translate(284 ${H * .7}) scale(-0.28 0.28) rotate(-6)`) : '')
     + `</svg>`;
 }
 
@@ -857,11 +860,11 @@ let elegUid = 0;
 function dragonElegante(paleta, transform, op = {}) {
   const p = PALETAS_DRAGON[paleta] || PALETAS_DRAGON.azul, id = `de${elegUid++}`;
   const tinta = Boolean(op.tinta);
-  const linea = p.linea, grosorLinea = tinta ? 1.25 : 1.05;
+  const linea = p.linea, grosorLinea = tinta ? 1.3 : 1.2;
   // columna: de la cabeza (derecha, arriba) a la punta de la cola (izquierda, enroscada)
-  const columna = catmull([[226, 40], [214, 50], [204, 66], [190, 82], [170, 92], [146, 94], [122, 92], [100, 98], [78, 110], [54, 122], [32, 126], [16, 118], [12, 104], [22, 96], [32, 102]], 7);
+  const columna = catmull([[232, 26], [218, 40], [205, 62], [190, 82], [170, 92], [146, 94], [122, 92], [100, 98], [78, 110], [54, 122], [32, 126], [16, 118], [12, 104], [22, 96], [32, 102]], 7);
   const N = columna.length;
-  const ancho = t => t < .14 ? 5.4 + (t / .14) * 5 : t < .3 ? 10.4 + ((t - .14) / .16) * 4 : t < .46 ? 14.4 - ((t - .3) / .16) * 3.4 : Math.max(.8, 11 * Math.pow(1 - (t - .46) / .54, 1.5));
+  const ancho = t => t < .14 ? 5.4 + (t / .14) * 5 : t < .3 ? 10.4 + ((t - .14) / .16) * 5.6 : t < .46 ? 16 - ((t - .3) / .16) * 5 : Math.max(.8, 11 * Math.pow(1 - (t - .46) / .54, 1.5));
   const normal = i => {
     const a = columna[Math.max(0, i - 1)], b = columna[Math.min(N - 1, i + 1)];
     const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
@@ -876,9 +879,22 @@ function dragonElegante(paleta, transform, op = {}) {
   });
   const contorno = caminoSuave(arriba.concat(abajo.slice().reverse()), true);
   const banda = caminoSuave(vientre.slice(2, Math.round(N * .62)).concat(abajo.slice(2, Math.round(N * .62)).reverse()), true);
-  // espinas a lo largo del lomo, inclinadas hacia la cola
+  // cresta ondulada en cuello y lomo
+  const ini = Math.round(.03 * (N - 1)), fin = Math.round(.46 * (N - 1)), base = [], borde = [];
+  for (let i = ini; i <= fin; i++) {
+    const t = i / (N - 1), [nx, ny] = normal(i), c = arriba[i];
+    const alto = (2.4 + ancho(t) * .42) * (.55 + .45 * Math.abs(Math.sin(i * .62))) * Math.sin(Math.PI * (i - ini) / (fin - ini)) + .6;
+    base.push(c); borde.push([c[0] + nx * alto, c[1] + ny * alto]);
+  }
+  const cresta = caminoSuave(base.concat(borde.reverse()), true);
+  // brillo a lo largo del lomo
+  const brillo = caminoSuave(columna.slice(Math.round(.04 * (N - 1)), Math.round(.8 * (N - 1))).map((c, k) => {
+    const i = k + Math.round(.04 * (N - 1)), [nx, ny] = normal(i), w = ancho(i / (N - 1));
+    return [c[0] + nx * w * .55, c[1] + ny * w * .55];
+  }));
+  // espinas a lo largo del lomo (desde donde termina la cresta), inclinadas hacia la cola
   let espinas = '';
-  for (let t = .05; t < .9; t += .034) {
+  for (let t = .47; t < .9; t += .034) {
     const i = Math.round(t * (N - 1)), [nx, ny] = normal(i), c = arriba[i], s = Math.max(1.4, ancho(t) * .62);
     const tx = columna[Math.min(N - 1, i + 1)][0] - columna[i][0], ty = columna[Math.min(N - 1, i + 1)][1] - columna[i][1], tl = Math.hypot(tx, ty) || 1;
     const ux = tx / tl, uy = ty / tl;
@@ -894,15 +910,17 @@ function dragonElegante(paleta, transform, op = {}) {
   const c0 = columna[0], c1 = columna[3], ang = Math.atan2(c0[1] - c1[1], c0[0] - c1[0]) * 180 / Math.PI;
   const relleno = tinta ? p.base : `url(#${id}c)`;
   const cabeza = `<g transform="translate(${(c0[0] - 4).toFixed(1)} ${c0[1].toFixed(1)}) rotate(${ang.toFixed(1)}) scale(1.32)">`
-    + `<path d="M3 -8C-5 -13 -16 -16 -32 -15C-19 -10 -9 -6 -2 -1Z" fill="${p.vientre}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
-    + `<path d="M8 -9C2 -17 -7 -23 -21 -27C-11 -19 -3 -13 2 -6Z" fill="${p.vientre}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
+    + `<path d="M3 -8C-8 -16 -24 -21 -44 -20C-26 -13 -12 -7 -2 -1Z" fill="${p.vientre}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
+    + `<path d="M8 -9C1 -21 -11 -31 -30 -38C-15 -26 -4 -16 2 -6Z" fill="${p.vientre}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
     + `<path d="M-1 -6l-5 -6 1 7M-6 -3l-6 -4 2 6" fill="${tinta ? p.vientre : p.sombra}" stroke="${linea}" stroke-width=".6" stroke-linejoin="round"/>`
     + `<path d="M-6 -7C2 -11 12 -12 22 -10C29 -9 36 -6 42 -3.5C45 -2.2 45 1 42 2L32 3C35 5 35 7.4 31.5 8.4C23 9.6 12 9 3 7.4C-3 6 -7 2 -6 -7Z" fill="${relleno}" stroke="${linea}" stroke-width="${grosorLinea * 1.1}" stroke-linejoin="round"/>`
     + `<path d="M8 2.6C16 4.6 24 4.4 32 3" fill="none" stroke="${linea}" stroke-width=".8"/>`
+    + (tinta ? '' : `<ellipse cx="20.5" cy="-6" rx="7" ry="4" fill="${p.ojo}" opacity=".3"/>`)
     + `<path d="M15 -5.6C18 -8 23 -8.2 26 -6C23 -4.6 19 -4.2 15 -5.6Z" fill="${p.ojo}" stroke="${linea}" stroke-width=".7"/><circle cx="21.4" cy="-6.2" r=".95" fill="${linea}"/>`
     + `<path d="M13 -8.4C18 -11 25 -11 29 -8.4" fill="none" stroke="${linea}" stroke-width=".9"/>`
     + `<circle cx="39.5" cy="-1.6" r=".75" fill="${linea}"/>`
     + `<path d="M2 6C-6 10 -12 14 -20 22M4 7.6C-2 13 -6 18 -9 26" fill="none" stroke="${linea}" stroke-width=".7" opacity=".8"/>`
+    + `<path d="M0 3l-9 3 7 1-6 6 9-4M2 -2l-8 -1 6 3" fill="${tinta ? p.vientre : p.sombra}" stroke="${linea}" stroke-width=".6" stroke-linejoin="round"/>`
     + (tinta ? '' : `<path d="M2 -7.6C10 -10 18 -10.4 26 -9" fill="none" stroke="${p.luz}" stroke-width="1.1" opacity=".8"/>`)
     + `</g>`;
   // ala: hombro en el origen; huesos curvos y membrana festoneada
@@ -916,9 +934,15 @@ function dragonElegante(paleta, transform, op = {}) {
     mem += `Q-30 10 0 0Z`;
     const huesos = tips.map((t, k) => `M${W[0]} ${W[1]}Q${((W[0] + t[0]) / 2 + (k === 0 ? 0 : 6)).toFixed(1)} ${((W[1] + t[1]) / 2 - 8 + k * 2).toFixed(1)} ${t[0]} ${t[1]}`).join('');
     const brazo = `M0 0Q${E[0] + 6} ${E[1] + 14} ${E[0]} ${E[1]}Q${W[0] + 12} ${W[1] + 4} ${W[0]} ${W[1]}`;
+    const venas = tips.slice(0, -1).map((t, k) => { const n = tips[k + 1], mx = (t[0] + n[0]) / 2, my = (t[1] + n[1]) / 2;
+      return `M${W[0]} ${W[1]}Q${((W[0] + mx) / 2 + 4).toFixed(1)} ${((W[1] + my) / 2 - 3).toFixed(1)} ${(mx + (W[0] - mx) * .36).toFixed(1)} ${(my + (W[1] - my) * .36).toFixed(1)}`; }).join('');
     return `<g class="${clase}"><g transform="rotate(${giro}) scale(${escala})">`
       + `<path d="${mem}" fill="${tinta ? tono : `url(#${id}${tono})`}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
       + (tinta ? '' : `<path d="${mem}" fill="url(#${id}v)" opacity=".55"/>`)
+      + (tinta ? '' : tips.slice(0, -1).map((t, k) => { const n = tips[k + 1];
+          const cx = ((t[0] + n[0]) / 2 + (W[0] - (t[0] + n[0]) / 2) * .34).toFixed(1), cy = ((t[1] + n[1]) / 2 + (W[1] - (t[1] + n[1]) / 2) * .34).toFixed(1);
+          return `<path d="M${W[0]} ${W[1]}L${t[0]} ${t[1]}Q${cx} ${cy} ${n[0]} ${n[1]}Z" fill="${k % 2 ? '#000' : '#fff'}" opacity="${k % 2 ? .07 : .12}"/>`; }).join(''))
+      + `<path d="${venas}" fill="none" stroke="${linea}" stroke-width=".5" opacity="${tinta ? .5 : .3}"/>`
       + `<path d="${huesos}" fill="none" stroke="${tinta ? linea : tonoOsc}" stroke-width="${tinta ? 1 : 1.8}" stroke-linecap="round"/>`
       + `<path d="${brazo}" fill="none" stroke="${tinta ? linea : tonoOsc}" stroke-width="${tinta ? 2.2 : 4.2}" stroke-linecap="round"/>`
       + (tinta ? '' : `<path d="${brazo}" fill="none" stroke="${p.luz}" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>`)
@@ -935,22 +959,26 @@ function dragonElegante(paleta, transform, op = {}) {
   const cola = columna[N - 1];
   const puntaCola = tinta
     ? `<path d="M${cola[0]} ${cola[1]}c-4 2 -10 2 -12 -2m12 2c-2 4 -6 8 -12 8m12 -8c2 4 2 9 -2 12" fill="none" stroke="${linea}" stroke-width=".9"/>`
-    : `<path d="M${cola[0]} ${cola[1]}C${cola[0] + 4} ${cola[1] - 8} ${cola[0] + 12} ${cola[1] - 10} ${cola[0] + 16} ${cola[1] - 6}C${cola[0] + 12} ${cola[1] - 2} ${cola[0] + 6} ${cola[1] + 2} ${cola[0]} ${cola[1]}Z" fill="${p.base}" stroke="${linea}" stroke-width="${grosorLinea}"/>`;
+    : `<path d="M${cola[0]} ${cola[1]}C${cola[0] + 3} ${cola[1] - 12} ${cola[0] + 14} ${cola[1] - 16} ${cola[0] + 22} ${cola[1] - 10}C${cola[0] + 16} ${cola[1] - 8} ${cola[0] + 18} ${cola[1] - 2} ${cola[0] + 22} ${cola[1] + 2}C${cola[0] + 12} ${cola[1] + 4} ${cola[0] + 5} ${cola[1] + 3} ${cola[0]} ${cola[1]}Z" fill="${p.alaOsc}" stroke="${linea}" stroke-width="${grosorLinea}" stroke-linejoin="round"/>`
+      + `<path d="M${cola[0] + 2} ${cola[1] - 1}L${cola[0] + 18} ${cola[1] - 10}M${cola[0] + 3} ${cola[1]}L${cola[0] + 19} ${cola[1] + 1}" stroke="${linea}" stroke-width=".6" opacity=".6"/>`;
   const defs = tinta ? '' : `<defs><linearGradient id="${id}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.luz}"/><stop offset=".45" stop-color="${p.base}"/><stop offset="1" stop-color="${p.sombra}"/></linearGradient>`
     + `<linearGradient id="${id}a" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.ala}"/><stop offset="1" stop-color="${p.alaOsc}"/></linearGradient>`
     + `<linearGradient id="${id}o" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.alaOsc}"/><stop offset="1" stop-color="${p.sombra}"/></linearGradient>`
     + `<radialGradient id="${id}v" cx=".3" cy=".3" r=".8"><stop offset="0" stop-color="${p.luz}" stop-opacity=".0"/><stop offset=".75" stop-color="${p.luz}" stop-opacity=".0"/><stop offset="1" stop-color="${p.luz}" stop-opacity=".7"/></radialGradient>`
-    + `<pattern id="${id}e" width="5" height="4" patternUnits="userSpaceOnUse"><path d="M0 4Q2.5 .5 5 4" fill="none" stroke="${linea}" stroke-width=".45" opacity=".45"/></pattern></defs>`;
-  return `<g transform="${transform}">${defs}<g class="dragon-anim">`
-    + `<g transform="translate(${(hombro[0] - 10).toFixed(1)} ${(hombro[1] + 2).toFixed(1)})">${ala(.86, 14, tinta ? p.alaOsc : 'o', p.sombra, 'ala-anim ala-lejos')}</g>`
+    + `<pattern id="${id}e" width="5" height="4" patternUnits="userSpaceOnUse"><path d="M0 4Q2.5 .5 5 4" fill="none" stroke="${linea}" stroke-width=".45" opacity=".45"/></pattern>`
+    + `<filter id="${id}s" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#28143c" flood-opacity=".32"/></filter></defs>`;
+  return `<g transform="${transform}">${defs}<g class="dragon-anim"${tinta ? '' : ` filter="url(#${id}s)"`}>`
+    + `<g transform="translate(${(hombro[0] - 10).toFixed(1)} ${(hombro[1] + 2).toFixed(1)})">${ala(1.12, 12, tinta ? p.alaOsc : 'o', p.sombra, 'ala-anim ala-lejos')}</g>`
     + pata(.55, .85, 78)
     + `<path d="${contorno}" fill="${relleno}" stroke="${linea}" stroke-width="${grosorLinea * 1.15}" stroke-linejoin="round"/>`
     + (tinta ? '' : `<path d="${contorno}" fill="url(#${id}e)"/>`)
     + `<path d="${banda}" fill="${p.vientre}" stroke="none" opacity="${tinta ? 1 : .95}"/>`
     + `<path d="${placas}" stroke="${linea}" stroke-width=".55" opacity=".5"/>`
     + `<path d="${espinas}" fill="${tinta ? p.vientre : p.sombra}" stroke="${linea}" stroke-width=".6" stroke-linejoin="round"/>`
+    + `<path d="${cresta}" fill="${tinta ? p.vientre : p.alaOsc}" stroke="${linea}" stroke-width=".8" stroke-linejoin="round"/>`
+    + (tinta ? '' : `<path d="${brillo}" fill="none" stroke="${p.luz}" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>`)
     + puntaCola + pata(.3, .78, 70) + cabeza
-    + `<g transform="translate(${hombro[0].toFixed(1)} ${hombro[1].toFixed(1)})">${ala(1, 0, tinta ? p.ala : 'a', p.alaOsc, 'ala-anim')}</g>`
+    + `<g transform="translate(${hombro[0].toFixed(1)} ${hombro[1].toFixed(1)})">${ala(1.32, -4, tinta ? p.ala : 'a', p.alaOsc, 'ala-anim')}</g>`
     + `</g></g>`;
 }
 
@@ -965,8 +993,8 @@ function dragonConRosas(transform, paleta = 'tinta') {
 
 /* ---------- Portadas distintas para cada librito (dibujos propios en SVG, inspirados en las ideas de Eduardo) ----------
    portadaSVG(estilo, alto): nubes, cerezos, cristales, ventana, castillo, nudos, nudos-azul, pergamino. */
-const PORTADAS = ['nubes', 'cerezos', 'cristales', 'ventana', 'castillo', 'nudos', 'nudos-azul', 'pergamino'];
-const COLOR_PORTADA = { nubes: 'rosa', cerezos: 'lila', cristales: 'azul', ventana: 'azul', castillo: 'rosa', nudos: 'lila', 'nudos-azul': 'azul', pergamino: 'miel' };
+const PORTADAS = ['nubes', 'cerezos', 'cristales', 'ventana', 'castillo', 'nudos', 'nudos-azul', 'pergamino', 'luna'];
+const COLOR_PORTADA = { nubes: 'rosa', cerezos: 'lila', cristales: 'azul', ventana: 'azul', castillo: 'rosa', nudos: 'lila', 'nudos-azul': 'azul', pergamino: 'miel', luna: 'lila' };
 
 function azarSemilla(s) { return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
 function chispa(x, y, r, fill = '#fff', op = 1) {
@@ -1147,8 +1175,8 @@ const PINTORES = {
       + nube(-20, H * .12, 1.3, '#fbe9dc') + nube(210, H * .08, 1.1, '#fde6d6') + nube(-30, H * .34, 1.2, '#f8cdb5') + nube(230, H * .3, 1.4, '#fbd3bd')
       + nube(-40, H * .72, 1.6, '#f6c0cc') + nube(200, H * .78, 1.5, '#f9cdd3') + nube(60, H * .9, 1.8, '#fde3dc') + nube(250, H * .6, .9, '#fde8dc')
       + estrellitas(14, 30, 20, 240, H * .5, 3, '#fff')
-      + dragonElegante('azul', `translate(4 ${H * .5}) scale(0.52) rotate(-6)`)
-      + dragonElegante('rosa', `translate(298 ${H * .44}) scale(-0.5 0.5) rotate(-6)`)
+      + dragonElegante('azul', `translate(4 ${H * .6}) scale(0.46) rotate(-6)`)
+      + dragonElegante('rosa', `translate(298 ${H * .55}) scale(-0.44 0.44) rotate(-6)`)
       + marcoSimple(H, '#fff', '#f3c9a8');
   },
   cerezos(H, id) {
@@ -1162,8 +1190,8 @@ const PINTORES = {
       + castilloSVG(150, H * .8, 1.05, '#f7e7cc', '#e6a46a', '#c98a52')
       + [30, 58, 86, 214, 242, 270].map((x, k) => `<path d="M${x} ${H}L${x - 13} ${H}L${x} ${H * .82 + (k % 3) * 8}L${x + 13} ${H}Z" fill="${k % 2 ? '#d7b46f' : '#c9a35e'}"/>`).join('')
       + `<rect x="0" y="${H * .93}" width="300" height="${H * .07}" fill="#e9cf9a"/>`
-      + dragonElegante('oro', `translate(34 ${H * .52}) scale(0.23) rotate(-10)`)
-      + dragonElegante('vino', `translate(128 ${H * .5}) scale(0.418) rotate(-4)`)
+      + dragonElegante('oro', `translate(30 ${H * .6}) scale(0.2) rotate(-10)`)
+      + dragonElegante('vino', `translate(146 ${H * .6}) scale(0.32) rotate(-4)`)
       + estrellitas(10, 40, 20, 220, H * .3, 11, '#fff')
       + ramaCerezo(-6, 40, 1.1, 20, 5) + ramaCerezo(306, 40, 1.1, 160, 9).replace('rotate(160)', 'rotate(160) scale(1 -1)')
       + ramaCerezo(-4, H - 70, 1, -20, 13) + ramaCerezo(304, H - 70, 1, 200, 17).replace('rotate(200)', 'rotate(200) scale(1 -1)');
@@ -1205,8 +1233,8 @@ const PINTORES = {
       + `<path d="M${wx} ${wy + wh * .88}C${wx + 50} ${wy + wh * .74} ${wx + 120} ${wy + wh * .8} ${wx + ww} ${wy + wh * .7}V${wy + wh}H${wx}Z" fill="#6c5a9e" opacity=".7"/>`
       + `<rect x="${wx - 22}" y="${wy + wh}" width="${ww + 44}" height="12" rx="3" fill="#5b6aa8"/>`
       + librosPila(wx - 18, wy + wh, .9) + globoEstrellas(wx + 18, wy + wh - 54) + telescopio(wx + ww + 2, wy + wh)
-      + dragonElegante('violeta', `translate(${wx + 6} ${wy + wh * .34}) scale(0.36) rotate(-10)`)
-      + dragonElegante('rosa', `translate(${wx + ww + 4} ${wy + wh * .56}) scale(-0.245 0.245) rotate(-4)`)
+      + dragonElegante('violeta', `translate(${wx + 30} ${wy + wh * .76}) scale(0.22) rotate(-8)`)
+      + dragonElegante('rosa', `translate(${wx + ww + 2} ${wy + wh * .8}) scale(-0.2 0.2) rotate(-4)`)
       + chispa(40, 40, 6, '#c3cbe6') + chispa(262, 70, 5, '#c3cbe6') + chispa(250, H - 40, 6, '#c3cbe6') + chispa(36, H - 34, 4, '#c3cbe6')
       + marcoSimple(H, '#b7c0dc', '#fff');
   },
@@ -1232,12 +1260,28 @@ const PINTORES = {
   },
   nudos(H) { return tapaSVG('lila', H, true).replace(/^<svg[^>]*>|<\/svg>$/g, ''); },
   'nudos-azul'(H) { return tapaSVG('azul', H, true).replace(/^<svg[^>]*>|<\/svg>$/g, ''); },
+  luna(H, id) {
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23255c"/><stop offset=".55" stop-color="#5a4a9a"/><stop offset="1" stop-color="#d9a3c8"/></linearGradient>`
+      + `<radialGradient id="${id}l"><stop offset="0" stop-color="#fff4d2" stop-opacity=".95"/><stop offset=".5" stop-color="#f6dca0" stop-opacity=".35"/><stop offset="1" stop-color="#f6dca0" stop-opacity="0"/></radialGradient>`
+      + `<filter id="${id}b"><feGaussianBlur stdDeviation="2.4"/></filter></defs>`
+      + `<rect width="300" height="${H}" fill="url(#${id})"/>`
+      + estrellitas(70, 16, 16, 268, H * .7, 61, '#fff')
+      + `<circle cx="150" cy="${H * .25}" r="96" fill="url(#${id}l)"/>`
+      + luna(150, H * .25, 50, '#fbeec4')
+      + `<circle cx="140" cy="${H * .2}" r="5" fill="#ead9a8" opacity=".6"/><circle cx="133" cy="${H * .3}" r="3.5" fill="#ead9a8" opacity=".55"/>`
+      + `<path d="M48 ${H * .37}C90 ${H * .46} 210 ${H * .46} 252 ${H * .37}" fill="none" stroke="#fff3cf" stroke-width="1" stroke-dasharray="2 5" opacity=".55"/>`
+      + dragonElegante('violeta', `translate(14 ${H * .2}) scale(.36) rotate(-6)`)
+      + dragonElegante('rosa', `translate(286 ${H * .23}) scale(-.36 .36) rotate(-6)`)
+      + `<g filter="url(#${id}b)">${nube(-30, H * .9, 1.4, '#e7b8d6')}${nube(190, H * .92, 1.3, '#d9b0dd')}${nube(70, H * .97, 1.6, '#f0c6dc')}</g>`
+      + marcoSimple(H, '#a8804a', '#f1d6a0')
+      + [[22, 22], [278, 22], [22, H - 22], [278, H - 22]].map(([a, b]) => chispa(a, b, 6, '#f6e2b5')).join('');
+  },
   pergamino(H, id) {
     return `<defs><radialGradient id="${id}" cx=".5" cy=".45" r=".75"><stop offset="0" stop-color="#f9efda"/><stop offset=".7" stop-color="#efdcb8"/><stop offset="1" stop-color="#dcc095"/></radialGradient></defs>`
       + `<rect width="300" height="${H}" fill="url(#${id})"/>`
       + nube(170, H * .2, 1.6, '#e9d7b6') + nube(-40, H * .82, 1.8, '#f4e6cc') + nube(200, H * .9, 1.4, '#ecdcbd')
       + estrellitas(30, 10, 10, 280, H - 20, 51, '#c9a77a')
-      + dragonConRosas(`translate(132 ${H * .16}) scale(.5) rotate(-22)`) + dragonConRosas(`translate(14 ${H * .78}) scale(.5) rotate(-22)`)
+      + dragonConRosas(`translate(150 ${H * .06}) scale(.42) rotate(-18)`) + dragonConRosas(`translate(8 ${H * .88}) scale(.34) rotate(-16)`)
       + marcoSimple(H, '#c9a06a', '#f6e8cc');
   }
 };
@@ -1249,6 +1293,75 @@ function portadaSVG(estilo, alto = 415) {
   const textura = `<filter id="${id}t"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .35  0 0 0 0 .25  0 0 0 0 .2  0 0 0 .5 -.18"/></filter>`
     + `<rect width="300" height="${H}" filter="url(#${id}t)" opacity=".55" style="mix-blend-mode:multiply"/>`;
   return `<svg class="tapa-arte" viewBox="0 0 300 ${H}" aria-hidden="true" focusable="false">${pintar(H, id)}${textura}</svg>`;
+}
+
+
+/* El número 7 haciendo el «Siuuu»: salta, gira y aterriza con los brazos abiertos (dibujo propio) */
+const JUGADOR_SIU = `<svg viewBox="0 0 160 200">
+  <ellipse class="siu-sombra" cx="80" cy="186" rx="40" ry="6" fill="#000" opacity=".18"/>
+  <g class="siu-cuerpo">
+    <path d="M70 128L50 166L48 178H60L62 168L78 132Z" fill="#e3b18c" stroke="#5a3a2c" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M90 128L110 166L112 178H100L98 168L82 132Z" fill="#e3b18c" stroke="#5a3a2c" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M51 158L46 176H62L64 160Z M109 158L114 176H98L96 160Z" fill="#c8102e" stroke="#5a1a22" stroke-width="1.2"/>
+    <path d="M44 176H64L66 184H40Z M96 176H116L120 184H94Z" fill="#1d1d24"/>
+    <path d="M64 104H96L100 130H60Z" fill="#0d6b3a" stroke="#083d22" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M80 112V130" stroke="#083d22" stroke-width="1.2"/>
+    <path d="M58 56C66 52 94 52 102 56L98 106H62Z" fill="#c8102e" stroke="#5a1a22" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M58 56L30 90L38 96L64 70Z" fill="#c8102e" stroke="#5a1a22" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M102 56L130 90L122 96L96 70Z" fill="#c8102e" stroke="#5a1a22" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M30 90L22 104L30 106L38 96Z M130 90L138 104L130 106L122 96Z" fill="#e3b18c" stroke="#5a3a2c" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M70 54Q80 60 90 54" fill="none" stroke="#0d6b3a" stroke-width="3"/>
+    <text x="80" y="94" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="30" fill="#fff" stroke="#f2c14e" stroke-width=".8">7</text>
+    <rect x="74" y="42" width="12" height="12" fill="#e3b18c"/>
+    <ellipse cx="80" cy="32" rx="13" ry="15" fill="#e3b18c" stroke="#5a3a2c" stroke-width="1.4"/>
+    <path d="M67 30C66 18 74 14 82 15C90 16 95 22 93 30C90 24 84 22 76 24C72 25 69 27 67 30Z" fill="#2a1c14"/>
+    <path d="M67 30C66 26 67 22 69 20" fill="none" stroke="#2a1c14" stroke-width="2"/>
+  </g>
+  <g class="siu-impacto" stroke="#f2c14e" stroke-width="2.4" stroke-linecap="round">
+    <path d="M30 184L18 180M28 176L18 168M130 184L142 180M132 176L142 168"/>
+  </g>
+</svg>`;
+
+/* Dragones de las esquinas de las hojas, con los colores del libro */
+const DRAGONES_HOJA = { nubes: ['azul', 'rosa'], cerezos: ['vino', 'oro'], cristales: ['violeta', 'azul'], ventana: ['azul', 'rosa'], castillo: ['rosa', 'violeta'],
+  nudos: ['violeta', 'crema'], 'nudos-azul': ['azul', 'crema'], pergamino: ['tinta', 'tinta'], luna: ['violeta', 'rosa'] };
+function dragonEsquina(paleta, espejo) {
+  const tinta = paleta === 'tinta';
+  const d = tinta ? dragonConRosas('translate(0 0)') : dragonElegante(paleta, 'translate(0 0)');
+  return svgDato(`<svg viewBox="-150 -110 470 300"><g transform="${espejo ? 'matrix(-1 0 0 1 170 0)' : ''}">${d}</g></svg>`);
+}
+
+/* Marco de las hojas según la portada del libro: adornos solo en los bordes, el centro queda libre para el texto */
+function marcoHojaSVG(estilo, H) {
+  const yb = y => H - y;
+  const filete = (c, op = .55) => `<rect x="9" y="9" width="282" height="${H - 18}" rx="6" fill="none" stroke="${c}" stroke-width="1.4" opacity="${op}"/>`
+    + `<rect x="14" y="14" width="272" height="${H - 28}" rx="4" fill="none" stroke="${c}" stroke-width=".7" opacity="${op * .8}"/>`;
+  const M = {
+    nubes: () => filete('#e4a7a3') + `<g opacity=".9">${nube(-34, 18, .75, '#fbe3d6')}${nube(236, 10, .7, '#fde9de')}${nube(-30, yb(6), .9, '#f8d3dc')}${nube(210, yb(2), .95, '#fbdde0')}${nube(90, yb(-6), .8, '#fde6e2')}</g>`
+      + estrellitas(10, 20, 10, 260, 40, 5, '#f3b6a8') + estrellitas(6, 20, H - 50, 260, 40, 8, '#f3b6a8')
+      + dragonElegante('azul', `translate(214 ${yb(66)}) scale(.16) rotate(-8)`),
+    cerezos: () => filete('#d7a2c4') + ramaCerezo(-8, 26, 1, 22, 5) + ramaCerezo(308, 26, 1, 158, 9).replace('rotate(158)', 'rotate(158) scale(1 -1)')
+      + ramaCerezo(308, yb(30), .9, 196, 13).replace('rotate(196)', 'rotate(196) scale(1 -1)')
+      + Array.from({ length: 10 }, (_, k) => `<ellipse cx="${20 + (k * 53) % 260}" cy="${yb(18 + (k * 29) % 40)}" rx="3" ry="2" fill="#f6b8cb" transform="rotate(${k * 37} ${20 + (k * 53) % 260} ${yb(18 + (k * 29) % 40)})"/>`).join(''),
+    cristales: () => filete('#c9a6e6', .7)
+      + [[22, H, 12, 46, '#d7a6e3', '#b783c8', -10], [38, H, 9, 32, '#a9c0ef', '#7f98d6', 8], [278, H, 12, 48, '#d7a6e3', '#b783c8', 10], [262, H, 9, 30, '#f1c2dc', '#d593ba', -8]]
+        .map(([a, b, w, h, c1, c2, g]) => cristal(a, b - 8, w, h, c1, c2, g)).join('')
+      + estrellitas(16, 20, 14, 260, 50, 23, '#9b84d4') + chispa(150, 22, 6, '#d6ad6c') + arabesco(150, 34, .55),
+    ventana: () => `<path d="M16 ${yb(14)}V90C16 46 80 16 150 14C220 16 284 46 284 90V${yb(14)}Z" fill="none" stroke="#7f8fc8" stroke-width="2.2" opacity=".6"/>`
+      + `<path d="M22 ${yb(20)}V92C22 52 84 24 150 22C216 24 278 52 278 92V${yb(20)}Z" fill="none" stroke="#7f8fc8" stroke-width=".8" opacity=".5"/>`
+      + estrellitas(14, 40, 30, 220, 40, 33, '#7f8fc8') + luna(246, 50, 9, '#e9cf86') + roseton(150, 36, 10, '#7f8fc8', '#e7ebf8'),
+    castillo: () => filete('#e2a6bd') + enredadera(18, 30, H - 60, -1, 3) + enredadera(282, 30, H - 60, 1, 7)
+      + Array.from({ length: 9 }, (_, k) => tulipan(26 + k * 31, H - 6, 18 + (k * 7) % 10, k % 3 ? '#f6b9cb' : '#f19bb6', '#cf6d8f', (k % 2 ? 4 : -4))).join(''),
+    nudos: () => filete('#d9a56a', .7) + `<g transform="translate(45 2) scale(.7)">${svgNudo(150, 8)}</g><g transform="matrix(.7 0 0 -.7 45 ${H - 2})">${svgNudo(150, 8)}</g>`
+      + svgRamillete(26, 40, [[0, 0, 9, 'rosa', 0], [16, -10, 6, 'lila', 20]], [[-8, 10, 12, 40], [10, 8, 11, -50]])
+      + svgRamillete(274, yb(40), [[0, 0, 9, 'azul', 0], [-16, 10, 6, 'lila', 20]], [[8, -10, 12, 40], [-10, -8, 11, -50]]),
+    pergamino: () => filete('#c9a06a', .6) + dragonConRosas(`translate(196 4) scale(.3) rotate(-14)`) + dragonConRosas(`translate(6 ${yb(64)}) scale(.28) rotate(-16)`),
+    luna: () => filete('#b8a3e0', .65) + `<circle cx="252" cy="44" r="30" fill="#f6dca0" opacity=".25"/>` + luna(252, 44, 15, '#f1d98f')
+      + estrellitas(22, 16, 12, 268, 60, 63, '#8d7bd0') + estrellitas(12, 16, H - 56, 268, 44, 67, '#8d7bd0')
+      + `<path d="M30 ${yb(26)}C100 ${yb(46)} 200 ${yb(46)} 270 ${yb(26)}" fill="none" stroke="#a593d8" stroke-width="1" stroke-dasharray="2 5" opacity=".7"/>`
+  };
+  M['nudos-azul'] = M.nudos;
+  return (M[estilo] || M.nudos)();
 }
 
 /* Adornos de las hojas: el mismo nudo dorado arriba y un ramillete en la esquina */
@@ -1318,6 +1431,21 @@ function crearHoja(p, i) {
     if (p.titulo) { add('h3', 'lh-titulo', p.titulo); add('span', 'lh-separador').setAttribute('aria-hidden', 'true'); }
     add('p', 'lh-texto', String(p.texto || '').trim());
     if (p.firma) add('p', 'lh-firma', p.firma);
+  } else if (p.tipo === 'frase' && p.celebra) {
+    const fiesta = add('div', 'lh-siu');
+    if (p.gif) { const g = add('img', 'lh-siu-gif', null, fiesta); g.src = p.gif; g.alt = p.gifAlt || 'Celebración'; g.loading = 'lazy'; }
+    else {
+      const escena = add('div', 'lh-siu-escena', null, fiesta);
+      escena.setAttribute('aria-hidden', 'true');
+      const jugador = add('span', 'lh-siu-jugador', null, escena);
+      jugador.innerHTML = JUGADOR_SIU;
+      add('span', 'lh-siu-ale', null, escena);
+    }
+    const grito = add('p', 'lh-siu-texto', null, fiesta);
+    grito.setAttribute('aria-label', p.texto || '¡Siuuu!');
+    [...(p.texto || '¡Siuuu!')].forEach((ch, k) => { const s = document.createElement('span'); s.textContent = ch; s.style.setProperty('--k', k); s.setAttribute('aria-hidden', 'true'); grito.append(s); });
+    const conf = add('span', 'lh-confeti', null, fiesta); conf.setAttribute('aria-hidden', 'true');
+    for (let k = 0; k < 24; k++) { const c = document.createElement('i'); c.style.setProperty('--x', `${(k * 41) % 100}%`); c.style.setProperty('--d', `${-(k * .37 % 3).toFixed(2)}s`); c.style.setProperty('--c', ['#e0506c', '#f2c14e', '#6f9be0', '#7cc49a', '#b59ce0'][k % 5]); conf.append(c); }
   } else if (p.tipo === 'frase') {
     add('span', 'lh-comillas', '“').setAttribute('aria-hidden', 'true');
     add('blockquote', 'lh-frase', p.texto || '');
@@ -1327,6 +1455,19 @@ function crearHoja(p, i) {
     const img = add('img', '', null, fig);
     img.src = urlFoto(p.foto); img.alt = p.pie || 'Una foto para ti'; img.loading = 'lazy'; img.decoding = 'async';
     if (p.pie) add('figcaption', '', p.pie, fig);
+  } else if (p.tipo === 'vale') {
+    const cupon = add('div', 'lh-vale');
+    const cuerpo = add('div', 'lh-vale-cuerpo', null, cupon);
+    add('span', 'lh-vale-banda', 'Un vale para Dallana', cuerpo);
+    add('span', 'lh-vale-kicker', 'Vale por', cuerpo);
+    add('p', 'lh-vale-texto', p.texto || '', cuerpo);
+    add('span', 'lh-separador', null, cuerpo).setAttribute('aria-hidden', 'true');
+    add('span', 'lh-vale-pie', 'Canjeable con Eduardo cuando tú quieras, sin fecha de vencimiento', cuerpo);
+    add('span', 'lh-vale-firma', 'Eduardo', cuerpo);
+    const talon = add('div', 'lh-vale-talon', null, cupon);
+    add('span', 'lh-vale-num', `Nº ${String(libroActual._i + 1).padStart(2, '0')}${i}`, talon);
+    add('span', 'lh-vale-corazon', '♥', talon).setAttribute('aria-hidden', 'true');
+    add('span', 'lh-vale-timbre', 'Canjeable', cupon).setAttribute('aria-hidden', 'true');
   } else if (p.tipo === 'lista') {
     if (p.titulo) add('h3', 'lh-titulo', p.titulo);
     const ul = add('ul', 'lh-lista');
@@ -1343,6 +1484,27 @@ function crearHoja(p, i) {
   }
   h.append(dentro);
   if (i % 2 === 0) h.classList.add('par');
+  // dragoncitos en las esquinas (arriba a la derecha y abajo a la izquierda), siempre en el margen
+  if (p.tipo !== 'portada') {
+    const da = add('span', 'lh-dragon lh-dragon--a', null, h); da.setAttribute('aria-hidden', 'true');
+    const db = add('span', 'lh-dragon lh-dragon--b', null, h); db.setAttribute('aria-hidden', 'true');
+  }
+  // partículas suaves según el tema (pétalos, estrellas, brillos…)
+  const part = add('span', 'lh-particulas', null, h);
+  part.setAttribute('aria-hidden', 'true');
+  for (let k = 0; k < 8; k++) {
+    const e = document.createElement('i');
+    e.style.setProperty('--x', `${(k * 37 + i * 13) % 92 + 4}%`);
+    e.style.setProperty('--y', `${(k * 53 + i * 29) % 88 + 6}%`);
+    e.style.setProperty('--d', `${-((k * 1.7 + i) % 8).toFixed(1)}s`);
+    part.append(e);
+  }
+  // stickers en las frases y vales
+  if (p.tipo === 'frase' || p.tipo === 'vale') {
+    const st = add('img', 'lh-sticker-hoja', null, h);
+    st.src = `assets/stickers/${STICKERS_LIBRO[(libroActual._i * 3 + i) % STICKERS_LIBRO.length]}.png`; st.alt = ''; st.decoding = 'async'; st.loading = 'lazy';
+    st.style.setProperty('--giro', `${i % 2 ? 8 : -8}deg`);
+  }
   if (i > 0 && p.tipo !== 'fin') add('span', 'lh-num', String(i), h);
   if (p.tipo !== 'fin') {
     const oreja = add('button', 'lh-oreja', null, h);
@@ -1359,9 +1521,18 @@ function ajustarHoja(h) {
   if (!dentro || !texto) return;
   texto.style.fontSize = '';
   let size = parseFloat(getComputedStyle(texto).fontSize);
-  while (dentro.scrollHeight > dentro.clientHeight + 1 && size > 15) {
+  while (dentro.scrollHeight > dentro.clientHeight + 1 && size > 17.5) {
     size -= .5;
     texto.style.fontSize = `${size}px`;
+  }
+  // si igual no cabe, se avisa que hay que deslizar (y el aviso se va al llegar al final)
+  const sobra = dentro.scrollHeight > dentro.clientHeight + 4;
+  h.classList.toggle('con-scroll', sobra);
+  if (sobra && !h.querySelector('.lh-desliza')) {
+    const aviso = document.createElement('span');
+    aviso.className = 'lh-desliza'; aviso.textContent = 'desliza para seguir leyendo';
+    h.append(aviso);
+    dentro.addEventListener('scroll', () => h.classList.toggle('al-final', dentro.scrollTop + dentro.clientHeight >= dentro.scrollHeight - 6), { passive: true });
   }
 }
 
@@ -1459,6 +1630,12 @@ function abrirLibro(libro, i, origen = null) {
     const r = frente.getBoundingClientRect();
     frente.insertAdjacentHTML('afterbegin', portadaSVG(estilo, r.width ? 300 * r.height / r.width : 560));
   }
+  const pags = $('libroPaginas');
+  const altoHoja = pags.offsetWidth ? Math.round(300 * pags.offsetHeight / pags.offsetWidth) : 520;
+  const [da, db] = DRAGONES_HOJA[estilo] || DRAGONES_HOJA.nudos;
+  dlg.style.setProperty('--dragon-hoja-a', dragonEsquina(da, false));
+  dlg.style.setProperty('--dragon-hoja-b', dragonEsquina(db, true));
+  dlg.style.setProperty('--marco-hoja', svgDato(`<svg viewBox="0 0 300 ${altoHoja}" preserveAspectRatio="none">${marcoHojaSVG(estilo, altoHoja)}</svg>`));
   irAHoja(0, 1);
   notificar(`abrió el librito «${libro.titulo || nombre}» 📖`, 'closed_book');
   sumarCorazon();

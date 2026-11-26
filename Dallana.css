@@ -1791,3 +1791,165 @@ dialog.libro-dialog::backdrop{background:radial-gradient(circle at 50% 40%,rgba(
   .libro-hoja::after,.libro-hoja.par::after{width:118px;height:100px}
 }
 @media (prefers-reduced-motion:reduce){.lh-pareja-corazon,.lh-pareja .ala-anim,.lh-pareja .dragon-anim{animation:none}}
+
+/* hoja «vale»: cupón con bordes troquelados */
+.lh-vale{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;width:min(100%,320px);padding:30px 22px 22px;
+  background:radial-gradient(circle at 0 50%,transparent 11px,#fff8ec 12px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 11px,#fff8ec 12px) right/51% 100% no-repeat;
+  filter:drop-shadow(0 8px 14px rgba(120,70,40,.25));transform:rotate(-2deg)}
+.lh-vale::before{content:"";position:absolute;inset:8px 18px;border:2px dashed rgba(192,84,110,.45);border-radius:10px;pointer-events:none}
+.lh-vale-sello{position:absolute;top:-16px;right:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:47% 53% 50% 50%/52% 48% 52% 48%;
+  background:radial-gradient(circle at 35% 30%,#f07a82,#d8414c 45%,#a82a35);color:#ffe0e0;font-size:18px;box-shadow:0 3px 6px rgba(80,20,20,.35);transform:rotate(12deg)}
+.lh-vale-kicker{color:#c0546e;font:400 34px/1 var(--libro-script)}
+.lh-vale-texto{margin:0;color:#4a3833;font:italic 600 24px/1.3 var(--libro-titulo);text-align:center;text-wrap:balance}
+.lh-vale-pie{color:#8a6a5a;font:600 11px/1.3 var(--sans);letter-spacing:.04em}
+.lh-vale-firma{align-self:flex-end;color:#a8475f;font:600 24px/1 var(--firma);transform:rotate(-4deg)}
+
+/* los dragoncitos de las hojas nunca tapan el texto: en las cartas y listas va uno solo arriba y el texto empieza más abajo */
+.libro-hoja--carta::after,.libro-hoja--lista::after{display:none}
+.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding-top:96px}
+.libro-hoja::before{background-size:128px auto;background-position:right 8px top 6px}
+.libro-hoja--frase::after,.libro-hoja--vale::after{width:110px;height:96px;left:4px;bottom:8px}
+@media (max-width:599px){
+  .libro-hoja::before{background-size:104px auto;background-position:right 6px top 4px}
+  .libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding-top:82px}
+  .libro-hoja--frase::after,.libro-hoja--vale::after{width:96px;height:84px}
+}
+
+/* cartas que no caben: desvanecido abajo y aviso para deslizar */
+.libro-hoja.con-scroll .lh-dentro{-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent)}
+.libro-hoja.con-scroll.al-final .lh-dentro{-webkit-mask-image:none;mask-image:none}
+.lh-desliza{position:absolute;z-index:4;left:50%;bottom:36px;transform:translateX(-50%);padding:5px 12px;border-radius:999px;background:rgba(168,71,95,.92);color:#fff;
+  font:600 12px/1 var(--sans);white-space:nowrap;box-shadow:0 4px 10px rgba(90,30,40,.25);pointer-events:none;animation:desliza-invita 1.8s ease-in-out infinite;transition:opacity .3s}
+.libro-hoja.al-final .lh-desliza{opacity:0}
+@keyframes desliza-invita{0%,100%{translate:0 0}50%{translate:0 4px}}
+@media (prefers-reduced-motion:reduce){.lh-desliza{animation:none}}
+
+[data-estilo="luna"]{--t-top:52%;--t-izq:16%;--t-der:16%;--t-sombra:0 2px 8px rgba(30,20,70,.85)}
+[data-estilo="ventana"] .ml-tapa .ml-npag,[data-estilo="pergamino"] .ml-tapa .ml-npag{display:none}
+
+/* ---------- hojas temáticas: marco del mundo de la portada, color y vida ---------- */
+.libro-dialog{--hoja-tinte:rgba(255,236,220,.0);--particula:#f6b8cb}
+.libro-dialog[data-estilo="nubes"]{--hoja-tinte:rgba(252,214,200,.5);--particula:#ffffff}
+.libro-dialog[data-estilo="cerezos"]{--hoja-tinte:rgba(240,210,236,.5);--particula:#f6b8cb}
+.libro-dialog[data-estilo="cristales"]{--hoja-tinte:rgba(214,200,244,.5);--particula:#b49cf0}
+.libro-dialog[data-estilo="ventana"]{--hoja-tinte:rgba(206,216,244,.5);--particula:#8f9fe0}
+.libro-dialog[data-estilo="castillo"]{--hoja-tinte:rgba(250,212,226,.5);--particula:#f19bb6}
+.libro-dialog[data-estilo="nudos"]{--hoja-tinte:rgba(224,212,246,.48);--particula:#e6c27a}
+.libro-dialog[data-estilo="nudos-azul"]{--hoja-tinte:rgba(206,216,246,.48);--particula:#e6c27a}
+.libro-dialog[data-estilo="pergamino"]{--hoja-tinte:rgba(236,214,176,.35);--particula:#e7a2b4}
+.libro-dialog[data-estilo="luna"]{--hoja-tinte:rgba(214,204,246,.5);--particula:#f1d98f}
+.libro-hoja{background:
+    linear-gradient(90deg,rgba(120,75,40,.2),rgba(120,75,40,0) 7%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,252,244,.0) 40%,var(--hoja-tinte) 100%),
+    var(--acuarela-hoja) center/100% 100% no-repeat,
+    radial-gradient(rgba(150,110,70,.07) .8px,rgba(0,0,0,0) 1.2px) 0 0/5px 5px,
+    radial-gradient(ellipse at 50% 45%,#fdf6e8 40%,#f1e2c6 100%)}
+.libro-hoja::before,.libro-hoja.par::before{inset:0;background:var(--marco-hoja) center/100% 100% no-repeat !important;opacity:1}
+.libro-hoja::after,.libro-hoja.par::after,.libro-hoja--frase::after,.libro-hoja--vale::after{display:none}
+.lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding:66px 34px 70px 36px}
+@media (max-width:599px){.lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding:58px 26px 62px 28px}}
+/* partículas */
+.lh-particulas{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.lh-particulas i{position:absolute;left:var(--x);top:-12px;width:8px;height:6px;border-radius:60% 0 60% 0;background:var(--particula);opacity:.75;animation:cae-petalo 9s linear infinite;animation-delay:var(--d)}
+@keyframes cae-petalo{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(18px,260px) rotate(200deg)}100%{transform:translate(-10px,720px) rotate(420deg)}}
+.libro-dialog:is([data-estilo="cristales"],[data-estilo="ventana"],[data-estilo="luna"],[data-estilo="nudos"],[data-estilo="nudos-azul"]) .lh-particulas i{top:var(--y);width:9px;height:9px;border-radius:0;
+  clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:brilla-estrella 3.4s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes brilla-estrella{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:.85;transform:scale(1)}}
+.libro-dialog[data-estilo="nubes"] .lh-particulas i{top:var(--y);width:26px;height:10px;border-radius:50%;opacity:.55;filter:blur(1px);animation:nube-pasa 14s linear infinite;animation-delay:var(--d)}
+@keyframes nube-pasa{from{transform:translateX(-60px)}to{transform:translateX(160px)}}
+.libro-dialog[data-estilo="pergamino"] .lh-particulas i{width:8px;height:8px;border-radius:0;clip-path:path('M4 7.5C1 5 0 3.5 0 2.2 0 1 1 0 2.2 0 3 0 3.6.5 4 1.2 4.4.5 5 0 5.8 0 7 0 8 1 8 2.2 8 3.5 7 5 4 7.5Z')}
+.lh-dentro{z-index:2}
+/* stickers en frases y vales */
+.lh-sticker-hoja{position:absolute;z-index:3;left:18px;bottom:22px;width:62px;height:auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));transform:rotate(var(--giro));animation:sticker-flota 4s ease-in-out infinite}
+@media (max-width:599px){.lh-sticker-hoja{width:52px;left:14px;bottom:18px}}
+
+/* ---------- vales: boleto con talón, banda de color, número y timbre ---------- */
+.lh-vale{position:relative;display:flex;width:min(100%,340px);padding:0;background:none;filter:drop-shadow(0 10px 16px rgba(110,60,40,.28));transform:rotate(-1.5deg)}
+.lh-vale::before{display:none}
+.lh-vale-sello{display:none}
+.lh-vale-cuerpo{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 16px 16px;border-radius:12px 0 0 12px;overflow:hidden;
+  background:repeating-radial-gradient(circle at 50% 120%,rgba(0,0,0,0) 0 6px,rgba(170,120,90,.06) 6px 7px),linear-gradient(180deg,#fffaf0,#fbefdc);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.7),inset 0 0 0 4px color-mix(in srgb,var(--tapa) 45%,transparent)}
+.lh-vale-banda{align-self:stretch;margin:0 -16px 6px;padding:7px 10px;background:linear-gradient(90deg,var(--tapa-osc),var(--tapa));color:#fff;
+  font:italic 600 14px/1 var(--libro-titulo);letter-spacing:.02em;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.lh-vale-kicker{color:var(--tapa-osc);font:400 36px/1 var(--libro-script)}
+.lh-vale-texto{margin:0;color:#3f2f35;font:italic 700 23px/1.25 var(--libro-titulo);text-align:center;text-wrap:balance}
+.lh-vale-cuerpo .lh-separador{width:120px;height:18px;margin:2px auto}
+.lh-vale-pie{color:#7b6460;font:500 11px/1.35 var(--sans);text-align:center;letter-spacing:.01em}
+.lh-vale-firma{align-self:flex-end;color:var(--tapa-osc);font:600 25px/1 var(--firma);transform:rotate(-4deg)}
+.lh-vale-talon{position:relative;flex:none;width:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:0 12px 12px 0;
+  background:linear-gradient(180deg,var(--tapa),var(--tapa-osc));color:#fff;
+  -webkit-mask:radial-gradient(circle at 0 6px,transparent 4px,#000 4.5px) 0 0/100% 12px repeat-y;mask:radial-gradient(circle at 0 6px,transparent 4px,#000 4.5px) 0 0/100% 12px repeat-y}
+.lh-vale-num{writing-mode:vertical-rl;transform:rotate(180deg);font:italic 600 14px/1 var(--libro-titulo);letter-spacing:.12em;opacity:.95}
+.lh-vale-corazon{font-size:18px;animation:latido-libro 1.6s ease-in-out infinite}
+.lh-vale-timbre{position:absolute;right:58px;bottom:-14px;width:76px;height:76px;display:grid;place-items:center;border:2.5px solid rgba(192,60,80,.7);border-radius:50%;
+  color:rgba(192,60,80,.8);font:700 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-16deg);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,0),inset 0 0 0 6px rgba(192,60,80,.35);background:rgba(255,250,240,.35);pointer-events:none}
+@media (max-width:599px){.lh-vale-texto{font-size:20px}.lh-vale-kicker{font-size:31px}.lh-vale-talon{width:46px}.lh-vale-timbre{width:64px;height:64px;right:48px;font-size:9.5px}}
+
+/* ---------- la hoja que celebra (¡Siiiuuu!) ---------- */
+.lh-siu{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.lh-siu-ale{width:108px;height:129px;background:url(assets/pixel/alejandro.png?v=5) 0 -258px/1296px 1419px no-repeat;image-rendering:pixelated;
+  animation:siu-baila .9s steps(12) infinite,siu-salta .9s ease-in-out infinite}
+@keyframes siu-baila{from{background-position-x:0}to{background-position-x:-1296px}}
+@keyframes siu-salta{0%,100%{translate:0 0}50%{translate:0 -12px}}
+.lh-siu-gif{width:min(100%,260px);border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.lh-siu-texto{margin:0;color:var(--tapa-osc);font:italic 700 clamp(30px,9vw,44px)/1.05 var(--libro-titulo);word-break:break-all;text-align:center}
+.lh-siu-texto span{display:inline-block;animation:siu-ola 1.2s ease-in-out infinite;animation-delay:calc(var(--k) * .06s)}
+@keyframes siu-ola{0%,100%{transform:translateY(0)}30%{transform:translateY(-10px) scale(1.15)}}
+.lh-confeti{position:absolute;inset:-60px -20px auto;height:360px;pointer-events:none;overflow:hidden}
+.lh-confeti i{position:absolute;left:var(--x);top:-10px;width:7px;height:11px;background:var(--c);border-radius:2px;animation:confeti-cae 3s linear infinite;animation-delay:var(--d)}
+@keyframes confeti-cae{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(380px) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.lh-particulas,.lh-confeti{display:none}.lh-siu-ale,.lh-siu-texto span,.lh-sticker-hoja,.lh-vale-corazon{animation:none}}
+.lh-vale{flex-direction:row;align-items:stretch;gap:0}
+.lh-siu-texto{font-size:clamp(26px,7.6vw,38px)}
+.lh-vale-timbre{right:auto;left:-8px;bottom:-20px}
+@media (max-width:599px){.lh-vale-timbre{right:auto;left:-8px}}
+
+/* ---------- dragones en las esquinas de las hojas (con los colores del libro) ---------- */
+.lh-dragon{position:absolute;z-index:1;width:118px;height:76px;background:no-repeat center/contain;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(60,30,40,.18))}
+.lh-dragon--a{top:4px;right:6px;background-image:var(--dragon-hoja-a);animation:planeo 6s ease-in-out infinite}
+.lh-dragon--b{bottom:10px;left:4px;background-image:var(--dragon-hoja-b);animation:planeo 7s ease-in-out infinite reverse}
+.libro-hoja--frase .lh-sticker-hoja,.libro-hoja--vale .lh-sticker-hoja{left:auto;right:56px;bottom:14px}
+.lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding:78px 34px 82px 36px}
+@media (max-width:599px){
+  .lh-dragon{width:96px;height:62px}
+  .lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{padding:66px 24px 70px 26px}
+}
+/* un brillo suave que recorre la hoja de vez en cuando */
+.libro-hoja .lh-dentro::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%) -200% 0/200% 100% no-repeat;animation:hoja-brillo 9s ease-in-out infinite}
+@keyframes hoja-brillo{0%,70%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* ---------- el número 7 haciendo el «Siuuu» ---------- */
+.lh-siu-escena{display:flex;align-items:flex-end;justify-content:center;gap:4px}
+.lh-siu-jugador{display:block;width:150px;height:188px}
+.lh-siu-jugador svg{display:block;width:100%;height:100%;overflow:visible}
+.lh-siu-jugador .siu-cuerpo{transform-box:fill-box;transform-origin:50% 100%;animation:siu-salto 2.6s cubic-bezier(.3,.7,.3,1) infinite}
+.lh-siu-jugador .siu-sombra{transform-box:fill-box;transform-origin:center;animation:siu-sombra 2.6s ease-in-out infinite}
+.lh-siu-jugador .siu-impacto{opacity:0;animation:siu-impacto 2.6s ease-out infinite}
+@keyframes siu-salto{0%{transform:translateY(0) scaleY(.92)}12%{transform:translateY(0) scaleY(1)}35%{transform:translateY(-46px) scaleX(-1)}52%{transform:translateY(-30px) scaleX(1)}62%{transform:translateY(0) scaleY(.9)}70%,100%{transform:translateY(0) scaleY(1)}}
+@keyframes siu-sombra{0%,12%,62%,100%{transform:scale(1);opacity:.18}35%{transform:scale(.55);opacity:.08}}
+@keyframes siu-impacto{0%,58%{opacity:0;transform:scale(.6)}64%{opacity:1;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.2)}}
+.lh-siu-ale{width:72px;height:86px;background-size:864px 946px;background-position:0 -172px;animation:siu-baila-chico .9s steps(12) infinite,siu-salta .9s ease-in-out infinite}
+@keyframes siu-baila-chico{from{background-position-x:0}to{background-position-x:-864px}}
+@media (max-width:599px){.lh-siu-jugador{width:124px;height:156px}.lh-siu-ale{width:60px;height:72px;background-size:720px 788px;background-position:0 -143px}
+  @keyframes siu-baila-chico{from{background-position-x:0}to{background-position-x:-720px}}}
+@media (prefers-reduced-motion:reduce){.lh-dragon,.lh-siu-jugador *,.libro-hoja .lh-dentro::after{animation:none}}
+/* hojas que se deslizan: el dragón de abajo se esconde y el texto se desvanece al llegar a las esquinas */
+.libro-hoja.con-scroll .lh-dragon--b{display:none}
+.libro-hoja.con-scroll .lh-dentro{-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 64px,#000 84%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 64px,#000 84%,transparent)}
+.libro-hoja.con-scroll.al-final .lh-dentro{-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 64px);mask-image:linear-gradient(180deg,transparent 0,#000 64px)}
+/* ---------- el texto vive en una ventana fija dentro de la hoja: al deslizar se corta en su borde y nunca pasa por encima
+   de los dragones ni del marco ---------- */
+.lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{margin:84px 30px 92px 32px;padding:4px 8px 12px}
+.libro-hoja.con-scroll .lh-dragon--b{display:block}
+.libro-hoja.con-scroll .lh-dentro{-webkit-mask-image:linear-gradient(180deg,#000 86%,transparent);mask-image:linear-gradient(180deg,#000 86%,transparent)}
+.libro-hoja.con-scroll.al-final .lh-dentro{-webkit-mask-image:none;mask-image:none}
+.lh-desliza{bottom:62px}
+@media (max-width:599px){
+  .lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro{margin:70px 22px 78px 24px;padding:2px 6px 10px}
+  .lh-desliza{bottom:50px;font-size:11px;padding:4px 10px}
+}
+@media (max-width:599px){.libro-hoja--frase .lh-sticker-hoja,.libro-hoja--vale .lh-sticker-hoja{width:44px;bottom:8px;right:52px}}
+.libro-hoja--frase .lh-sticker-hoja,.libro-hoja--vale .lh-sticker-hoja{width:auto;height:62px;max-width:72px;object-fit:contain}
+@media (max-width:599px){.libro-hoja--frase .lh-sticker-hoja,.libro-hoja--vale .lh-sticker-hoja{width:auto;height:46px;max-width:56px}}
