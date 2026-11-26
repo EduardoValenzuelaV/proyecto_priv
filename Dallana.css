@@ -1990,3 +1990,32 @@ dialog.libro-dialog::backdrop{background:radial-gradient(circle at 50% 40%,rgba(
 .libro-dialog[data-estilo="nubes"] .lh-particulas i:nth-child(odd){top:2.5%}
 .libro-dialog[data-estilo="nubes"] .lh-particulas i:nth-child(even){top:auto;bottom:3.5%}
 .libro-dialog:is([data-estilo="cristales"],[data-estilo="ventana"],[data-estilo="luna"],[data-estilo="nudos"],[data-estilo="nudos-azul"]) .lh-particulas i{width:7px;height:7px}
+/* la letra de las portadas en la repisa se ajusta al ancho real de cada librito (celulares chicos incluidos) */
+.mini-libro{container-type:inline-size}
+.ml-tapa .ml-kicker{font-size:clamp(11px,8.4cqw,17px)}
+.ml-tapa .ml-titulo{font-size:clamp(13px,10.2cqw,21px)}
+.ml-tapa .ml-npag{font-size:clamp(9px,5.6cqw,11px)}
+[data-estilo="cristales"] .ml-tapa .ml-titulo{font-size:clamp(11.5px,8.2cqw,16px)}
+[data-estilo="cristales"] .ml-tapa .ml-kicker{font-size:clamp(10px,6.6cqw,13px)}
+/* ---------- celular acostado (poca altura): modo lectura ----------
+   el libro usa casi toda la pantalla, el marco decorado se oculta y los dragones quedan a los costados del texto */
+@media (orientation:landscape) and (max-height:500px){
+  dialog.libro-dialog{width:min(760px,calc(100% - 24px))}
+  .libro-escena{padding:8px 6px 2px 10px}
+  .libro-abierto{height:calc(100dvh - 76px);padding:6px 8px 6px 14px}
+  .libro-controles{margin-top:6px;gap:10px}
+  .libro-btn{min-width:0;padding:8px 14px;font-size:13px}
+  .libro-puntos{display:none}
+  .libro-dialog .close{top:4px;width:34px;height:34px}
+  .libro-hoja::before,.libro-hoja.par::before{opacity:0}
+  .lh-dragon{width:86px;height:56px}
+  .lh-dragon--a{top:6px;right:8px}.lh-dragon--b{bottom:6px;left:8px}
+  .lh-dentro,.libro-hoja--carta .lh-dentro,.libro-hoja--lista .lh-dentro,
+  .libro-dialog[data-estilo="ventana"] .lh-dentro,.libro-dialog[data-estilo="castillo"] .lh-dentro{margin:22px 104px 26px 104px}
+  .lh-num{bottom:6px}
+  .lh-desliza{bottom:8px}
+  .libro-hoja--frase .lh-sticker-hoja,.libro-hoja--vale .lh-sticker-hoja{height:44px;right:12px;bottom:auto;top:66px}
+  .lh-siu-stickers{height:130px}
+  .lh-portada-titulo{font-size:30px}.lh-pareja{width:180px}
+  .lt-frente .ml-titulo{font-size:30px}.lt-frente .ml-kicker{font-size:20px}
+}
