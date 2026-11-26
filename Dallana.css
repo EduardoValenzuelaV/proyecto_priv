@@ -1978,3 +1978,15 @@ dialog.libro-dialog::backdrop{background:radial-gradient(circle at 50% 40%,rgba(
 .lh-siu-st--1{left:3%;width:28%}
 .lh-siu-st--2{right:3%;width:24%}
 .lh-siu-st--1{left:8%}.lh-siu-st--2{right:7%}
+/* los pétalos que caen pasan solo por los costados; el castillo deja más margen a la enredadera */
+.lh-particulas i{left:var(--x)}
+.libro-dialog:is([data-estilo="cerezos"],[data-estilo="castillo"],[data-estilo="pergamino"]) .lh-particulas i:nth-child(odd){left:3%}
+.libro-dialog:is([data-estilo="cerezos"],[data-estilo="castillo"],[data-estilo="pergamino"]) .lh-particulas i:nth-child(even){left:auto;right:3%}
+.libro-dialog[data-estilo="castillo"] .lh-dentro{margin-left:40px;margin-right:40px}
+@media (max-width:599px){.libro-dialog[data-estilo="castillo"] .lh-dentro{margin-left:32px;margin-right:32px}}
+.libro-dialog:is([data-estilo="cerezos"],[data-estilo="castillo"],[data-estilo="pergamino"]) .lh-particulas i{animation-name:cae-lado}
+@keyframes cae-lado{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(5px,260px) rotate(200deg)}100%{transform:translate(-3px,720px) rotate(420deg)}}
+/* las nubecitas pasan solo por arriba y por abajo */
+.libro-dialog[data-estilo="nubes"] .lh-particulas i:nth-child(odd){top:2.5%}
+.libro-dialog[data-estilo="nubes"] .lh-particulas i:nth-child(even){top:auto;bottom:3.5%}
+.libro-dialog:is([data-estilo="cristales"],[data-estilo="ventana"],[data-estilo="luna"],[data-estilo="nudos"],[data-estilo="nudos-azul"]) .lh-particulas i{width:7px;height:7px}

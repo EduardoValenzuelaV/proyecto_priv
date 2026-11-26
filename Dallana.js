@@ -1124,15 +1124,15 @@ function marcoSimple(H, c1, c2) {
 
 
 /* enredadera con hojas doradas y florcitas (bordes de la portada rosa) */
-function enredadera(x, y0, y1, lado, semilla) {
+function enredadera(x, y0, y1, lado, semilla, amp = 10, hojaDx = 7) {
   const az = azarSemilla(semilla), s = lado < 0 ? 1 : -1;
   let d = `M${x} ${y0}`, hojas = '';
   const pasos = 7;
   for (let k = 1; k <= pasos; k++) {
-    const y = y0 + (y1 - y0) * k / pasos, xx = x + Math.sin(k * 1.3) * 10 * s;
+    const y = y0 + (y1 - y0) * k / pasos, xx = x + Math.sin(k * 1.3) * amp * s;
     d += `S${xx + 8 * s} ${y - (y1 - y0) / pasos / 2} ${xx} ${y}`;
     const g = (k % 2 ? 35 : -35) * s, oro = az() > .45;
-    hojas += `<ellipse cx="${xx + (k % 2 ? 7 : -7)}" cy="${y}" rx="3.4" ry="8" transform="rotate(${g} ${xx + (k % 2 ? 7 : -7)} ${y})" fill="${oro ? '#e8b95c' : '#8fbf8a'}" stroke="${oro ? '#b9873a' : '#5e8f5a'}" stroke-width=".7"/>`;
+    hojas += `<ellipse cx="${xx + (k % 2 ? hojaDx : -hojaDx)}" cy="${y}" rx="3.4" ry="8" transform="rotate(${g} ${xx + (k % 2 ? hojaDx : -hojaDx)} ${y})" fill="${oro ? '#e8b95c' : '#8fbf8a'}" stroke="${oro ? '#b9873a' : '#5e8f5a'}" stroke-width=".7"/>`;
     if (k % 3 === 0) hojas += svgFlor(xx, y - 4, 5.5, az() > .5 ? 'lila' : 'rosa', k * 30);
   }
   return `<path d="${d}" fill="none" stroke="#7f9a6a" stroke-width="1.6"/>${hojas}`;
@@ -1312,26 +1312,25 @@ function marcoHojaSVG(estilo, H) {
     + `<rect x="14" y="14" width="272" height="${H - 28}" rx="4" fill="none" stroke="${c}" stroke-width=".7" opacity="${op * .8}"/>`;
   const M = {
     nubes: () => filete('#e4a7a3') + `<g opacity=".9">${nube(-34, 18, .75, '#fbe3d6')}${nube(236, 10, .7, '#fde9de')}${nube(-30, yb(6), .9, '#f8d3dc')}${nube(210, yb(2), .95, '#fbdde0')}${nube(90, yb(-6), .8, '#fde6e2')}</g>`
-      + estrellitas(10, 20, 10, 260, 40, 5, '#f3b6a8') + estrellitas(6, 20, H - 50, 260, 40, 8, '#f3b6a8')
-      + dragonElegante('azul', `translate(214 ${yb(66)}) scale(.16) rotate(-8)`),
+      + estrellitas(10, 20, 10, 260, 24, 5, '#f3b6a8') + estrellitas(6, 20, H - 34, 260, 22, 8, '#f3b6a8'),
     cerezos: () => filete('#d7a2c4') + ramaCerezo(-8, 26, 1, 22, 5) + ramaCerezo(308, 26, 1, 158, 9).replace('rotate(158)', 'rotate(158) scale(1 -1)')
       + ramaCerezo(308, yb(30), .9, 196, 13).replace('rotate(196)', 'rotate(196) scale(1 -1)')
       + Array.from({ length: 10 }, (_, k) => `<ellipse cx="${20 + (k * 53) % 260}" cy="${yb(18 + (k * 29) % 40)}" rx="3" ry="2" fill="#f6b8cb" transform="rotate(${k * 37} ${20 + (k * 53) % 260} ${yb(18 + (k * 29) % 40)})"/>`).join(''),
     cristales: () => filete('#c9a6e6', .7)
       + [[22, H, 12, 46, '#d7a6e3', '#b783c8', -10], [38, H, 9, 32, '#a9c0ef', '#7f98d6', 8], [278, H, 12, 48, '#d7a6e3', '#b783c8', 10], [262, H, 9, 30, '#f1c2dc', '#d593ba', -8]]
         .map(([a, b, w, h, c1, c2, g]) => cristal(a, b - 8, w, h, c1, c2, g)).join('')
-      + estrellitas(16, 20, 14, 260, 50, 23, '#9b84d4') + chispa(150, 22, 6, '#d6ad6c') + arabesco(150, 34, .55),
+      + estrellitas(14, 20, 12, 260, 22, 23, '#9b84d4') + chispa(150, 20, 6, '#d6ad6c'),
     ventana: () => `<path d="M16 ${yb(14)}V90C16 46 80 16 150 14C220 16 284 46 284 90V${yb(14)}Z" fill="none" stroke="#7f8fc8" stroke-width="2.2" opacity=".6"/>`
       + `<path d="M22 ${yb(20)}V92C22 52 84 24 150 22C216 24 278 52 278 92V${yb(20)}Z" fill="none" stroke="#7f8fc8" stroke-width=".8" opacity=".5"/>`
-      + estrellitas(14, 40, 30, 220, 40, 33, '#7f8fc8') + luna(246, 50, 9, '#e9cf86') + roseton(150, 36, 10, '#7f8fc8', '#e7ebf8'),
-    castillo: () => filete('#e2a6bd') + enredadera(18, 30, H - 60, -1, 3) + enredadera(282, 30, H - 60, 1, 7)
+      + estrellitas(10, 60, 24, 180, 20, 33, '#7f8fc8') + luna(246, 46, 8, '#e9cf86') + roseton(150, 34, 10, '#7f8fc8', '#e7ebf8'),
+    castillo: () => filete('#e2a6bd') + enredadera(11, 40, H - 70, -1, 3, 3, 4) + enredadera(289, 40, H - 70, 1, 7, 3, 4)
       + Array.from({ length: 9 }, (_, k) => tulipan(26 + k * 31, H - 6, 18 + (k * 7) % 10, k % 3 ? '#f6b9cb' : '#f19bb6', '#cf6d8f', (k % 2 ? 4 : -4))).join(''),
     nudos: () => filete('#d9a56a', .7) + `<g transform="translate(45 2) scale(.7)">${svgNudo(150, 8)}</g><g transform="matrix(.7 0 0 -.7 45 ${H - 2})">${svgNudo(150, 8)}</g>`
       + svgRamillete(26, 40, [[0, 0, 9, 'rosa', 0], [16, -10, 6, 'lila', 20]], [[-8, 10, 12, 40], [10, 8, 11, -50]])
       + svgRamillete(274, yb(40), [[0, 0, 9, 'azul', 0], [-16, 10, 6, 'lila', 20]], [[8, -10, 12, 40], [-10, -8, 11, -50]]),
-    pergamino: () => filete('#c9a06a', .6) + dragonConRosas(`translate(196 4) scale(.3) rotate(-14)`) + dragonConRosas(`translate(6 ${yb(64)}) scale(.28) rotate(-16)`),
+    pergamino: () => filete('#c9a06a', .6) + rosita(28, 28, 5) + rosita(272, yb(28), 5) + rosita(40, yb(22), 3.6) + rosita(262, 22, 3.6),
     luna: () => filete('#b8a3e0', .65) + `<circle cx="252" cy="44" r="30" fill="#f6dca0" opacity=".25"/>` + luna(252, 44, 15, '#f1d98f')
-      + estrellitas(22, 16, 12, 268, 60, 63, '#8d7bd0') + estrellitas(12, 16, H - 56, 268, 44, 67, '#8d7bd0')
+      + estrellitas(20, 16, 10, 220, 26, 63, '#8d7bd0') + estrellitas(12, 16, H - 34, 268, 24, 67, '#8d7bd0')
       + `<path d="M30 ${yb(26)}C100 ${yb(46)} 200 ${yb(46)} 270 ${yb(26)}" fill="none" stroke="#a593d8" stroke-width="1" stroke-dasharray="2 5" opacity=".7"/>`
   };
   M['nudos-azul'] = M.nudos;
@@ -1468,8 +1467,10 @@ function crearHoja(p, i) {
   part.setAttribute('aria-hidden', 'true');
   for (let k = 0; k < 8; k++) {
     const e = document.createElement('i');
-    e.style.setProperty('--x', `${(k * 37 + i * 13) % 92 + 4}%`);
-    e.style.setProperty('--y', `${(k * 53 + i * 29) % 88 + 6}%`);
+    // repartidas por los bordes: arriba, abajo, izquierda y derecha (nunca sobre el texto)
+    const lado = k % 4, a = ((k * 37 + i * 13) % 90) + 5, b = ((k * 17 + i * 7) % 3) + 1;
+    e.style.setProperty('--x', `${lado < 2 ? a : lado === 2 ? b : 100 - b - 2}%`);
+    e.style.setProperty('--y', `${lado === 0 ? b : lado === 1 ? 100 - b - 2 : a}%`);
     e.style.setProperty('--d', `${-((k * 1.7 + i) % 8).toFixed(1)}s`);
     part.append(e);
   }
